@@ -1,9 +1,14 @@
 import { Button } from "~/components/ui/button";
+import { api } from "~/trpc/server";
 
-export default function Home() {
+export default async function Home() {
+  const forecastQuery = await api.forecast.get();
+
+  console.log(forecastQuery.data);
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <Button>Click to shoo away clouds</Button>
+    <main>
+      <Button>Press to shoo clouds away</Button>
     </main>
   );
 }

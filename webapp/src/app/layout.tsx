@@ -1,31 +1,35 @@
-import type { Metadata } from "next";
-import { Inter as FontSans } from "next/font/google";
-import "./globals.css";
+import "~/styles/globals.css";
 
+import { Instrument_Sans as FontSans } from "next/font/google";
+
+import { TRPCReactProvider } from "~/trpc/react";
 import { cn } from "~/lib/utils";
 
-const fontSans = FontSans({ subsets: ["latin"], variable: "--font-sans" });
-
-export const metadata: Metadata = {
+export const metadata = {
   title: "Sky Pi",
-  description: "How's it looking out there?",
+  description: "Astrophotography weather conditions, at a glance.",
+  // icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
+
+const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <head />
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
+          fontSans.variable,
         )}
       >
-        {children}
+        <TRPCReactProvider>{children}</TRPCReactProvider>
       </body>
     </html>
   );
