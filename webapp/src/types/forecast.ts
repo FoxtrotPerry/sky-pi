@@ -11,7 +11,7 @@ const nwsApiUrl = z
   });
 
 const nwsUnitCode =
-  z.custom<`${"wmo:" | "uc:" | "wmoUnit:" | "nwsUnit:" | undefined}${"m" | "degC"}`>(
+  z.custom<`${"wmo:" | "uc:" | "wmoUnit:" | "nwsUnit:" | ""}${"m" | "degC" | "percent"}`>(
     (val) => {
       return typeof val === "string"
         ? /^((wmo|uc|wmoUnit|nwsUnit):)?.*$/.test(val)
@@ -41,7 +41,7 @@ export const zGridpointForecast = z.object({
     }),
   ]),
   id: nwsApiUrl,
-  type: z.string(),
+  type: z.literal("Feature"),
   geometry: z.object({
     type: z.string(),
     coordinates: z

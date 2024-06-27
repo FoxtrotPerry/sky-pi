@@ -1,5 +1,6 @@
-import { forecastRouter } from "~/server/api/routers/forecast";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
+import { forecastRouter } from "./routers/forecast";
+import { moonPhaseRouter } from "./routers/moonPhase";
 
 /**
  * This is the primary router for your server.
@@ -8,6 +9,7 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
  */
 export const appRouter = createTRPCRouter({
   forecast: forecastRouter,
+  moonPhase: moonPhaseRouter,
 });
 
 // export type definition of API
