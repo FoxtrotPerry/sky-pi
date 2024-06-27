@@ -1,0 +1,22 @@
+meta {
+  name: AA Dept Moon Phases
+  type: http
+  seq: 5
+}
+
+get {
+  url: https://aa.usno.navy.mil/api/moon/phases/date
+  body: none
+  auth: none
+}
+
+params:query {
+  ~date: 2024-06-27
+  ~nump: 10
+}
+
+script:pre-request {
+  const moment = require("moment");
+  
+  req.setUrl(`${req.getUrl()}?date=${moment().format("YYYY-MM-DD")}&nump=4`)
+}
