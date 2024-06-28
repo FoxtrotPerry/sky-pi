@@ -16,7 +16,13 @@ params:query {
 }
 
 script:pre-request {
+  const { URL, URLSearchParams } = require('node:url');
   const moment = require("moment");
   
-  req.setUrl(`${req.getUrl()}?date=${moment().format("YYYY-MM-DD")}&nump=4`)
+  const params = new URLSearchParams([
+    ['date', moment().format("YYYY-MM-DD")],
+    ['nump', '4']
+  ]);
+  
+  req.setUrl(`${req.getUrl()}?${params.toString()}`)
 }

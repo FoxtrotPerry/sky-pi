@@ -1,4 +1,5 @@
 import { Button } from "~/components/ui/button";
+import { Card, CardTitle } from "~/components/ui/card";
 import { api } from "~/trpc/server";
 
 export default async function Home() {
@@ -9,8 +10,13 @@ export default async function Home() {
   console.log(moonPhaseQuery.data);
 
   return (
-    <main>
-      <Button>Press to shoo clouds away</Button>
+    <main className="flex justify-center flex-row space-x-4 space-y-4 p-4 h-full max-h-full">
+      <Button>Shoo clouds away</Button>
+      <Card className="p-4">
+        <CardTitle>
+          Forecast
+        </CardTitle>
+      </Card>
     </main>
   );
 }
