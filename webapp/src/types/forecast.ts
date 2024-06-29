@@ -223,3 +223,94 @@ export const zGridpointForecast = z.object({
 });
 
 export type GridpointForecast = z.infer<typeof zGridpointForecast>;
+
+export const zPointMetadata = z.object({
+  "@context": z.tuple([
+    z.string().url(),
+    z.object({
+      "@version": z.string(),
+      wx: z.string().url(),
+      s: z.string().url(),
+      geo: z.string().url(),
+      unit: z.string().url(),
+      "@vocab": z.string().url(),
+      geometry: z.object({
+        "@id": z.string(),
+        "@type": z.string(),
+      }),
+      city: z.string(),
+      state: z.string(),
+      distance: z.object({
+        "@id": z.string(),
+        "@type": z.string(),
+      }),
+      bearing: z.object({
+        "@type": z.string(),
+      }),
+      value: z.object({
+        "@id": z.string(),
+      }),
+      unitCode: z.object({
+        "@id": z.string(),
+        "@type": z.string(),
+      }),
+      forecastOffice: z.object({
+        "@type": z.string(),
+      }),
+      forecastGridData: z.object({
+        "@type": z.string(),
+      }),
+      publicZone: z.object({
+        "@type": z.string(),
+      }),
+      county: z.object({
+        "@type": z.string(),
+      }),
+    }),
+  ]),
+  id: z.string().url(),
+  type: z.string(),
+  geometry: z.object({
+    type: z.string(),
+    coordinates: z.array(z.number()).length(2),
+  }),
+  properties: z.object({
+    "@id": z.string().url(),
+    "@type": z.string(),
+    cwa: z.string(),
+    forecastOffice: z.string().url(),
+    gridId: z.string(),
+    gridX: z.number(),
+    gridY: z.number(),
+    forecast: z.string().url(),
+    forecastHourly: z.string().url(),
+    forecastGridData: z.string().url(),
+    observationStations: z.string().url(),
+    relativeLocation: z.object({
+      type: z.string(),
+      geometry: z.object({
+        type: z.string(),
+        coordinates: z.array(z.number()).length(2),
+      }),
+      properties: z.object({
+        city: z.string(),
+        state: z.string(),
+        distance: z.object({
+          unitCode: z.string(),
+          value: z.number(),
+        }),
+        bearing: z.object({
+          unitCode: z.string(),
+          value: z.number(),
+        }),
+      }),
+    }),
+    forecastZone: z.string().url(),
+    county: z.string().url(),
+    fireWeatherZone: z.string().url(),
+    timeZone: z.string(),
+    radarStation: z.string(),
+  }),
+});
+
+export type PointMetadata = z.infer<typeof zPointMetadata>;
