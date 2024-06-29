@@ -1,6 +1,11 @@
 {
   "cSpell.words": [
+    "datetime",
     "dewpoint",
-    "Gridpoint"
+    "Gridpoint",
+    "moonphase",
+    "numphases",
+    "phasedata",
+    "TRPC"
   ]
 }
