@@ -222,7 +222,15 @@ export const zGridpointForecast = z.object({
   }),
 });
 
-export type GridpointForecast = z.infer<typeof zGridpointForecast>;
+export type GridpointForecastResp = z.infer<typeof zGridpointForecast>;
+
+export const zGridpointForecastParams = z.object({
+  wfo: zWfoEnum,
+  gridX: z.number(),
+  gridY: z.number(),
+});
+
+export type GridpointForecastParams = z.infer<typeof zGridpointForecastParams>;
 
 export const zPointMetadata = z.object({
   "@context": z.tuple([
@@ -279,7 +287,7 @@ export const zPointMetadata = z.object({
     "@type": z.string(),
     cwa: z.string(),
     forecastOffice: z.string().url(),
-    gridId: z.string(),
+    gridId: zWfoEnum,
     gridX: z.number(),
     gridY: z.number(),
     forecast: z.string().url(),
@@ -313,4 +321,4 @@ export const zPointMetadata = z.object({
   }),
 });
 
-export type PointMetadata = z.infer<typeof zPointMetadata>;
+export type PointMetadataResp = z.infer<typeof zPointMetadata>;

@@ -1,24 +1,16 @@
 import axios from "axios";
-import z from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { zWfoEnum } from "~/types/nws";
-import { type PointMetadata, type GridpointForecast } from "~/types/forecast";
+import { type PointMetadataResp, type GridpointForecastResp, zGridpointForecastParams, type GridpointForecastParams } from "~/types/forecast";
 import { type MoonPhaseData } from "~/types/moonphase";
 import { type GeoData } from "~/types/ip";
 
 export const forecastRouter = createTRPCRouter({
   getForecast: publicProcedure
-    .input(
-      z.object({
-        wfo: zWfoEnum,
-        x: z.number(),
-        y: z.number(),
-      }),
-    )
+    .input(zGridpointForecastParams)
     .query(async ({ input }) => {
-      return axios.get<GridpointForecast>(
-        `https://api.weather.gov/gridpoints/${input.wfo}/${input.x},${input.y}`,
+      return axios.get<GridpointForecastResp>(
+        `https://api.weather.gov/gridpoints/${input.wfo}/${input.gridX},${input.gridY}`,
       );
     }),
 
@@ -40,10 +32,10 @@ export const forecastRouter = createTRPCRouter({
     const { data: geoData } = await axios.get<GeoData>(
       `https://ipwho.is/${ipData.ip}`,
     );
-    const { data: nwsData } = await axios.get<PointMetadata>(
+    const { data: nwsData } = await axios.get<PointMetadataResp>(
       `https://api.weather.gov/points/${geoData.latitude},${geoData.longitude}`,
     );
     const { gridId, gridX, gridY } = nwsData.properties;
-    return { gridId, gridX, gridY };
+    return { wfo: gridId, gridX, gridY } satisfies GridpointForecastParams;
   }),
 });
