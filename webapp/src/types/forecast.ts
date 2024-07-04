@@ -21,7 +21,7 @@ const nwsUnitCode =
 
 const nwsDataPoint = z.optional(
   z.object({
-    validTime: z.string(), // TODO: refine this date (ex: "2024-06-25T19:00:00+00:00/PT1H")
+    validTime: z.date(), // Is converted to date from ISO8601 duration string
     value: z.nullable(z.number()),
   }),
 );
@@ -56,7 +56,7 @@ export const zGridpointForecast = z.object({
     "@id": nwsApiUrl,
     "@type": z.literal("wx:Gridpoint"),
     updateTime: z.string(),
-    validTimes: z.string(),
+    validTimes: z.string().duration(),
     elevation: z.object({
       unitCode: nwsUnitCode,
       value: z.number(),
@@ -80,7 +80,7 @@ export const zGridpointForecast = z.object({
     windGust: nwsDataLayer,
     weather: z.object({
       values: z.object({
-        validTime: z.string(),
+        validTime: z.string().duration(),
         value: z.object({
           coverage: z.nullable(
             z.enum([
@@ -167,7 +167,7 @@ export const zGridpointForecast = z.object({
     hazards: z.object({
       values: z.array(
         z.object({
-          validTime: z.string(),
+          validTime: z.string().duration(),
           value: z.object({
             phenomenon: zPhenomenon,
             significance: zSignificance,
@@ -228,6 +228,7 @@ export const zGridpointForecastParams = z.object({
   wfo: zWfoEnum,
   gridX: z.number(),
   gridY: z.number(),
+  timeZone: z.string()
 });
 
 export type GridpointForecastParams = z.infer<typeof zGridpointForecastParams>;

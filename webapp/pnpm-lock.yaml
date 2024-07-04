@@ -16,13 +16,13 @@ dependencies:
     version: 5.45.1(react@18.3.1)
   '@trpc/client':
     specifier: next
-    version: 11.0.0-rc.433(@trpc/server@11.0.0-rc.433)
+    version: 11.0.0-rc.436(@trpc/server@11.0.0-rc.436)
   '@trpc/react-query':
     specifier: next
-    version: 11.0.0-rc.433(@tanstack/react-query@5.45.1)(@trpc/client@11.0.0-rc.433)(@trpc/server@11.0.0-rc.433)(react-dom@18.3.1)(react@18.3.1)
+    version: 11.0.0-rc.436(@tanstack/react-query@5.45.1)(@trpc/client@11.0.0-rc.436)(@trpc/server@11.0.0-rc.436)(react-dom@18.3.1)(react@18.3.1)
   '@trpc/server':
     specifier: next
-    version: 11.0.0-rc.433
+    version: 11.0.0-rc.436
   axios:
     specifier: ^1.7.2
     version: 1.7.2
@@ -35,6 +35,9 @@ dependencies:
   date-fns:
     specifier: ^3.6.0
     version: 3.6.0
+  date-fns-tz:
+    specifier: ^3.1.3
+    version: 3.1.3(date-fns@3.6.0)
   geist:
     specifier: ^1.3.0
     version: 1.3.0(next@14.2.4)
@@ -415,32 +418,32 @@ packages:
       react: 18.3.1
     dev: false
 
-  /@trpc/client@11.0.0-rc.433(@trpc/server@11.0.0-rc.433):
-    resolution: {integrity: sha512-QEPk14HGP4GK/88v7ORChN2GYbaP+LlCJMQHPRFogaVzapSbiE6C6PN+vNTn8soD28SuPOu+lRzuJszLIuhIPA==}
+  /@trpc/client@11.0.0-rc.436(@trpc/server@11.0.0-rc.436):
+    resolution: {integrity: sha512-xI2+6PTs0rhFEIABhZdcGUtn/bfngkqzrcerXez3un2SGbf/7BRt93J0rg9qjiVi716U0QAc88ZD52s6iMvlew==}
     peerDependencies:
-      '@trpc/server': 11.0.0-rc.433+014d1c839
+      '@trpc/server': 11.0.0-rc.436+fbb4a2fb4
     dependencies:
-      '@trpc/server': 11.0.0-rc.433
+      '@trpc/server': 11.0.0-rc.436
     dev: false
 
-  /@trpc/react-query@11.0.0-rc.433(@tanstack/react-query@5.45.1)(@trpc/client@11.0.0-rc.433)(@trpc/server@11.0.0-rc.433)(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-MXe9C7gq5eId6Uz30M24D11D1zc/As91WVhKZS8i3yb+VERxvRmhfWyGRn7BJvhCApZ/8eKlsKbWq48SrATlhg==}
+  /@trpc/react-query@11.0.0-rc.436(@tanstack/react-query@5.45.1)(@trpc/client@11.0.0-rc.436)(@trpc/server@11.0.0-rc.436)(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-9xnA2+rjSrC2ng0KJ9dAc/YaSUyZ6MdjyhhLUJoDnMUKwB0vRMLqnaFlRYPVvIg+SzNcsqdyqAK173OlbZVVnw==}
     peerDependencies:
       '@tanstack/react-query': ^5.40.0
-      '@trpc/client': 11.0.0-rc.433+014d1c839
-      '@trpc/server': 11.0.0-rc.433+014d1c839
+      '@trpc/client': 11.0.0-rc.436+fbb4a2fb4
+      '@trpc/server': 11.0.0-rc.436+fbb4a2fb4
       react: '>=18.2.0'
       react-dom: '>=18.2.0'
     dependencies:
       '@tanstack/react-query': 5.45.1(react@18.3.1)
-      '@trpc/client': 11.0.0-rc.433(@trpc/server@11.0.0-rc.433)
-      '@trpc/server': 11.0.0-rc.433
+      '@trpc/client': 11.0.0-rc.436(@trpc/server@11.0.0-rc.436)
+      '@trpc/server': 11.0.0-rc.436
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
     dev: false
 
-  /@trpc/server@11.0.0-rc.433:
-    resolution: {integrity: sha512-Zfafmbcv9HS/MBhW4O1JSw0b5Dnvm5PkwPviy64hyG9vRoCDPOLYyxRQD7TBdcWecITvjcQjmcdIGjQyNBVNJw==}
+  /@trpc/server@11.0.0-rc.436:
+    resolution: {integrity: sha512-Nm6b010lb6DuUQTnn95zU+IppD8YnSk/NCrpcj8o8umj9Ap07s1AOZLUfJaZzlDQltC2UVuLpH+shArryypBLg==}
     dev: false
 
   /@types/eslint@8.56.10:
@@ -1056,6 +1059,14 @@ packages:
       es-errors: 1.3.0
       is-data-view: 1.0.1
     dev: true
+
+  /date-fns-tz@3.1.3(date-fns@3.6.0):
+    resolution: {integrity: sha512-ZfbMu+nbzW0mEzC8VZrLiSWvUIaI3aRHeq33mTe7Y38UctKukgqPR4nTDwcwS4d64Gf8GghnVsroBuMY3eiTeA==}
+    peerDependencies:
+      date-fns: ^3.0.0
+    dependencies:
+      date-fns: 3.6.0
+    dev: false
 
   /date-fns@3.6.0:
     resolution: {integrity: sha512-fRHTG8g/Gif+kSh50gaGEdToemgfj74aRX3swtiouboip5JDLAyDE9F11nHMIcvOaXeOC6D7SpNhi7uFyB7Uww==}
