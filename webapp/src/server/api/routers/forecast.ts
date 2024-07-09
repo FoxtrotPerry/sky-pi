@@ -1,35 +1,48 @@
 import axios from "axios";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { type PointMetadataResp, type GridpointForecastResp, zGridpointForecastParams, type GridpointForecastParams } from "~/types/forecast";
-import { type MoonPhaseData } from "~/types/moonphase";
-import { type GeoData } from "~/types/ip";
+import type { MoonPhaseData } from "~/types/moonphase";
+import type { GeoData } from "~/types/ip";
+import { getDateTransformer } from "~/lib/utils/date";
 import { toZonedTime } from "date-fns-tz";
-import { separateDuration } from "~/lib/utils/date";
+import { format, isAfter, subHours } from "date-fns";
 
 export const forecastRouter = createTRPCRouter({
   getForecast: publicProcedure
     .input(zGridpointForecastParams)
     .query(async ({ input }) => {
+      const transformer = getDateTransformer(input.timeZone);
       return axios.get<GridpointForecastResp>(
         `https://api.weather.gov/gridpoints/${input.wfo}/${input.gridX},${input.gridY}`,
         {
-          transformResponse: (data: string) => {
-            let resp;
-            try {
-              resp = JSON.parse(data, (key, value: string | number | boolean | null) => {
-                if (key !== 'validTime') return value;
-                if (typeof value !== 'string') return value;
-                const [timestamp] = separateDuration(value);
-                return toZonedTime(timestamp, input.timeZone);
-              }) as GridpointForecastResp;
-            } catch (error) {
-              throw Error(`Error parsing forecast data in transformResponse - ${JSON.stringify(error)}`)
-            }
-            return resp;
-          }
+          transformResponse: transformer
         }
       );
     }),
+
+  getLocalSkycover: publicProcedure
+  .input(zGridpointForecastParams)
+  .query(async ({ input }) => {
+    const transformer = getDateTransformer(input.timeZone);
+    const localNow = toZonedTime(new Date(), input.timeZone);
+    const timeOneHourAgo = subHours(localNow, 1);
+    const localTimeForecast = await axios.get<GridpointForecastResp>(
+      `https://api.weather.gov/gridpoints/${input.wfo}/${input.gridX},${input.gridY}`,
+      {
+        transformResponse: transformer
+      }
+    );
+    console.log(format(localNow, 'yyyy MM dd hh:mm bbbb x'))
+    const skyCover = localTimeForecast.data.properties.skyCover.values;
+    const dailySkyCover = [];
+    for (let i = 0; i < skyCover.length; i++ ) {
+      const forecastTime = skyCover[i]?.validTime;
+      if (!forecastTime) continue;
+      if (isAfter(forecastTime, timeOneHourAgo)) {
+        console.log(format(forecastTime, 'yyyy MM dd hh:mm bbbb x'));
+      }
+    }
+  }),
 
   getMoonPhases: publicProcedure.query(async () => {
     const now = new Date();

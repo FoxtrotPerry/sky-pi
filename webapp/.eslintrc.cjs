@@ -36,7 +36,8 @@ const config = {
           "attributes": false
         }
       }
-    ]
+    ],
+    "@typescript-eslint/prefer-for-of": "off",
   }
 }
 module.exports = config;
