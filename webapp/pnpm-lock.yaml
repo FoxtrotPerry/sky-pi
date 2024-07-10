@@ -12,14 +12,14 @@ dependencies:
     specifier: ^0.10.1
     version: 0.10.1(typescript@5.5.2)(zod@3.23.8)
   '@tanstack/react-query':
-    specifier: ^5.39.0
-    version: 5.45.1(react@18.3.1)
+    specifier: ^5.50.1
+    version: 5.50.1(react@18.3.1)
   '@trpc/client':
     specifier: next
     version: 11.0.0-rc.449(@trpc/server@11.0.0-rc.449)
   '@trpc/react-query':
     specifier: next
-    version: 11.0.0-rc.449(@tanstack/react-query@5.45.1)(@trpc/client@11.0.0-rc.449)(@trpc/server@11.0.0-rc.449)(react-dom@18.3.1)(react@18.3.1)
+    version: 11.0.0-rc.449(@tanstack/react-query@5.50.1)(@trpc/client@11.0.0-rc.449)(@trpc/server@11.0.0-rc.449)(react-dom@18.3.1)(react@18.3.1)
   '@trpc/server':
     specifier: next
     version: 11.0.0-rc.449
@@ -101,8 +101,8 @@ devDependencies:
     specifier: ^3.2.5
     version: 3.3.2
   prettier-plugin-tailwindcss:
-    specifier: ^0.5.14
-    version: 0.5.14(prettier@3.3.2)
+    specifier: ^0.6.5
+    version: 0.6.5(prettier@3.3.2)
   tailwindcss:
     specifier: ^3.4.3
     version: 3.4.4
@@ -402,16 +402,16 @@ packages:
       zod: 3.23.8
     dev: false
 
-  /@tanstack/query-core@5.45.0:
-    resolution: {integrity: sha512-RVfIZQmFUTdjhSAAblvueimfngYyfN6HlwaJUPK71PKd7yi43Vs1S/rdimmZedPWX/WGppcq/U1HOj7O7FwYxw==}
+  /@tanstack/query-core@5.50.1:
+    resolution: {integrity: sha512-lpfhKPrJlyV2DSVcQb/HuozH3Av3kws4ge22agx+lNGpFkS4vLZ7St0l3GLwlAD+bqB+qXGex3JdRKUNtMviEQ==}
     dev: false
 
-  /@tanstack/react-query@5.45.1(react@18.3.1):
-    resolution: {integrity: sha512-mYYfJujKg2kxmkRRjA6nn4YKG3ITsKuH22f1kteJ5IuVQqgKUgbaSQfYwVP0gBS05mhwxO03HVpD0t7BMN7WOA==}
+  /@tanstack/react-query@5.50.1(react@18.3.1):
+    resolution: {integrity: sha512-s0DW3rVBDPReDDovUjVqItVa3R2nPfUANK9nqGvarO2DwTiY9U4EBTsqizMxItRCoGgK5apeM7D3mxlHrSKpdQ==}
     peerDependencies:
       react: ^18.0.0
     dependencies:
-      '@tanstack/query-core': 5.45.0
+      '@tanstack/query-core': 5.50.1
       react: 18.3.1
     dev: false
 
@@ -423,7 +423,7 @@ packages:
       '@trpc/server': 11.0.0-rc.449
     dev: false
 
-  /@trpc/react-query@11.0.0-rc.449(@tanstack/react-query@5.45.1)(@trpc/client@11.0.0-rc.449)(@trpc/server@11.0.0-rc.449)(react-dom@18.3.1)(react@18.3.1):
+  /@trpc/react-query@11.0.0-rc.449(@tanstack/react-query@5.50.1)(@trpc/client@11.0.0-rc.449)(@trpc/server@11.0.0-rc.449)(react-dom@18.3.1)(react@18.3.1):
     resolution: {integrity: sha512-CokXudkoIgIYWTjVnDSNuErpo1xpRAcTP0FcINe0IUE9iNt+d2BfnOUKF2YgYPNekta559334/v1PLim7GYGsQ==}
     peerDependencies:
       '@tanstack/react-query': ^5.49.2
@@ -432,7 +432,7 @@ packages:
       react: '>=18.2.0'
       react-dom: '>=18.2.0'
     dependencies:
-      '@tanstack/react-query': 5.45.1(react@18.3.1)
+      '@tanstack/react-query': 5.50.1(react@18.3.1)
       '@trpc/client': 11.0.0-rc.449(@trpc/server@11.0.0-rc.449)
       '@trpc/server': 11.0.0-rc.449
       react: 18.3.1
@@ -2645,8 +2645,8 @@ packages:
     engines: {node: '>= 0.8.0'}
     dev: true
 
-  /prettier-plugin-tailwindcss@0.5.14(prettier@3.3.2):
-    resolution: {integrity: sha512-Puaz+wPUAhFp8Lo9HuciYKM2Y2XExESjeT+9NQoVFXZsPPnc9VYss2SpxdQ6vbatmt8/4+SN0oe0I1cPDABg9Q==}
+  /prettier-plugin-tailwindcss@0.6.5(prettier@3.3.2):
+    resolution: {integrity: sha512-axfeOArc/RiGHjOIy9HytehlC0ZLeMaqY09mm8YCkMzznKiDkwFzOpBvtuhuv3xG5qB73+Mj7OCe2j/L1ryfuQ==}
     engines: {node: '>=14.21.3'}
     peerDependencies:
       '@ianvs/prettier-plugin-sort-imports': '*'

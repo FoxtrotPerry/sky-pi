@@ -1,11 +1,11 @@
 import axios from "axios";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { type PointMetadataResp, type GridpointForecastResp, zGridpointForecastParams, type GridpointForecastParams } from "~/types/forecast";
+import { type PointMetadataResp, type GridpointForecastResp, zGridpointForecastParams, type GridpointForecastParams, type NWSDataPoint } from "~/types/forecast";
 import type { MoonPhaseData } from "~/types/moonphase";
 import type { GeoData } from "~/types/ip";
 import { getDateTransformer } from "~/lib/utils/date";
 import { toZonedTime } from "date-fns-tz";
-import { format, isAfter, subHours } from "date-fns";
+import { format, isBefore, subHours, differenceInCalendarDays } from "date-fns";
 
 export const forecastRouter = createTRPCRouter({
   getForecast: publicProcedure
@@ -23,25 +23,30 @@ export const forecastRouter = createTRPCRouter({
   getLocalSkycover: publicProcedure
   .input(zGridpointForecastParams)
   .query(async ({ input }) => {
-    const transformer = getDateTransformer(input.timeZone);
     const localNow = toZonedTime(new Date(), input.timeZone);
     const timeOneHourAgo = subHours(localNow, 1);
     const localTimeForecast = await axios.get<GridpointForecastResp>(
       `https://api.weather.gov/gridpoints/${input.wfo}/${input.gridX},${input.gridY}`,
       {
-        transformResponse: transformer
+        transformResponse: getDateTransformer(input.timeZone)
       }
     );
-    console.log(format(localNow, 'yyyy MM dd hh:mm bbbb x'))
     const skyCover = localTimeForecast.data.properties.skyCover.values;
-    const dailySkyCover = [];
+    // matrix comprised of forecast data for each day. each elem is
+    // an array of that day's forecasts.
+    const skyCoverByDay: NWSDataPoint[][] = [];
     for (let i = 0; i < skyCover.length; i++ ) {
       const forecastTime = skyCover[i]?.validTime;
-      if (!forecastTime) continue;
-      if (isAfter(forecastTime, timeOneHourAgo)) {
-        console.log(format(forecastTime, 'yyyy MM dd hh:mm bbbb x'));
+      if (!forecastTime || isBefore(forecastTime, timeOneHourAgo)) continue;
+      // figure out which index to insert the forecast into
+      const dayDiff = differenceInCalendarDays(forecastTime, timeOneHourAgo);
+      if (skyCoverByDay?.at(dayDiff) === undefined) {
+        skyCoverByDay[dayDiff] = [skyCover[i]];
+      } else {
+        skyCoverByDay[dayDiff]?.push(skyCover[i]);
       }
     }
+    return skyCoverByDay.filter(dayForecasts => !!dayForecasts);
   }),
 
   getMoonPhases: publicProcedure.query(async () => {

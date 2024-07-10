@@ -26,6 +26,8 @@ const nwsDataPoint = z.optional(
   }),
 );
 
+export type NWSDataPoint = z.infer<typeof nwsDataPoint>;
+
 const nwsDataLayer = z.object({
   uom: z.optional(nwsUnitCode), // unit of measurement
   values: nwsDataPoint.array(),
