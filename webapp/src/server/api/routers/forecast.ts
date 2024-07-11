@@ -5,7 +5,7 @@ import type { MoonPhaseData } from "~/types/moonphase";
 import type { GeoData } from "~/types/ip";
 import { getDateTransformer } from "~/lib/utils/date";
 import { toZonedTime } from "date-fns-tz";
-import { format, isBefore, subHours, differenceInCalendarDays } from "date-fns";
+import { isBefore, subHours, differenceInCalendarDays } from "date-fns";
 
 export const forecastRouter = createTRPCRouter({
   getForecast: publicProcedure
