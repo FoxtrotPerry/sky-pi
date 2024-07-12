@@ -3,7 +3,7 @@
  */
 
 import { toZonedTime } from "date-fns-tz";
-import type { GridpointForecastResp, NWSDataPoint } from "~/types/forecast";
+import type { GridpointForecastResp } from "~/types/forecast";
 import type { JSONValue } from "~/types/json";
 
 const durationComponentsAreValid = (
