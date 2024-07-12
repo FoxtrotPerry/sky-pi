@@ -9,15 +9,15 @@ export default async function Home() {
     api.forecast.getLocalSkycover(clientGeoData),
   ]);
 
-  const threeDayForecast = skyCover.slice(0, 3);
+  const skyCoverForecasts = skyCover.slice(0, 3);
 
   return (
     <main className="flex h-full max-h-full flex-row justify-center space-x-4 p-4 pt-4">
-      {threeDayForecast.map((dayForecasts, i) => {
+      {skyCoverForecasts.map((skyCoverForDay, i) => {
         return (
           <ForecastCard
             key={`forecast-card-${i}`}
-            dayForecasts={dayForecasts}
+            skyCoverData={skyCoverForDay}
           />
         );
       })}

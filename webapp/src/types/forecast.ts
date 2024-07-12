@@ -21,11 +21,20 @@ const nwsUnitCode =
 
 const nwsDataPoint = z.optional(
   z.object({
-    validTime: z.date(), // Is converted to date from ISO8601 duration string
+    validTime: z.object({
+      date: z.date(),
+      duration: z.string().duration(),
+    }), // Is converted to date from ISO8601 duration string
     value: z.nullable(z.number()),
   }),
 );
 
+/**
+ * ## Note
+ * Unmodified data points have `validTime` as a string representing an ISO8601 duration.
+ * We modify this value on deserialization into it's date and duration so that we can
+ * fill in data gaps more readily.
+ */
 export type NWSDataPoint = z.infer<typeof nwsDataPoint>;
 
 const nwsDataLayer = z.object({
@@ -230,7 +239,7 @@ export const zGridpointForecastParams = z.object({
   wfo: zWfoEnum,
   gridX: z.number(),
   gridY: z.number(),
-  timeZone: z.string()
+  timeZone: z.string(),
 });
 
 export type GridpointForecastParams = z.infer<typeof zGridpointForecastParams>;
