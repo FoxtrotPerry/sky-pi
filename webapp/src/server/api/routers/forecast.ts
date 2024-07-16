@@ -13,29 +13,19 @@ import { getDateTransformer } from "~/lib/utils/date";
 import { toZonedTime } from "date-fns-tz";
 import {
   isBefore,
-  subHours,
   differenceInCalendarDays,
   addHours,
+  getHours,
+  startOfDay,
 } from "date-fns";
 import { Temporal } from "temporal-polyfill";
 
 export const forecastRouter = createTRPCRouter({
-  getForecast: publicProcedure
-    .input(zGridpointForecastParams)
-    .query(async ({ input }) => {
-      return axios.get<GridpointForecastResp>(
-        `https://api.weather.gov/gridpoints/${input.wfo}/${input.gridX},${input.gridY}`,
-        {
-          transformResponse: getDateTransformer(input.timeZone),
-        },
-      );
-    }),
-
   getLocalSkycover: publicProcedure
     .input(zGridpointForecastParams)
     .query(async ({ input }) => {
       const localNow = toZonedTime(new Date(), input.timeZone);
-      const timeOneHourAgo = subHours(localNow, 1);
+      const startOfToday = startOfDay(localNow);
       const localTimeForecast = await axios.get<GridpointForecastResp>(
         `https://api.weather.gov/gridpoints/${input.wfo}/${input.gridX},${input.gridY}`,
         {
@@ -45,7 +35,10 @@ export const forecastRouter = createTRPCRouter({
       const skyCover = localTimeForecast.data.properties.skyCover.values;
       // matrix comprised of forecast data for each day. each elem is
       // an array of that day's forecasts.
-      const skyCoverByDay: NWSDataPoint[][] = [];
+      const lastSkyCoverDate = skyCover.at(-1)?.validTime.date;
+      const firstSkyCoverDate = skyCover.at(0)?.validTime.date;
+      if (!firstSkyCoverDate || !lastSkyCoverDate) return [];
+      const skyCoverByDay: NWSDataPoint[][] = [[]] as NWSDataPoint[][];
       // ISO8601 Duration encoding for a one hour duration
       const oneHourIsoDuration = "PT1H";
       for (let i = 0; i < skyCover.length; i++) {
@@ -53,33 +46,44 @@ export const forecastRouter = createTRPCRouter({
         const duration = Temporal.Duration.from(
           skyCover[i]?.validTime.duration ?? oneHourIsoDuration,
         );
-        if (!forecastTime || isBefore(forecastTime, timeOneHourAgo)) continue;
+        // if the forecase doesn't have a time or the time is before
+        // the start of today, then skip this data point.
+        if (!forecastTime || isBefore(forecastTime, startOfToday)) continue;
+        // figure out which day index to insert the forecast into
+        const dayDiff = differenceInCalendarDays(forecastTime, startOfToday);
+
         const newSkyCoverItems = [skyCover[i]];
-        // if the duration lasts for more than one hour, then duplicate this forecast
-        // to fill in the data gaps
-        if (duration.hours > 1) {
-          console.log(
-            `Long duration on ${forecastTime.toDateString()}: ${duration.hours}`,
-          );
-        }
-        // FIXME: Figure out a way to ensure that each day array in the `skyCoverByDay`
-        // matrix has 24 elements in it for each hour of the day. For hours where there is
-        // no data, use a value of -1 so we can catch that on the front end.
+
+        /**
+         * If the forecast data point's duration is more than one hour, then add a copy
+         * of the data point for every hour the duration is over.
+         *
+         * We deconstruct these durations so that for every day we have full data coverage
+         * of, we are ensured 24 elements in that day's array.
+         */
         for (let j = 1; j < duration.hours; j++) {
           const newDate = addHours(forecastTime, j);
-          newSkyCoverItems.push({
+          const newEntry: NWSDataPoint = {
             value: skyCover[i]?.value ?? null,
             validTime: { date: newDate, duration: oneHourIsoDuration },
-          });
+          };
+          if (getHours(newDate) > getHours(forecastTime)) {
+            newSkyCoverItems.push(newEntry);
+          } else {
+            skyCoverByDay[dayDiff + 1]?.push(newEntry);
+          }
         }
-        // figure out which day index to insert the forecast into
-        const dayDiff = differenceInCalendarDays(forecastTime, timeOneHourAgo);
+
+        // if the day array we're about to insert into doesn't exist yet,
         if (skyCoverByDay?.at(dayDiff) === undefined) {
+          // then assign our new array elems to it
           skyCoverByDay[dayDiff] = newSkyCoverItems;
         } else {
+          // otherwise, push the new array elems to what already exists there
           skyCoverByDay[dayDiff]?.push(...newSkyCoverItems);
         }
       }
+
       return skyCoverByDay.filter((dayForecasts) => !!dayForecasts);
     }),
 

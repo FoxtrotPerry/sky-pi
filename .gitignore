@@ -1,3 +1,6 @@
+# Weather Photos
+*.png
+
 # Logs
 logs
 *.log
