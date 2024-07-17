@@ -11,8 +11,8 @@ export default async function Home() {
   const skyCoverForecasts = skyCover.slice(0, 3);
 
   return (
-    <main className="flex h-full max-h-full flex-row justify-center p-4 align-middle">
-      <div className="grid grid-rows-3 gap-4">
+    <main className="flex h-full max-h-full flex-row justify-center p-3 align-middle">
+      <div className="grid grid-rows-3 gap-3">
         {skyCoverForecasts.map((skyCoverForDay, i) => {
           return (
             <ForecastCard
