@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import type { NWSDataPoint } from "~/types/forecast";
 import { format, getHours } from "date-fns";
-import { Sparkles, Cloud } from "lucide-react";
+import { MoonStar } from "lucide-react";
 import { percentToSkyShade } from "~/lib/utils/tailwind";
 import { useCallback } from "react";
 import { Cloudy } from "~/components/icons/cloudy";
@@ -14,7 +14,7 @@ export const ForecastCard = ({ skyCoverData }: ForecastCardProps) => {
   const day = skyCoverData[0]?.validTime.date;
 
   const getIcon = useCallback((value: number) => {
-    if (20 >= value) return Sparkles;
+    if (20 >= value) return MoonStar;
     return Cloudy;
   }, []);
 
