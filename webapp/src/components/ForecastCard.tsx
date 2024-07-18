@@ -37,38 +37,36 @@ export const ForecastCard = ({ skyCoverData }: ForecastCardProps) => {
           {skyCoverData.map((forecast) => {
             if (!forecast?.value) return;
             const value = forecast?.value;
-            const highlight = 20 >= value;
+            const shouldHighlight = 20 >= value;
             const shade = percentToSkyShade(value);
             const hour = forecast?.validTime
               ? getHours(forecast?.validTime.date) + 1
               : 0;
             // only show the hour if it's cleanly divisible by 6 or is 1
-            const showHour = hour % 6 === 0 || hour === 1;
+            const showHour = hour % 6 === 0 || hour === 1 || shouldHighlight;
             const Icon = getIcon(value);
             return (
               <div
                 className={clsx(
                   "flex flex-col items-center justify-end",
-                  highlight &&
-                    showHour &&
-                    "gap-0 rounded-lg border-2 bg-slate-100",
+                  showHour && "justify-between",
                 )}
                 key={`sky-cover-${forecast?.validTime.date.valueOf()}`}
               >
-                {showHour && <p className="text-slate-500">{hour}</p>}
+                {(showHour || shouldHighlight) && (
+                  <p className="text-slate-500">{hour}</p>
+                )}
                 <div
                   className={clsx(
-                    "flex flex-col items-center",
-                    highlight &&
-                      !showHour &&
-                      "gap-0 rounded-lg border-2 bg-slate-100",
+                    "flex flex-col items-center rounded-lg border-2 border-transparent",
+                    shouldHighlight && "border-2 border-slate-300 bg-slate-100",
                   )}
                 >
                   <Icon className={`fill-slate-${shade} stroke-slate-500`} />
                   <p
                     className={clsx(
                       "text-xs text-slate-500",
-                      highlight && "font-bold text-slate-800",
+                      shouldHighlight && "font-bold text-slate-800",
                     )}
                   >
                     {value}
