@@ -25,11 +25,13 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={cn(
-          "min-h-screen bg-background font-sans antialiased",
+          "flex min-h-screen bg-background font-sans antialiased",
           fontSans.variable,
         )}
       >
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <main>
+          <TRPCReactProvider>{children}</TRPCReactProvider>
+        </main>
       </body>
     </html>
   );

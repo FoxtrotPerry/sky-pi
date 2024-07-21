@@ -3,7 +3,7 @@ import { z } from "zod";
 const zDayOfMonth = z.number().gte(1).lte(31);
 const zMonthOfYear = z.number().gte(1).lte(12);
 
-export const zMoonPhaseData = z.object({
+export const zRawMoonPhaseData = z.object({
   apiVersion: z.string(),
   day: zDayOfMonth,
   month: zMonthOfYear,
@@ -20,4 +20,4 @@ export const zMoonPhaseData = z.object({
   ),
 });
 
-export type MoonPhaseData = z.infer<typeof zMoonPhaseData>;
+export type RawMoonPhaseData = z.infer<typeof zRawMoonPhaseData>;

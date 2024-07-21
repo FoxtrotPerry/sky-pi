@@ -1,18 +1,21 @@
 import { ForecastCard } from "~/components/ForecastCard";
+import { MoonPhaseCard } from "~/components/MoonPhaseCard";
 import { api } from "~/trpc/server";
 
 export default async function Home() {
   const clientGeoData = await api.forecast.getGeoData();
-  const [moonPhaseQuery, skyCover] = await Promise.all([
+  const [moonPhases, skyCover] = await Promise.all([
     api.forecast.getMoonPhases(),
     api.forecast.getLocalSkycover(clientGeoData),
   ]);
 
   const skyCoverForecasts = skyCover.slice(0, 3);
 
+  console.log(moonPhases);
+
   return (
-    <main className="flex h-full max-h-full flex-row justify-center p-3 align-middle">
-      <div className="grid grid-rows-3 gap-3">
+    <div className="flex h-full max-h-full flex-row justify-center p-1.5 align-middle">
+      <div className="flex flex-col gap-1.5">
         {skyCoverForecasts.map((skyCoverForDay, i) => {
           return (
             <ForecastCard
@@ -21,7 +24,8 @@ export default async function Home() {
             />
           );
         })}
+        <MoonPhaseCard phaseData={moonPhases.phasedata} />
       </div>
-    </main>
+    </div>
   );
 }

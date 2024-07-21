@@ -58,8 +58,9 @@ export const ForecastCard = ({ skyCoverData }: ForecastCardProps) => {
                 )}
                 <div
                   className={clsx(
-                    "flex flex-col items-center rounded-lg border-2 border-transparent",
+                    "flex flex-col items-center rounded-lg border-2",
                     shouldHighlight && "border-2 border-slate-300 bg-slate-100",
+                    !shouldHighlight && "border-transparent",
                   )}
                 >
                   <Icon className={`fill-slate-${shade} stroke-slate-500`} />
