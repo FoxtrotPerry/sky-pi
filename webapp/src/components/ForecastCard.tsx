@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Badge } from "~/components/ui/badge";
 import type { NWSDataPoint } from "~/types/forecast";
 import { format, getHours } from "date-fns";
 import { MoonStar, CloudMoon } from "lucide-react";
@@ -29,7 +30,9 @@ export const ForecastCard = ({ skyCoverData }: ForecastCardProps) => {
       <CardHeader className="space-y-0.5 px-3 pb-0.5 pt-3">
         <div className="flex flex-row justify-between gap-2">
           <CardTitle>{dayOfWeek}</CardTitle>
-          <h3 className="text-muted-foreground">{date}</h3>
+          <Badge className="bg-slate-200">
+            <h3 className="text-slate-700">{date}</h3>
+          </Badge>
         </div>
       </CardHeader>
       <CardContent className="space-y-0.5 px-3 pb-3 pt-0.5">

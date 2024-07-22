@@ -7,7 +7,11 @@ import {
   type GridpointForecastParams,
   type NWSDataPoint,
 } from "~/types/forecast";
-import type { RawMoonPhaseData } from "~/types/moonphase";
+import type {
+  MoonPhaseCycle,
+  MoonPhaseData,
+  RawMoonPhaseData,
+} from "~/types/moonphase";
 import type { GeoData } from "~/types/ip";
 import { getDateTransformer } from "~/lib/utils/date";
 import { toZonedTime } from "date-fns-tz";
@@ -19,7 +23,6 @@ import {
   startOfDay,
 } from "date-fns";
 import { Temporal } from "temporal-polyfill";
-import { date } from "zod";
 
 export const forecastRouter = createTRPCRouter({
   getLocalSkycover: publicProcedure
@@ -101,7 +104,10 @@ export const forecastRouter = createTRPCRouter({
     const phasesResp = await axios.get<RawMoonPhaseData>(
       `https://aa.usno.navy.mil/api/moon/phases/date?${params.toString()}`,
     );
-    const enhancedPhaseData = phasesResp.data.phasedata.map((phase) => {
+
+    const moonPhaseCycle: MoonPhaseCycle = {};
+    phasesResp.data.phasedata.forEach((phase) => {
+      const phaseName = phase.phase;
       const [hoursStr, minutesStr] = phase.time.split(":");
       const phaseTime = new Date(
         Date.UTC(
@@ -112,23 +118,23 @@ export const forecastRouter = createTRPCRouter({
           Number(minutesStr),
         ),
       );
-      return {
-        ...phase,
+      const phaseData: MoonPhaseData = {
         date: phaseTime,
+        name: phaseName,
       };
+
+      if (phaseName === "First Quarter") {
+        moonPhaseCycle.firstQuarter = phaseData;
+      } else if (phaseName === "Full Moon") {
+        moonPhaseCycle.fullMoon = phaseData;
+      } else if (phaseName === "Last Quarter") {
+        moonPhaseCycle.lastQuarter = phaseData;
+      } else if (phaseName === "New Moon") {
+        moonPhaseCycle.newMoon = phaseData;
+      }
     });
-    const enhancedRawResp = {
-      ...phasesResp.data,
-      phasedata: enhancedPhaseData,
-    };
 
-    // TODO: convert enhanced raw response to map over the phases and convert
-    // the array to an object with keys of moon phase name.
-
-    return {
-      ...phasesResp.data,
-      phasedata: enhancedPhaseData,
-    };
+    return moonPhaseCycle;
   }),
 
   getGeoData: publicProcedure.query(async () => {

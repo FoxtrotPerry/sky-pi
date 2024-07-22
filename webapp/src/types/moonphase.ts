@@ -21,3 +21,15 @@ export const zRawMoonPhaseData = z.object({
 });
 
 export type RawMoonPhaseData = z.infer<typeof zRawMoonPhaseData>;
+
+export type MoonPhaseData = {
+  date: Date;
+  name: string;
+};
+
+export type MoonPhaseCycle = {
+  newMoon?: MoonPhaseData;
+  firstQuarter?: MoonPhaseData;
+  fullMoon?: MoonPhaseData;
+  lastQuarter?: MoonPhaseData;
+};
