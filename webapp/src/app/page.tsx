@@ -1,4 +1,5 @@
 import { ForecastCard } from "~/components/ForecastCard";
+import { MiscCard } from "~/components/MiscCard";
 import { MoonPhaseCard } from "~/components/MoonPhaseCard";
 import { api } from "~/trpc/server";
 
@@ -22,7 +23,10 @@ export default async function Home() {
             />
           );
         })}
-        <MoonPhaseCard moonPhaseCycle={moonPhaseCycle} />
+        <div className="flex grow gap-1.5">
+          <MoonPhaseCard moonPhaseCycle={moonPhaseCycle} className="w-1/2" />
+          <MiscCard className="w-1/2" updateTime={new Date()} />
+        </div>
       </div>
     </div>
   );

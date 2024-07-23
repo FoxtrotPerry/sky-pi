@@ -6,7 +6,7 @@ import { MoonStar, CloudMoon } from "lucide-react";
 import { percentToSkyShade } from "~/lib/utils/tailwind";
 import { useCallback } from "react";
 import { Cloudy } from "~/components/icons/cloudy";
-import clsx from "clsx";
+import { cn } from "~/lib/utils/ui";
 
 type ForecastCardProps = {
   skyCoverData: NWSDataPoint[];
@@ -50,7 +50,7 @@ export const ForecastCard = ({ skyCoverData }: ForecastCardProps) => {
             const Icon = getIcon(value);
             return (
               <div
-                className={clsx(
+                className={cn(
                   "flex flex-col items-center justify-end",
                   showHour && "justify-between",
                 )}
@@ -60,7 +60,7 @@ export const ForecastCard = ({ skyCoverData }: ForecastCardProps) => {
                   <p className="text-slate-500">{hour}</p>
                 )}
                 <div
-                  className={clsx(
+                  className={cn(
                     "flex flex-col items-center rounded-lg border-2",
                     shouldHighlight && "border-2 border-slate-300 bg-slate-100",
                     !shouldHighlight && "border-transparent",
@@ -68,7 +68,7 @@ export const ForecastCard = ({ skyCoverData }: ForecastCardProps) => {
                 >
                   <Icon className={`fill-slate-${shade} stroke-slate-500`} />
                   <p
-                    className={clsx(
+                    className={cn(
                       "text-xs text-slate-500",
                       shouldHighlight && "font-bold text-slate-800",
                     )}

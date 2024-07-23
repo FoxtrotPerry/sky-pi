@@ -3,8 +3,9 @@ import { Card, CardContent } from "~/components/ui/card";
 import type { MoonPhaseCycle, MoonPhaseData } from "~/types/moonphase";
 import { format } from "date-fns";
 import type { ReactNode } from "react";
+import { cn } from "~/lib/utils/ui";
 
-type MoonPhaseCardProps = {
+type MoonPhaseCardProps = React.HTMLAttributes<HTMLDivElement> & {
   moonPhaseCycle: MoonPhaseCycle;
 };
 
@@ -27,11 +28,15 @@ const PhaseDetails = ({ phaseData, children }: MoonDetailsProps) => {
   );
 };
 
-export const MoonPhaseCard = ({ moonPhaseCycle }: MoonPhaseCardProps) => {
-  const { newMoon, firstQuarter, fullMoon, lastQuarter } = moonPhaseCycle;
+export const MoonPhaseCard = ({
+  moonPhaseCycle,
+  className,
+  ...props
+}: MoonPhaseCardProps) => {
+  const { newMoon, fullMoon } = moonPhaseCycle;
 
   return (
-    <Card className="grow">
+    <Card className={cn("grow", className)} {...props}>
       <CardContent className="flex h-full justify-evenly gap-3 space-y-0.5 px-3 py-1.5">
         {newMoon && (
           <PhaseDetails phaseData={newMoon}>
