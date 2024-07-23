@@ -23,14 +23,14 @@ export const ForecastCard = ({ skyCoverData }: ForecastCardProps) => {
 
   if (day === undefined) return;
   const dayOfWeek = format(day, "EEEE");
-  const date = format(day, "yyyy / MM / dd");
+  const date = format(day, "MMM do");
 
   return (
     <Card>
       <CardHeader className="space-y-0.5 px-3 pb-0.5 pt-3">
-        <div className="flex flex-row justify-between gap-2">
+        <div className="flex flex-row gap-2">
           <CardTitle>{dayOfWeek}</CardTitle>
-          <Badge className="bg-slate-200">
+          <Badge className="bg-slate-200 hover:bg-slate-200">
             <h3 className="text-slate-700">{date}</h3>
           </Badge>
         </div>
