@@ -1,0 +1,29 @@
+{
+  "name": "sky-pi",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "app:build": "pnpm --filter sky-pi-webapp run build",
+    "app:dev": "pnpm --filter sky-pi-webapp run dev",
+    "app:lint": "pnpm --filter sky-pi-webapp run lint",
+    "app:start": "pnpm --filter sky-pi-webapp run start",
+    "ss:install": "pnpm --filter sky-pi-screenshot run install",
+    "ss:build": "pnpm --filter sky-pi-screenshot run build",
+    "ss:start": "pnpm --filter sky-pi-screenshot run start",
+    "ss:bs": "pnpm run ss:build && pnpm run ss:start"
+  },
+  "packageManager": "pnpm@8.11.0",
+  "devDependencies": {
+    "@types/eslint": "^9.6.0",
+    "@types/node": "^20.14.12",
+    "@typescript-eslint/eslint-plugin": "^7.17.0",
+    "@typescript-eslint/parser": "^7.17.0",
+    "eslint": "^9.7.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4"
+  }
+}

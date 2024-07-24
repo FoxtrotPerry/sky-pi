@@ -1,0 +1,19 @@
+{
+  "name": "sky-pi-screenshot",
+  "version": "1.0.0",
+  "description": "Takes screenshots of the webapp. Very exciting.",
+  "type": "module",
+  "main": "src/screenshot.ts",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node --es-module-specifier-resolution=node dist/screenshot.js",
+    "bs": "pnpm run build && pnpm run start"
+  },
+  "dependencies": {
+    "puppeteer": "^22.12.1"
+  },
+  "packageManager": "pnpm@8.6.10"
+}
