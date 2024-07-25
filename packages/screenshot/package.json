@@ -3,17 +3,31 @@
   "version": "1.0.0",
   "description": "Takes screenshots of the webapp. Very exciting.",
   "type": "module",
-  "main": "src/screenshot.ts",
+  "main": "dist/screenshot.js",
+  "source": "src/screenshot.ts",
+  "targets": {
+    "main": {
+      "includeNodeModules": {}
+    }
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "scripts": {
     "build": "npx tsc",
+    "parcel:build": "parcel build",
     "start": "node --es-module-specifier-resolution=node dist/screenshot.js",
     "bs": "pnpm run build && pnpm run start"
   },
   "dependencies": {
     "puppeteer": "^22.12.1"
   },
-  "packageManager": "pnpm@8.6.10"
+  "packageManager": "pnpm@8.6.10",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "rollup": "^4.19.0"
+  }
 }

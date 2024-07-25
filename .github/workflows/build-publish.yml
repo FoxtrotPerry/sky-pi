@@ -24,7 +24,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4.0.0
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --prod
       - name: Build sky-pi-webapp project
         run: pnpm run app:build
       - uses: montudor/action-zip@v1

@@ -7,11 +7,12 @@
     "packages/*"
   ],
   "scripts": {
+    "app:install": "pnpm i --filter sky-pi-webapp",
     "app:build": "pnpm --filter sky-pi-webapp run build",
     "app:dev": "pnpm --filter sky-pi-webapp run dev",
     "app:lint": "pnpm --filter sky-pi-webapp run lint",
     "app:start": "pnpm --filter sky-pi-webapp run start",
-    "ss:install": "pnpm --filter sky-pi-screenshot run install",
+    "ss:install": "pnpm i --filter sky-pi-screenshot",
     "ss:build": "pnpm --filter sky-pi-screenshot run build",
     "ss:start": "pnpm --filter sky-pi-screenshot run start",
     "ss:bs": "pnpm run ss:build && pnpm run ss:start"
