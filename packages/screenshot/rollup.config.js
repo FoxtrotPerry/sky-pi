@@ -10,7 +10,7 @@ export default {
     format: "cjs", // CommonJS format for Node.js
   },
   plugins: [
-    typescript(),
+    typescript(), // Converts ts to js
     commonjs(), // Converts CommonJS modules to ES6
     resolve(), // Resolves node_modules
     json(), // Allows importing JSON files
