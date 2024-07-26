@@ -8,11 +8,17 @@
   ],
   "scripts": {
     "build": "pnpm ss:build && pnpm app:build",
+    "copy:webapp": "cp -rL packages/webapp/.next/standalone/* builds/webapp/",
+    "copy:ss": "cp -rL packages/screenshot/dist/* builds/screenshot/",
+    "copy": "pnpm run clean && mkdir -pv builds/{webapp,screenshot} && pnpm run copy:webapp && pnpm run copy:ss",
+    "clean": "rm -rf builds/",
+
     "app:install": "pnpm i --filter sky-pi-webapp",
     "app:build": "pnpm --filter sky-pi-webapp run build",
     "app:dev": "pnpm --filter sky-pi-webapp run dev",
     "app:lint": "pnpm --filter sky-pi-webapp run lint",
     "app:start": "pnpm --filter sky-pi-webapp run start",
+
     "ss:install": "pnpm i --filter sky-pi-screenshot",
     "ss:build": "pnpm --filter sky-pi-screenshot run build",
     "ss:start": "pnpm --filter sky-pi-screenshot run start",

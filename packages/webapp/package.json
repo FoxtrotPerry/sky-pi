@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "next build && cp -r ./.next/static ./.next/standalone/.next/static",
+    "build": "next build && cp -r .next/static .next/standalone/packages/webapp/.next/static",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start"
