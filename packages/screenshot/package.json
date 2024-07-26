@@ -14,8 +14,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "build": "npx tsc",
-    "parcel:build": "parcel build",
+    "build": "rollup -c",
     "start": "node --es-module-specifier-resolution=node dist/screenshot.js",
     "bs": "pnpm run build && pnpm run start"
   },
