@@ -7,7 +7,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "pnpm ss:build && pnpm app:build",
+    "build": "pnpm ss:build && pnpm app:build && pnpm run copy",
     "copy:webapp": "cp -rL packages/webapp/.next/standalone/* builds/webapp/",
     "copy:ss": "cp -rL packages/screenshot/dist/* builds/screenshot/",
     "copy": "pnpm run clean && mkdir -pv builds/{webapp,screenshot} && pnpm run copy:webapp && pnpm run copy:ss",

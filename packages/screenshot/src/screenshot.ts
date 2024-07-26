@@ -18,7 +18,6 @@ const takeScreenshot = async () => {
   });
   await page.screenshot({
     path: "weather.png",
-    quality: 100,
   });
 
   await browser.close();
