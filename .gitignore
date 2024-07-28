@@ -1,6 +1,7 @@
 # sky-pi
 /builds
 *.png
+*.zip
 
 # Logs
 logs
