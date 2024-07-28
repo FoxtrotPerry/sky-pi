@@ -11,11 +11,10 @@ on:
       - '*'
 
 env:
-  SP_ART_NAME: "sky-pi-zip"
-  SP_ART_PATH: "sly-pi.zip"
+  ZIP_ART_NAME: "sky-pi-zip"
+  ZIP_ART_PATH: "sky-pi.zip"
   BUILDS_ART_NAME: "builds-dir"
   BUILDS_ART_PATH: "builds/"
-
 
 jobs:
   build:
@@ -42,28 +41,33 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Download ${{ env.BUILDS_ART_PATH }} from artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ env.BUILDS_ART_NAME }}
+          path: ${{ env.BUILDS_ART_PATH }}
       - name: Zip build
         uses: montudor/action-zip@v1
         with:
-          args: zip -q -r ${{ env.SP_ART_PATH }} ./builds/
-      - name: Upload ${{ env.SP_ART_PATH }} to artifacts
+          args: zip -q -r ${{ env.ZIP_ART_PATH }} ./builds/
+      - name: Upload ${{ env.ZIP_ART_PATH }} to artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.SP_ART_NAME }}
-          path: ${{ env.SP_ART_PATH }}
+          name: ${{ env.ZIP_ART_NAME }}
+          path: ${{ env.ZIP_ART_PATH }}
   release:
     runs-on: ubuntu-latest
     needs: zip
     steps:
-      - name: Download ${{env.SP_ART_PATH}} from artifacts
+      - name: Download ${{env.ZIP_ART_PATH}} from artifacts
         uses: actions/download-artifact@v4
         with:
-          name: ${{ env.SP_ART_NAME }}
-          path: ${{ env.SP_ART_PATH }}
+          name: ${{ env.ZIP_ART_NAME }}
+          path: ${{ env.ZIP_ART_PATH }}
       - name: Release sky-pi
         uses: ncipollo/release-action@v1.13.0
         with:
-          artifacts: ${{ env.SP_ART_PATH }}
+          artifacts: ${{ env.ZIP_ART_PATH }}
           token: ${{ secrets.GITHUB_TOKEN }}
           generateReleaseNotes: true
           makeLatest: true
