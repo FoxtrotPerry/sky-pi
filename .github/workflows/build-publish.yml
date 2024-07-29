@@ -64,7 +64,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.ZIP_NAME }}
-          # path: ${{ env.ZIP }}
       - name: ls -la
         run:
           ls -la
