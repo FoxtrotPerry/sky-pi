@@ -23,7 +23,7 @@ export default async function Home() {
             />
           );
         })}
-        <div className="flex grow gap-1.5">
+        <div className="flex grow gap-1.5 max-h-24">
           <MoonPhaseCard moonPhaseCycle={moonPhaseCycle} className="w-1/2" />
           <MiscCard className="w-1/2" updateTime={new Date()} />
         </div>

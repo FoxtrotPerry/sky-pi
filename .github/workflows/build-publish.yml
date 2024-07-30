@@ -15,6 +15,7 @@ env:
   ZIP: sky-pi.zip
   BUILDS_NAME: builds-dir
   BUILDS_PATH: builds/
+  SKY_PI_DIR: sky-pi/
 
 jobs:
   build:
@@ -45,12 +46,9 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.BUILDS_NAME }}
-          path: ${{ env.BUILDS_PATH }}
+          path: ${{ env.SKY_PI_DIR }}
       - name: Zip build
-        run: zip -q -r ${{ env.ZIP }} ${{ env.BUILDS_PATH }}
-      - name: ls -la
-        run:
-          ls -la
+        run: zip -q -r ${{ env.ZIP }} ${{ env.SKY_PI_DIR }}
       - name: Upload ${{ env.ZIP }} to artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -64,9 +62,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.ZIP_NAME }}
-      - name: ls -la
-        run:
-          ls -la
       - name: Release sky-pi
         uses: ncipollo/release-action@v1.13.0
         with:
