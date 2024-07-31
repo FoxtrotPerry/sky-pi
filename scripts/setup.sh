@@ -9,7 +9,7 @@ cyan=$(tput setaf 6)
 
 info_echo() {
   local message=$1
-  echo "⛅️ [INFO]: $message"
+  echo "⛅️ ${bold}[INFO]${normal}: $message"
 }
 
 error_echo() {
@@ -47,38 +47,9 @@ install_node() {
   fi
 }
 
-install_curl() {
-  info_echo "Installing curl..."
-  sudo apt-get install -y curl
-  if command -v curl &> /dev/null
-  then
-    CURL_PATH=$(command -v node)
-    success_echo "curl was successfully installed at: $CURL_PATH"
-  else
-    error_echo "Failed to install curl."
-    exit 1
-  fi
-}
-
 clear
 echo "🌓 ${bold}${magenta}SKY PI Setup${normal} 🌗"
-echo "\n"
-
-info_echo "Checking for curl install..."
-if command -v curl &> /dev/null
-then
-  info_echo "curl successfully found at: $(command -v curl)"
-else
-  ask_echo "curl is not installed. Do you want to install it now? (y/n)"
-  read -r response
-  if [[ "$response" =~ ^[Yy]$ ]]
-  then
-      install_curl
-  else
-      error_echo "curl installation aborted. Please install curl to proceed."
-      exit 1
-  fi
-fi
+printf "\n"
 
 info_echo "Checking for node install..."
 if command -v node &> /dev/null
@@ -96,5 +67,5 @@ else
   fi
 fi
 
-echo "\n"
+printf "\n"
 done_echo "SKY PI setup complete!"
