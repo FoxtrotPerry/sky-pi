@@ -8,28 +8,41 @@ magenta=$(tput setaf 5)
 cyan=$(tput setaf 6)
 
 info_echo() {
-  local message=$1
+  local message="$1"
   echo "⛅️ ${bold}[INFO]${normal}: $message"
 }
 
 error_echo() {
-  local message=$1
+  local message="$1"
   echo "❌ [ERROR]: $message" >&2
 }
 
 ask_echo() {
-  local message=$1
+  local message="$1"
   echo "❔ ${cyan}[PERMISSION]: $message${normal}"
 }
 
 success_echo() {
-  local message=$1
+  local message="$1"
   echo "✅ ${bold}[SUCCESS]: $message${normal}"
 }
 
 done_echo() {
-  local message=$1
+  local message="$1"
   echo "✨ ${bold}${green}[DONE]: $message${normal} ✨"
+}
+
+install_nvm() {
+  info_echo "Installing NVM (Node Version Manager)..."
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+  if nvm -v &> /dev/null
+  then
+    NVM_VER=$(nvm -v)
+    success_echo "Node.js version $NVM_VER was successfully installed"
+  else
+    error_echo "Failed to install NVM"
+    exit 1
+  fi
 }
 
 install_node() {
@@ -51,10 +64,26 @@ clear
 echo "🌓 ${bold}${magenta}SKY PI Setup${normal} 🌗"
 printf "\n"
 
+info_echo "Checking for NVM install..."
+if nvm -v &> /dev/null
+then
+  info_echo "NVM version $(nvm -v) successfully found"
+else
+  ask_echo "NVM is not installed. Do you want to install it now? (y/n)"
+  read -r response
+  if [[ "$response" =~ ^[Yy]$ ]]
+  then
+      install_nvm
+  else
+      error_echo "NVM installation aborted. Please install NVM to proceed."
+      exit 1
+  fi
+fi
+
 info_echo "Checking for node install..."
 if command -v node &> /dev/null
 then
-  info_echo "Node.js successfully found at: $(command -v node)"
+  info_echo "Node.js version $(node -v) successfully found at: $(command -v node)"
 else
   ask_echo "Node.js is not installed. Do you want to install it now? (y/n)"
   read -r response
