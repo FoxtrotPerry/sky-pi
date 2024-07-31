@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 bold=$(tput bold)
 normal=$(tput sgr0)
@@ -38,11 +38,9 @@ version_gt() {
     IFS='.' read -ra REQUIRED <<< "$2"
     # Compare each segment
     for ((i=0; i<${#REQUIRED[@]}; i++)); do
-        if [[ ${CURRENT[i]} -gt ${REQUIRED[i]} ]]
-        then
+        if [[ ${CURRENT[i]} -gt ${REQUIRED[i]} ]]; then
             return 0
-        elif [[ ${CURRENT[i]} -lt ${REQUIRED[i]} ]]
-        then
+        elif [[ ${CURRENT[i]} -lt ${REQUIRED[i]} ]]; then
             return 1
         fi
     done
@@ -65,10 +63,11 @@ check_node_version() {
 install_nvm() {
   info_echo "Installing NVM (Node Version Manager)..."
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+  load_nvm
   if nvm -v &> /dev/null
   then
     NVM_VER=$(nvm -v)
-    success_echo "Node.js version $NVM_VER was successfully installed"
+    success_echo "NVM version $NVM_VER was successfully installed"
   else
     error_echo "Failed to install NVM"
     exit 1
