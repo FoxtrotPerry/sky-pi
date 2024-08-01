@@ -133,26 +133,35 @@ printf "\n"
 ### Main script
 
 info_echo "Checking for node install..."
+# If node is installed and is greater than or equal to the version specified...
 if command -v node &> /dev/null && check_node_version "18.0.0"
 then
+  # ...then the user is good to go and doesn't need to install anything.
   info_echo "Node.js version $(node -v) successfully found at: $(command -v node)"
 else
+  # ...otherwise, check if node is installed
   if command -v node &> /dev/null
   then
+    # if it is, then it must be out of date. ask them to update node.
     ask_echo "Node.js $(node -v) is out of date. Do you want to update? (y/n)"
   else
+    # otherwise, node must not be installed. ask them if they want to install it.
     ask_echo "Node.js is not installed. Do you want to install it now? (y/n)"
   fi
   read -r response
   if [[ "$response" =~ ^[Yy]$ ]]
   then
+    # check if nvm is installed, if it isn't ask them if they want to install it
     check_for_nvm
+    # try to load nvm incase they decided to install it
     load_nvm
+    # if nvm is found...
     if command -v nvm &> /dev/null
     then
-      info_echo
+      # ...then install node with nvm
       install_node_with_nvm
     else
+      # ...otherwise, install node via apt.
       install_node
     fi
   else
