@@ -64,7 +64,7 @@ install_nvm() {
   info_echo "Installing NVM (Node Version Manager)..."
   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
   load_nvm
-  if nvm -v &> /dev/null
+  if command -v nvm &> /dev/null
   then
     NVM_VER=$(nvm -v)
     success_echo "NVM version $NVM_VER was successfully installed"

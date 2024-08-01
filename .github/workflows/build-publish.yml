@@ -1,8 +1,3 @@
-# goals
-# - deploy site to vercel
-# - hit deployed site's /api/save-pdf endpoint
-# - publish the pdf as part of the releases's artifacts
-
 name: Release Sky Pi
 
 on:
