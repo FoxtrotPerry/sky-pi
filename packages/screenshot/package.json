@@ -15,8 +15,8 @@
   "license": "ISC",
   "scripts": {
     "build": "rollup -c",
-    "start": "node --es-module-specifier-resolution=node dist/screenshot.js",
-    "bs": "pnpm run build && pnpm run start"
+    "run": "node --es-module-specifier-resolution=node dist/screenshot.cjs",
+    "bs": "pnpm run build && pnpm run run"
   },
   "dependencies": {
     "puppeteer": "^22.12.1"
