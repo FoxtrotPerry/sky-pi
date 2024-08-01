@@ -3,6 +3,7 @@
 bold=$(tput bold)
 normal=$(tput sgr0)
 green=$(tput setaf 2)
+yellow=$(tput setaf 3)
 red=$(tput setaf 1)
 magenta=$(tput setaf 5)
 cyan=$(tput setaf 6)
@@ -12,9 +13,14 @@ info_echo() {
   echo "⛅️ ${bold}[INFO]${normal}: $message"
 }
 
+warn_echo() {
+  local message="$1"
+  echo "⚠️ ${bold}${yellow}[WARN]${normal}${yellow}: $message${normal}"
+}
+
 error_echo() {
   local message="$1"
-  echo "❌ [ERROR]: $message" >&2
+  echo "❌ ${bold}${red}[ERROR]${normal}${red}: $message${normal}" >&2
 }
 
 ask_echo() {
@@ -172,6 +178,7 @@ else
       # ...otherwise, install node via apt.
       install_node
     fi
+    warn_echo "If node was previously installed on bare metal, make sure you remove that installation and restart your shell!"
   else
     error_echo "Node.js installation aborted. Please install or update Node.js to proceed."
     exit 1
