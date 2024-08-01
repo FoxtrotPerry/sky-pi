@@ -101,12 +101,20 @@ install_node_with_nvm() {
   fi
 }
 
+# Load NVM if installed
 load_nvm() {
-  # Load NVM if installed
-  if [ -s "$HOME/.nvm/nvm.sh" ]; then
-      export NVM_DIR="$HOME/.nvm"
-      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-      [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+  # check the first directory we look for when finding nvm
+  if [ -s "$HOME/.nvm/nvm.sh" ]
+  then
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+  # one more place to check before we give up looking
+  elif [ -s "$HOME/.config/nvm" ]
+  then
+    export NVM_DIR="$HOME/.config/nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
   fi
 }
 
