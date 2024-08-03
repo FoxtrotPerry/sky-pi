@@ -2,6 +2,7 @@ import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
 import typescript from "@rollup/plugin-typescript";
+import terser from "@rollup/plugin-terser";
 
 export default {
   input: "src/screenshot.ts", // Entry point
@@ -14,5 +15,6 @@ export default {
     commonjs(), // Converts CommonJS modules to ES6
     resolve(), // Resolves node_modules
     json(), // Allows importing JSON files
+    terser(), // Minify bundle
   ],
 };

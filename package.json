@@ -29,8 +29,8 @@
 
     "ss:install": "pnpm i --filter sky-pi-screenshot",
     "ss:build": "pnpm --filter sky-pi-screenshot run build",
-    "ss:start": "pnpm --filter sky-pi-screenshot run start",
-    "ss:bs": "pnpm run ss:build && pnpm run ss:start"
+    "ss:run": "pnpm --filter sky-pi-screenshot run run",
+    "ss:bs": "pnpm run ss:build && pnpm run ss:run"
   },
   "devDependencies": {
     "@types/eslint": "^9.6.0",
