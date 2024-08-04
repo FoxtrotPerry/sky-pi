@@ -55,23 +55,6 @@ const checkAndInstallBrowser = async () => {
     console.log(`Browser executable path: ${installed[0]?.executablePath}`);
     console.log("✅ Puppeteer browser found!");
   }
-
-  const detectedBrowserPlatform = detectBrowserPlatform();
-  let resolvedBuildId;
-  if (detectedBrowserPlatform) {
-    resolvedBuildId = await resolveBuildId(
-      Browser.CHROMEHEADLESSSHELL,
-      detectedBrowserPlatform,
-      "latest"
-    );
-  }
-
-  // TODO: remove console log
-  console.log({
-    installed,
-    detectedBrowserPlatform,
-    resolvedBuildId,
-  });
 };
 
 checkAndInstallBrowser().catch((err) => {
