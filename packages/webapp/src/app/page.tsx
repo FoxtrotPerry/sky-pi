@@ -7,14 +7,14 @@ export default async function Home() {
   const clientGeoData = await api.forecast.getGeoData();
   const [moonPhaseCycle, skyCover] = await Promise.all([
     api.forecast.getMoonPhases(),
-    api.forecast.getLocalSkycover(clientGeoData),
+    api.forecast.getLocalSkyCover(clientGeoData),
   ]);
 
   const skyCoverForecasts = skyCover.slice(0, 3);
 
   return (
-    <div className="flex h-full max-h-full flex-row justify-center p-1.5 align-middle">
-      <div className="flex flex-col gap-1.5">
+    <div className="flex max-h-full w-full items-center justify-center align-middle">
+      <div className="min-h-e-ink-height flex flex-col gap-1.5 p-1.5">
         {skyCoverForecasts.map((skyCoverForDay, i) => {
           return (
             <ForecastCard
@@ -23,7 +23,7 @@ export default async function Home() {
             />
           );
         })}
-        <div className="flex grow gap-1.5 max-h-24">
+        <div className="flex max-h-24 grow gap-1.5">
           <MoonPhaseCard moonPhaseCycle={moonPhaseCycle} className="w-1/2" />
           <MiscCard className="w-1/2" updateTime={new Date()} />
         </div>

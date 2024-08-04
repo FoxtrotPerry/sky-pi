@@ -14,7 +14,7 @@ export const MiscCard = ({
   const updateFromToday = isToday(updateTime);
   const updateText = `${updateFromToday ? "Today" : "Yesterday"}, at ${format(updateTime, "p")}`;
   return (
-    <Card className={cn("grow", className)} {...props}>
+    <Card className={cn("flex-grow", className)} {...props}>
       <CardContent className="flex h-full items-center space-y-0.5 px-3 py-1.5">
         <div className="flex h-full flex-col justify-center">
           <h3 className="text-xl">Updated At</h3>

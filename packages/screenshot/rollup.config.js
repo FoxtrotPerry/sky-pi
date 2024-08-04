@@ -5,7 +5,7 @@ import typescript from "@rollup/plugin-typescript";
 import terser from "@rollup/plugin-terser";
 
 export default {
-  input: "src/screenshot.ts", // Entry point
+  input: ["src/download.ts", "src/screenshot.ts"],
   output: {
     dir: "dist", // Output file
     format: "cjs", // CommonJS format for Node.js

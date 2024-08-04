@@ -1,6 +1,14 @@
 import type { Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
 
+const widthExtension = {
+  "e-ink-width": "800px",
+};
+
+const heightExtension = {
+  "e-ink-height": "480px",
+};
+
 const config = {
   darkMode: ["class"],
   content: [
@@ -27,6 +35,10 @@ const config = {
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
       },
+      height: heightExtension,
+      minHeight: heightExtension,
+      width: widthExtension,
+      minWidth: widthExtension,
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

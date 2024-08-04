@@ -29,7 +29,7 @@ export default function RootLayout({
           fontSans.variable,
         )}
       >
-        <main>
+        <main className="flex w-full">
           <TRPCReactProvider>{children}</TRPCReactProvider>
         </main>
       </body>

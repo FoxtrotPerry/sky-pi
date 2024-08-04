@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "scripts": {
-    "build": "rollup -c && node download.js",
+    "build": "rollup -c",
     "run": "node --es-module-specifier-resolution=node dist/screenshot.cjs",
     "bs": "pnpm run build && pnpm run run"
   },

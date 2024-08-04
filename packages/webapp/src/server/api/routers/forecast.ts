@@ -25,7 +25,7 @@ import {
 import { Temporal } from "temporal-polyfill";
 
 export const forecastRouter = createTRPCRouter({
-  getLocalSkycover: publicProcedure
+  getLocalSkyCover: publicProcedure
     .input(zGridpointForecastParams)
     .query(async ({ input }) => {
       const localNow = toZonedTime(new Date(), input.timeZone);
