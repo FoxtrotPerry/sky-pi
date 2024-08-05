@@ -16,11 +16,11 @@ const checkAndInstallBrowser = async () => {
   const cache = new Cache(`${process.env.HOME}/.cache/puppeteer`);
   const installed = cache.getInstalledBrowsers();
 
-  console.log(`🔎 Looking for puppeteer browser in ${cache.rootDir}`);
+  console.log(`🔎 Looking for browser in ${cache.rootDir}`);
 
   // if there are no browsers installed, then install one.
   if (installed.length === 0) {
-    console.log(`No puppeteer browser found!`);
+    console.log(`No browser found!`);
     const detectedBrowserPlatform = detectBrowserPlatform();
 
     if (!detectedBrowserPlatform) {
@@ -53,7 +53,7 @@ const checkAndInstallBrowser = async () => {
     }
   } else {
     console.log(`Browser executable path: ${installed[0]?.executablePath}`);
-    console.log("✅ Puppeteer browser found!");
+    console.log("✅ Browser found!");
   }
 };
 
