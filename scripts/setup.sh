@@ -8,6 +8,8 @@ red=$(tput setaf 1)
 magenta=$(tput setaf 5)
 cyan=$(tput setaf 6)
 
+# TODO: Add crontab entry creation to this script
+
 info_echo() {
   local message="$1"
   echo "⛅️ ${bold}[INFO]${normal}: $message"
@@ -140,7 +142,6 @@ check_for_nvm() {
   fi
 }
 
-clear
 echo "🌓 ${bold}${magenta}SKY PI Setup${normal} 🌗"
 printf "\n"
 
@@ -183,6 +184,16 @@ else
     error_echo "Node.js installation aborted. Please install or update Node.js to proceed."
     exit 1
   fi
+fi
+
+# At this point, node should be installed. We're still going to check just to make sure.
+if command -v node &> /dev/null
+then
+  info_echo "Looking for headless browser, will install if not found..."
+  node ../screenshot/download.js
+else
+  error_echo "Node.js not found after install attempts"
+  exit 1
 fi
 
 printf "\n"
