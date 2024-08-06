@@ -61,4 +61,4 @@ rm $ZIP_FILE
 
 info_echo "Running Setup script..."
 printf "\n"
-./setup.sh
+./sky-pi/setup.sh
