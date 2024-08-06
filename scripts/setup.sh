@@ -8,6 +8,8 @@ red=$(tput setaf 1)
 magenta=$(tput setaf 5)
 cyan=$(tput setaf 6)
 
+SKYPI_DIR="$HOME/.sky-pi/"
+
 # TODO: Add crontab entry creation to this script
 
 info_echo() {
@@ -190,7 +192,7 @@ fi
 if command -v node &> /dev/null
 then
   info_echo "Looking for headless browser, will install if not found..."
-  node ../screenshot/download.js
+  node $SKYPI_DIR/sky-pi/screenshot/download.js
 else
   error_echo "Node.js not found after install attempts"
   exit 1
