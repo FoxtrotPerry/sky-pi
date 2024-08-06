@@ -2,8 +2,8 @@ name: Release Sky Pi
 
 on:
   push:
-    tags:
-      - '*'
+    branches:
+      - main
 
 env:
   ZIP_NAME: sky-pi-zip
