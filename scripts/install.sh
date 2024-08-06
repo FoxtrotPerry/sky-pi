@@ -38,8 +38,7 @@ cd $SKYPI_DIR
 info_echo "Downloading latest sky-pi distribution..."
 wget --no-verbose https://github.com/foxtrotperry/sky-pi/releases/latest/download/$ZIP_FILE
 
-if [ ! -f "$ZIP_FILE"]
-then
+if [ ! -f "$ZIP_FILE"]; then
   error_echo "sky-pi distribution download failed"
   exit 1
 fi
@@ -47,8 +46,7 @@ fi
 info_echo "Un-zipping sky-pi zip..."
 unzip -qq $ZIP_FILE
 
-if [ ! -d "./sky-pi"]
-then
+if [ ! -d "./sky-pi"]; then
   error_echo "sky-pi distribution failed to unzip"
   exit 1
 fi

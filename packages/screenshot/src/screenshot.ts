@@ -12,6 +12,9 @@ const takeScreenshot = async () => {
     browserInstall.browser === Browser.CHROMEHEADLESSSHELL;
   });
 
+  console.log("Found browsers:");
+  console.log(installed);
+
   if (!headlessInstalledBrowser) {
     throw new Error("No headless browser found in browser cache");
   }
