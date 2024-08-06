@@ -39,6 +39,7 @@ const takeScreenshot = async () => {
       width: width,
       height: height,
     },
+    timeout: 5_000_000,
   });
   const page = await browser.newPage();
   await page.goto("http://localhost:3000", {
