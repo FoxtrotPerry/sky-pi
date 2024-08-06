@@ -8,12 +8,14 @@ const takeScreenshot = async () => {
   const cache = new Cache(`${process.env.HOME}/.cache/puppeteer`);
   const installed = cache.getInstalledBrowsers();
 
-  const headlessInstalledBrowser = installed.find((browserInstall) => {
-    browserInstall.browser === "chrome-headless-shell";
-  });
+  // const headlessInstalledBrowser = installed.find((browserInstall) => {
+  //   browserInstall.browser === "chrome-headless-shell";
+  // });
 
-  console.log("Found browsers:");
-  console.log(installed);
+  // console.log("Found browsers:");
+  // console.log(installed);
+
+  const headlessInstalledBrowser = installed?.at(0);
 
   if (!headlessInstalledBrowser) {
     throw new Error("No headless browser found in browser cache");
