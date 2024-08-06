@@ -9,7 +9,7 @@ const takeScreenshot = async () => {
   const installed = cache.getInstalledBrowsers();
 
   const headlessInstalledBrowser = installed.find((browserInstall) => {
-    browserInstall.browser === Browser.CHROMEHEADLESSSHELL;
+    browserInstall.browser === "chrome-headless-shell";
   });
 
   console.log("Found browsers:");
