@@ -36,7 +36,7 @@ mkdir -p $SKYPI_DIR
 cd $SKYPI_DIR
 
 info_echo "Downloading latest sky-pi distribution..."
-wget https://github.com/foxtrotperry/sky-pi/releases/latest/download/$ZIP_FILE
+wget --no-verbose https://github.com/foxtrotperry/sky-pi/releases/latest/download/$ZIP_FILE
 
 if [ ! -f "$ZIP_FILE"]
 then
@@ -45,7 +45,7 @@ then
 fi
 
 info_echo "Un-zipping sky-pi zip..."
-unzip $ZIP_FILE
+unzip -qq $ZIP_FILE
 
 if [ ! -d "./sky-pi"]
 then
