@@ -32,7 +32,7 @@ const takeScreenshot = async () => {
 
   const browser = await puppeteer.launch({
     // executablePath: headlessInstalledBrowser.executablePath,
-    executablePath: "/user/bin/chromium-browser",
+    executablePath: "/usr/bin/chromium-browser",
     headless: true,
     args: [`--window-size=${width},${height}`],
     defaultViewport: {
