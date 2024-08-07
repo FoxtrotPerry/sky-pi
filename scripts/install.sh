@@ -65,6 +65,4 @@ rm $ZIP_FILE
 info_echo "Running Setup script..."
 printf "\n"
 
-ask_echo "Permission to run setup script?"
-
 bash $SKYPI_DIR/sky-pi/setup.sh
