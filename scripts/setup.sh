@@ -137,8 +137,7 @@ check_for_nvm() {
   else
     ask_echo "(Optional) NVM is not installed. NVM is recommended to manage your node versions. Install now? (y/n)"
     read -r response
-    if [[ "$response" =~ ^[Yy]$ ]]
-    then
+    if [[ "$response" =~ ^[Yy]$ ]]; then
         install_nvm
     fi
   fi
@@ -166,8 +165,7 @@ else
     ask_echo "Node.js is not installed. Do you want to install it now? (y/n)"
   fi
   read -r response
-  if [[ "$response" =~ ^[Yy]$ ]]
-  then
+  if [[ "$response" =~ ^[Yy]$ ]]; then
     # check if nvm is installed, if it isn't ask them if they want to install it
     check_for_nvm
     # try to load nvm incase they decided to install it

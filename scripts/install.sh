@@ -46,17 +46,18 @@ fi
 info_echo "Un-zipping sky-pi zip..."
 unzip -qq $ZIP_FILE
 
-if [ ! -d "./sky-pi" ]; then
+if [ ! -d "$SKYPI_DIR" ]; then
   error_echo "sky-pi distribution failed to unzip"
   exit 1
 fi
 
-chmod +x ./sky-pi/*.sh
-chmod +x ./sky-pi/actions/*.sh
+chmod +x $SKYPI_DIR/sky-pi/*.sh
+chmod +x $SKYPI_DIR/sky-pi/actions/*.sh
 
 info_echo "Cleaning up artifacts..."
 rm $ZIP_FILE
 
 info_echo "Running Setup script..."
 printf "\n"
-./sky-pi/setup.sh
+
+bash $HOME/sky-pi/setup.sh
