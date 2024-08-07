@@ -36,7 +36,7 @@ mkdir -p $SKYPI_DIR
 cd $SKYPI_DIR
 
 info_echo "Downloading latest sky-pi distribution..."
-wget --no-verbose https://github.com/foxtrotperry/sky-pi/releases/latest/download/$ZIP_FILE
+wget -q --show-progress --progress=bar https://github.com/foxtrotperry/sky-pi/releases/latest/download/$ZIP_FILE
 
 if [ ! -f "$ZIP_FILE" ]; then
   error_echo "sky-pi distribution download failed"
