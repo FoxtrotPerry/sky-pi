@@ -135,7 +135,7 @@ check_for_nvm() {
   then
     info_echo "NVM version $(nvm -v) successfully found"
   else
-    ask_echo "(Optional) NVM is not installed. NVM is recommended to manage your node versions. Install now? (y/n)"
+    ask_echo "(Optional) NVM is not installed. NVM is recommended to manage your node versions. Install now?"
     read -p "(y/n) " response </dev/tty
     if [[ "$response" =~ ^[Yy]$ ]]; then
         install_nvm
@@ -159,10 +159,10 @@ else
   if command -v node &> /dev/null
   then
     # if it is, then it must be out of date. ask them to update node.
-    ask_echo "Node.js $(node -v) is out of date. Do you want to update? (y/n)"
+    ask_echo "Node.js $(node -v) is out of date. Do you want to update?"
   else
     # otherwise, node must not be installed. ask them if they want to install it.
-    ask_echo "Node.js is not installed. Do you want to install it now? (y/n)"
+    ask_echo "Node.js is not installed. Do you want to install it now?"
   fi
   read -p "(y/n) " response </dev/tty
   if [[ "$response" =~ ^[Yy]$ ]]; then

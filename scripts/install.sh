@@ -67,4 +67,4 @@ printf "\n"
 
 ask_echo "Permission to run setup script?"
 
-bash -i $SKYPI_DIR/sky-pi/setup.sh
+bash $SKYPI_DIR/sky-pi/setup.sh
