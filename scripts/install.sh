@@ -65,7 +65,7 @@ rm $ZIP_FILE
 info_echo "Running Setup script..."
 printf "\n"
 
-ask_echo Permission to run setup script?
+ask_echo "Permission to run setup script?"
 
 read -r response
 if [[ "$response" =~ ^[Yy]$ ]]; then
