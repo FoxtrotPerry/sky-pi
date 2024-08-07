@@ -67,7 +67,4 @@ printf "\n"
 
 ask_echo "Permission to run setup script?"
 
-read -p "(y/n) " response </dev/tty
-if [[ "$response" =~ ^[Yy]$ ]]; then
-  bash -i $SKYPI_DIR/sky-pi/setup.sh
-fi
+bash -i $SKYPI_DIR/sky-pi/setup.sh
