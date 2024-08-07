@@ -11,6 +11,11 @@ cyan=$(tput setaf 6)
 SKYPI_DIR="$HOME/.sky-pi/"
 ZIP_FILE="sky-pi.zip"
 
+ask_echo() {
+  local message="$1"
+  echo "❔ ${cyan}[PERMISSION]: $message${normal}"
+}
+
 info_echo() {
   local message="$1"
   echo "⛅️ ${bold}[INFO]${normal}: $message"
@@ -60,4 +65,9 @@ rm $ZIP_FILE
 info_echo "Running Setup script..."
 printf "\n"
 
-bash -i $SKYPI_DIR/sky-pi/setup.sh
+ask_echo Permission to run setup script?
+
+read -r response
+if [[ "$response" =~ ^[Yy]$ ]]; then
+  bash -i $SKYPI_DIR/sky-pi/setup.sh
+fi
