@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 SKYPI_DIR="$HOME/.sky-pi/"
 

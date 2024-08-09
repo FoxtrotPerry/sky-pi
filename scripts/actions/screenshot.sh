@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 SKYPI_DIR="$HOME/.sky-pi/"
 
@@ -8,7 +8,7 @@ then
   # ...then run the screenshot service
   node $SKYPI_DIR/sky-pi/screenshot/screenshot.js
 else
-# ...otherwise, prompt to run setup script and exit with error
+  # ...otherwise, prompt to run setup script and exit with error
   echo "Node.js is not installed. Please run ./setup.sh to proceed."
   exit 1
 fi
