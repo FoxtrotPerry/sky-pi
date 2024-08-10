@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SKYPI_DIR="$HOME/.sky-pi/"
+SKYPI_DIR="$HOME/.sky-pi"
 
 # if node is installed...
 if command -v node &> /dev/null
