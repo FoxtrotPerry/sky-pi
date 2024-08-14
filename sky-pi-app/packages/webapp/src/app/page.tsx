@@ -14,7 +14,7 @@ export default async function Home() {
 
   return (
     <div className="flex max-h-full w-full items-center justify-center align-middle">
-      <div className="min-h-e-ink-height flex flex-col gap-1.5 p-1.5">
+      <div className="flex min-h-e-ink-height flex-col gap-1.5 p-1.5">
         {skyCoverForecasts.map((skyCoverForDay, i) => {
           return (
             <ForecastCard
