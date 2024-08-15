@@ -3,6 +3,9 @@
 
 # sky-pi
 /builds
+/build
+sky-pi-draw/build/
+sky-pi-draw/*.spec
 *.png
 *.zip
 

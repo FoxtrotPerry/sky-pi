@@ -9,8 +9,9 @@ env:
   ZIP_NAME: sky-pi-zip
   ZIP: sky-pi.zip
   BUILDS_NAME: builds-dir
-  BUILDS_PATH: builds/
-  SKY_PI_DIR: sky-pi/
+  BUILDS_PATH: builds
+  SKY_PI_DIR: sky-pi
+  # Project dirs
   APP_DIR: ./sky-pi-app
   DRAW_DIR: ./sky-pi-draw
 
@@ -41,15 +42,51 @@ jobs:
         with:
           name: ${{ env.BUILDS_NAME }}
           path: ${{ env.BUILDS_PATH }}
+  build-draw:
+    name: Build sky-pi draw
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install Dependencies
+        working-directory: ${{ env.DRAW_DIR }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller
+      - name: Build executable
+        working-directory: ${{ env.DRAW_DIR }}
+        run: |
+          # Create venv
+          python -m venv .venv
+          source .venv/bin/activate
+
+          # Install project dependencies
+          python -m pip install .
+
+          # Make executable file
+          pyinstaller --onefile src/sky_pi_draw/draw.py
+      - name: Upload Executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: sky-pi-draw
+          path: ${{ env.DRAW_DIR }}/dist/draw
   zip:
     runs-on: ubuntu-latest
-    needs: build-app
+    needs: [build-app, build-draw]
     steps:
       - name: Download ${{ env.BUILDS_PATH }} from artifacts
         uses: actions/download-artifact@v4
         with:
           name: ${{ env.BUILDS_NAME }}
           path: ${{ env.SKY_PI_DIR }}
+      - name: Download Draw dist from artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: sky-pi-draw
+          path: ${{ env.SKY_PI_DIR }}/actions/
       - name: Zip build
         run: zip -q -r ${{ env.ZIP }} ${{ env.SKY_PI_DIR }}
       - name: Upload ${{ env.ZIP }} to artifacts
@@ -59,6 +96,7 @@ jobs:
           path: ${{ env.ZIP }}
   release:
     runs-on: ubuntu-latest
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
     needs: zip
     steps:
       - name: Download ${{ env.ZIP }} from artifacts

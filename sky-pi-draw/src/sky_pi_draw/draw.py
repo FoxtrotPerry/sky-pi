@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# NOTE: Due to inky dependency, script can only be ran on linux systems.
+# the inky package is dependant on spidev which is only present on linux.
+
 from os import environ
 
 from inky.auto import auto
