@@ -1,6 +1,6 @@
 # sky-pi-draw
 
-Handles rendering the weather screenshots to the Pimoroni Inky Impressions 7.3" 800x480 e-ink display.
+Handles rendering the weather screenshots to the [Pimoroni Inky Impressions 7.3" 800x480 e-ink display](https://shop.pimoroni.com/products/inky-impression-7-3?variant=40512683376723).
 
 > [!IMPORTANT]
 > Before running, make sure you have I2C and SPI enabled on your Raspberry Pi!
