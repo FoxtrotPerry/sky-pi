@@ -51,7 +51,7 @@ python src/sky_pi_draw/draw.py
 
 ## Troubleshooting
 
-Some general guidance for how to deal with edge cases found during development
+Some general guidance for how to deal with issues found during development
 
 ### Using a Raspberry Pi 5
 
