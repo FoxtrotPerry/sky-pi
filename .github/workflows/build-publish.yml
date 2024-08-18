@@ -56,13 +56,15 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
         with:
-          platforms: arm
+          platforms: linux/arm/v7
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Install Dependencies
         working-directory: ${{ env.DRAW_DIR }}
         run: |
-          sudo apt update && sudo apt install -y qemu-user-static
+          sudo apt update
+          sudo apt install -y qemu-user-static
+          sudo apt install build-essential
       - name: Build Raspberry Pi Docker Image
         working-directory: ${{ env.DRAW_DIR }}
         run: |
