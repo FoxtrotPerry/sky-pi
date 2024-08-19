@@ -36,53 +36,61 @@ jobs:
       - name: Build sky-pi project
         working-directory: ${{ env.APP_DIR }}
         run: pnpm build
-      - name: Copy builds to centralized location
+      - name: Copy sky-pi-app builds to temporary artifacts dir
         working-directory: ${{ env.APP_DIR }}
         run: pnpm copy
+      # FIXME: Remove this copy to artifacts dir when rasp pi emu is sorted out
+      - name: Copy draw project to temporary artifacts dir
+        working-directory: ${{ env.DRAW_DIR }}
+        run: |
+          mkdir ../${{ env.BUILDS_PATH  }}/draw
+          cp -r * ../${{ env.BUILDS_PATH  }}/draw
       - name: Upload builds dir to artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.BUILDS_NAME }}
           path: ${{ env.BUILDS_PATH }}
-  build-draw:
-    name: Build sky-pi draw
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup Python ${{ env.PYTHON_VER }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: '${{ env.PYTHON_VER }}'
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-        with:
-          platforms: linux/arm/v7
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Install Dependencies
-        working-directory: ${{ env.DRAW_DIR }}
-        run: |
-          sudo apt update
-          sudo apt install -y qemu-user-static
-          sudo apt install build-essential
-      - name: Build Raspberry Pi Docker Image
-        working-directory: ${{ env.DRAW_DIR }}
-        run: |
-          docker buildx create --use
-          docker buildx build --platform linux/arm/v7 -t rpi-emulator --load .
-      - name: Run Docker Container and Copy Executable
-        working-directory: ${{ env.DRAW_DIR }}
-        run: |
-          docker run --rm -v $(pwd)/output:/host_output rpi-emulator \
-          bash -c "cp /output/draw /host_output/"
-      - name: Upload Executable
-        uses: actions/upload-artifact@v4
-        with:
-          name: sky-pi-draw
-          path: ${{ env.DRAW_DIR }}/output/draw
+  # TODO: Figure out rasp pi emu, build with pyinstaller, and include dist in zip
+  # build-draw:
+  #   name: Build sky-pi draw
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Setup Python ${{ env.PYTHON_VER }}
+  #       uses: actions/setup-python@v5
+  #       with:
+  #         python-version: '${{ env.PYTHON_VER }}'
+  #     - name: Set up QEMU
+  #       uses: docker/setup-qemu-action@v2
+  #       with:
+  #         platforms: linux/arm/v7
+  #     - name: Set up Docker Buildx
+  #       uses: docker/setup-buildx-action@v3
+  #     - name: Install Dependencies
+  #       working-directory: ${{ env.DRAW_DIR }}
+  #       run: |
+  #         sudo apt update
+  #         sudo apt install -y qemu-user-static
+  #         sudo apt install build-essential
+  #     - name: Build Raspberry Pi Docker Image
+  #       working-directory: ${{ env.DRAW_DIR }}
+  #       run: |
+  #         docker buildx create --use
+  #         docker buildx build --platform linux/arm/v7 -t rpi-emulator --load .
+  #     - name: Run Docker Container and Copy Executable
+  #       working-directory: ${{ env.DRAW_DIR }}
+  #       run: |
+  #         docker run --rm -v $(pwd)/output:/host_output rpi-emulator \
+  #         bash -c "cp /output/draw /host_output/"
+  #     - name: Upload Executable
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: sky-pi-draw
+  #         path: ${{ env.DRAW_DIR }}/output/draw
   zip:
     runs-on: ubuntu-latest
-    needs: [build-app, build-draw]
+    # TODO: Add build-draw to needs list when rasp pi emu is sorted out
+    needs: [build-app]
     steps:
       - name: Download app builds from artifacts
         uses: actions/download-artifact@v4
