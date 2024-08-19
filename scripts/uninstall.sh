@@ -23,12 +23,13 @@ BROWSER_CACHE="$HOME/.cache/puppeteer"
 
 echo "🌓 ${bold}${magenta}SKY PI Removal${normal} 🌗"
 
+info_echo "Removing crontab entries..."
+bash $SKYPI_DIR/sky-pi/rm_crontab.sh
+
 info_echo "Removing project files..."
 rm -rf $SKYPI_DIR
 
 info_echo "Removing headless browser cache..."
 rm -rf $BROWSER_CACHE
-
-# TODO: remove crontab entry here
 
 done_echo "SKY PI removal complete!"

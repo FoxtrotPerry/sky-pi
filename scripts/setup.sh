@@ -10,8 +10,6 @@ cyan=$(tput setaf 6)
 
 SKYPI_DIR="$HOME/.sky-pi/"
 
-# TODO: Add crontab entry creation to this script
-
 info_echo() {
   local message="$1"
   echo "⛅️ ${bold}[INFO]${normal}: $message"
@@ -195,6 +193,15 @@ else
   error_echo "Node.js not found after install attempts"
   exit 1
 fi
+
+info_echo "Building draw project..."
+python -m venv $SKYPI_DIR/sky-pi/draw/.venv
+source $SKYPI_DIR/sky-pi/draw/.venv/bin/activate
+python -m pip install $SKYPI_DIR/sky-pi/draw/
+deactivate
+
+info_echo "Adding crontab entries..."
+source $SKYPI_DIR/sky-pi/add_crontab.sh
 
 printf "\n"
 done_echo "SKY PI setup complete!"

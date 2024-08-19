@@ -12,6 +12,8 @@ To install, simply open your terminal on your raspberry pi and run:
 curl -sSL install.skypi.dev | bash
 ```
 
+> Don't trust curling random urls blindly? Don't blame you. You can check out the [whole install script here](./scripts/install.sh).
+
 ## Uninstall
 
 You can always completely uninstall Sky Pi by running:
