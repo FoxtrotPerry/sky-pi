@@ -97,11 +97,12 @@ jobs:
         with:
           name: ${{ env.BUILDS_NAME }}
           path: ${{ env.SKY_PI_DIR }}
-      - name: Download Draw dist from artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: sky-pi-draw
-          path: ${{ env.SKY_PI_DIR }}/actions/
+      # Enable step when rasp pi emu is working
+      # - name: Download Draw dist from artifacts
+      #   uses: actions/download-artifact@v4
+      #   with:
+      #     name: sky-pi-draw
+      #     path: ${{ env.SKY_PI_DIR }}/actions/
       - name: Zip build
         run: zip -q -r ${{ env.ZIP }} ${{ env.SKY_PI_DIR }}
       - name: Upload ${{ env.ZIP }} to artifacts
