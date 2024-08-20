@@ -9,4 +9,3 @@ grep -v "sky-pi" curr_crontab > new_crontab
 crontab new_crontab
 # delete tmp files
 rm curr_crontab
-rm old_crontab
