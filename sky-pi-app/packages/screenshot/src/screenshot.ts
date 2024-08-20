@@ -46,7 +46,7 @@ const takeScreenshot = async () => {
     waitUntil: "networkidle2",
   });
   await page.screenshot({
-    path: "weather.png",
+    path: `${process.env.HOME}/.sky-pi/sky-pi/screenshot/weather.png`,
   });
 
   await browser.close();
