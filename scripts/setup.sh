@@ -185,14 +185,14 @@ else
 fi
 
 # At this point, node should be installed. We're still going to check just to make sure.
-if command -v node &> /dev/null
-then
-  info_echo "Looking for headless browser, will install if not found..."
-  node $SKYPI_DIR/sky-pi/screenshot/download.js
-else
-  error_echo "Node.js not found after install attempts"
-  exit 1
-fi
+# if command -v node &> /dev/null
+# then
+#   info_echo "Looking for headless browser, will install if not found..."
+#   node $SKYPI_DIR/sky-pi/screenshot/download.js
+# else
+#   error_echo "Node.js not found after install attempts"
+#   exit 1
+# fi
 
 info_echo "Building draw project..."
 python -m venv $SKYPI_DIR/sky-pi/draw/.venv
