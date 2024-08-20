@@ -201,6 +201,7 @@ python -m pip install $SKYPI_DIR/sky-pi/draw/ --quiet
 deactivate
 
 info_echo "Adding crontab entries..."
+source $SKYPI_DIR/sky-pi/path_crontab.sh
 source $SKYPI_DIR/sky-pi/add_crontab.sh
 
 printf "\n"

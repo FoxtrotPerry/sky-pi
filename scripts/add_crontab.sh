@@ -8,7 +8,7 @@ crontab -l > tmp_crontab
 # Why we need to use bash specifically: https://askubuntu.com/a/752245
 echo "*/15 * * * * node $SKYPI_DIR/sky-pi/screenshot/screenshot.js && bash -c '$SKYPI_DIR/sky-pi/actions/draw.sh'" >> tmp_crontab
 # echo app startup entry into temp file
-echo "@reboot $SKYPI_DIR/sky-pi/actions/start.sh" >> tmp_crontab
+echo "@reboot bash -c '$SKYPI_DIR/sky-pi/actions/start.sh'" >> tmp_crontab
 # install new cron file
 crontab tmp_crontab
 rm tmp_crontab
