@@ -45,7 +45,7 @@ export const MoonPhaseCard = ({
         )}
         {fullMoon && (
           <PhaseDetails phaseData={fullMoon}>
-            <Circle size={48} className="fill-slate-100 stroke-slate-200" />
+            <Circle size={48} className="fill-slate-100 stroke-slate-700" />
           </PhaseDetails>
         )}
       </CardContent>

@@ -5,12 +5,12 @@ import { api } from "~/trpc/server";
 
 export default async function Home() {
   const clientGeoData = await api.forecast.getGeoData();
-  const [moonPhaseCycle, skyCover] = await Promise.all([
+  const [moonPhaseCycle, conditions] = await Promise.all([
     api.forecast.getMoonPhases(),
-    api.forecast.getLocalSkyCover(clientGeoData),
+    api.forecast.getLocalConditions(clientGeoData),
   ]);
 
-  const skyCoverForecasts = skyCover.slice(0, 3);
+  const skyCoverForecasts = conditions.skyCover.slice(0, 3);
 
   return (
     <div className="flex max-h-full w-full items-center justify-center align-middle">
@@ -20,12 +20,20 @@ export default async function Home() {
             <ForecastCard
               key={`forecast-card-${i}`}
               skyCoverData={skyCoverForDay}
+              className="border-2 border-slate-500 shadow-none"
             />
           );
         })}
         <div className="flex max-h-24 grow gap-1.5">
-          <MoonPhaseCard moonPhaseCycle={moonPhaseCycle} className="w-1/2" />
-          <MiscCard className="w-1/2" updateTime={new Date()} />
+          <MoonPhaseCard
+            moonPhaseCycle={moonPhaseCycle}
+            className="w-1/2 border-2 border-slate-500 shadow-none"
+          />
+          <MiscCard
+            className="w-1/2 border-2 border-slate-500 shadow-none"
+            temperature={conditions.currTemp}
+            updateTime={new Date()}
+          />
         </div>
       </div>
     </div>

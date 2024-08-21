@@ -8,11 +8,14 @@ import { useCallback } from "react";
 import { Cloudy } from "~/components/icons/cloudy";
 import { cn } from "~/lib/utils/ui";
 
-type ForecastCardProps = {
+type ForecastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   skyCoverData: NWSDataPoint[];
 };
 
-export const ForecastCard = ({ skyCoverData }: ForecastCardProps) => {
+export const ForecastCard = ({
+  skyCoverData,
+  className,
+}: ForecastCardProps) => {
   const day = skyCoverData[0]?.validTime.date;
 
   const getIcon = useCallback((value: number) => {
@@ -26,12 +29,12 @@ export const ForecastCard = ({ skyCoverData }: ForecastCardProps) => {
   const date = format(day, "MMM do");
 
   return (
-    <Card>
+    <Card className={className}>
       <CardHeader className="space-y-0.5 px-3 pb-0.5 pt-3">
         <div className="flex flex-row gap-2">
           <CardTitle>{dayOfWeek}</CardTitle>
-          <Badge className="bg-slate-200 hover:bg-slate-200">
-            <h3 className="text-slate-700">{date}</h3>
+          <Badge className="bg-slate-900 hover:bg-slate-900">
+            <h3 className="text-slate-200">{date}</h3>
           </Badge>
         </div>
       </CardHeader>

@@ -1,6 +1,11 @@
 import z from "zod";
 import { zPhenomenon, zSignificance, zWfoEnum } from "./nws";
 
+export type LocalConditions = {
+  currTemp: number | null | undefined;
+  skyCover: NWSDataPoint[][];
+};
+
 const nwsApiUrl = z
   .string()
   .url()

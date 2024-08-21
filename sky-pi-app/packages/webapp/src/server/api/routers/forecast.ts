@@ -6,6 +6,7 @@ import {
   zGridpointForecastParams,
   type GridpointForecastParams,
   type NWSDataPoint,
+  LocalConditions,
 } from "~/types/forecast";
 import type {
   MoonPhaseCycle,
@@ -25,7 +26,7 @@ import {
 import { Temporal } from "temporal-polyfill";
 
 export const forecastRouter = createTRPCRouter({
-  getLocalSkyCover: publicProcedure
+  getLocalConditions: publicProcedure
     .input(zGridpointForecastParams)
     .query(async ({ input }) => {
       const localNow = toZonedTime(new Date(), input.timeZone);
@@ -36,6 +37,8 @@ export const forecastRouter = createTRPCRouter({
           transformResponse: getDateTransformer(input.timeZone),
         },
       );
+      const currTemp =
+        localTimeForecast.data.properties.temperature.values?.at(0)?.value;
       const skyCover = localTimeForecast.data.properties.skyCover.values;
       // matrix comprised of forecast data for each day. each elem is
       // an array of that day's forecasts.
@@ -50,7 +53,7 @@ export const forecastRouter = createTRPCRouter({
         const duration = Temporal.Duration.from(
           skyCover[i]?.validTime.duration ?? oneHourIsoDuration,
         );
-        // if the forecase doesn't have a time or the time is before
+        // if the forecast doesn't have a time or the time is before
         // the start of today, then skip this data point.
         if (!forecastTime || isBefore(forecastTime, startOfToday)) continue;
         // figure out which day index to insert the forecast into
@@ -92,7 +95,10 @@ export const forecastRouter = createTRPCRouter({
         }
       }
 
-      return skyCoverByDay.filter((dayForecasts) => !!dayForecasts);
+      return {
+        skyCover: skyCoverByDay.filter((dayForecasts) => !!dayForecasts),
+        currTemp,
+      } satisfies LocalConditions;
     }),
 
   getMoonPhases: publicProcedure.query(async () => {
