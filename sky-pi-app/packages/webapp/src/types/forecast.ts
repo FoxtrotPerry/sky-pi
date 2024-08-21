@@ -2,7 +2,7 @@ import z from "zod";
 import { zPhenomenon, zSignificance, zWfoEnum } from "./nws";
 
 export type LocalConditions = {
-  currTemp: number | null | undefined;
+  currTemp?: number;
   skyCover: NWSDataPoint[][];
 };
 

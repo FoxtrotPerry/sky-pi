@@ -28,7 +28,7 @@ import { Temporal } from "temporal-polyfill";
 export const forecastRouter = createTRPCRouter({
   getLocalConditions: publicProcedure
     .input(zGridpointForecastParams)
-    .query(async ({ input }) => {
+    .query(async ({ input }): Promise<LocalConditions> => {
       const localNow = toZonedTime(new Date(), input.timeZone);
       const startOfToday = startOfDay(localNow);
       const localTimeForecast = await axios.get<GridpointForecastResp>(
@@ -38,13 +38,15 @@ export const forecastRouter = createTRPCRouter({
         },
       );
       const currTemp =
-        localTimeForecast.data.properties.temperature.values?.at(0)?.value;
+        localTimeForecast.data.properties.temperature.values[0]?.value;
       const skyCover = localTimeForecast.data.properties.skyCover.values;
       // matrix comprised of forecast data for each day. each elem is
       // an array of that day's forecasts.
       const lastSkyCoverDate = skyCover.at(-1)?.validTime.date;
       const firstSkyCoverDate = skyCover.at(0)?.validTime.date;
-      if (!firstSkyCoverDate || !lastSkyCoverDate) return [];
+      if (!firstSkyCoverDate || !lastSkyCoverDate) {
+        return { currTemp: 0, skyCover: [] };
+      }
       const skyCoverByDay: NWSDataPoint[][] = [[]] as NWSDataPoint[][];
       // ISO8601 Duration encoding for a one hour duration
       const oneHourIsoDuration = "PT1H";
@@ -97,7 +99,7 @@ export const forecastRouter = createTRPCRouter({
 
       return {
         skyCover: skyCoverByDay.filter((dayForecasts) => !!dayForecasts),
-        currTemp,
+        currTemp: currTemp ? currTemp : undefined,
       } satisfies LocalConditions;
     }),
 
