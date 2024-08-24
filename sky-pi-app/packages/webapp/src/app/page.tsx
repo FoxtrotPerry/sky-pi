@@ -20,17 +20,17 @@ export default async function Home() {
             <ForecastCard
               key={`forecast-card-${i}`}
               skyCoverData={skyCoverForDay}
-              className="border-2 border-slate-500 shadow-none"
+              className="border-2 border-slate-400 shadow-none"
             />
           );
         })}
         <div className="flex max-h-24 grow gap-1.5">
           <MoonPhaseCard
             moonPhaseCycle={moonPhaseCycle}
-            className="w-1/2 border-2 border-slate-500 shadow-none"
+            className="w-1/2 border-2 border-slate-400 shadow-none"
           />
           <MiscCard
-            className="w-1/2 border-2 border-slate-500 shadow-none"
+            className="w-1/2 border-2 border-slate-400 shadow-none"
             temperature={conditions.currTemp}
             updateTime={new Date()}
           />

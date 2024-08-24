@@ -22,6 +22,7 @@ import {
   addHours,
   getHours,
   startOfDay,
+  isAfter,
 } from "date-fns";
 import { Temporal } from "temporal-polyfill";
 
@@ -37,8 +38,16 @@ export const forecastRouter = createTRPCRouter({
           transformResponse: getDateTransformer(input.timeZone),
         },
       );
+
       const currTemp =
-        localTimeForecast.data.properties.temperature.values[0]?.value;
+        localTimeForecast.data.properties.temperature.values.find((temp) => {
+          if (!temp?.validTime.duration) return false;
+          const duration = Temporal.Duration.from(temp?.validTime.duration);
+          const startTime = temp?.validTime.date;
+          const endTime = addHours(startTime, duration.hours);
+          return isAfter(endTime, new Date());
+        })?.value;
+
       const skyCover = localTimeForecast.data.properties.skyCover.values;
       // matrix comprised of forecast data for each day. each elem is
       // an array of that day's forecasts.
