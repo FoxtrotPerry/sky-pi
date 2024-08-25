@@ -45,6 +45,10 @@ jobs:
         run: |
           mkdir ../${{ env.BUILDS_PATH  }}/draw
           cp -r * ../${{ env.BUILDS_PATH  }}/draw
+      - name: Generate .version file
+        run: |
+          touch ${{ env.BUILDS_PATH }}/.version
+          echo "${GITHUB_REF##*/}" >> ${{ env.BUILDS_PATH }}/.version
       - name: Upload builds dir to artifacts
         uses: actions/upload-artifact@v4
         with:

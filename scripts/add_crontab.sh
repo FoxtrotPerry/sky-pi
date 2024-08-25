@@ -32,7 +32,7 @@ config_draws_per_hour() {
 
   ask_echo "Between $min_value and $max_value, how many times per hour would you like sky-pi to update? [Default: $default_value]: "
   while true; do
-    read -r user_input
+    read -r user_input </dev/tty
 
     # use the default value if the user doesn't provide any input
     user_input=${user_input:-$default_value}
