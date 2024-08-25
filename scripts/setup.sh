@@ -27,7 +27,7 @@ error_echo() {
 
 ask_echo() {
   local message="$1"
-  echo "❔ ${cyan}[PERMISSION]: $message${normal}"
+  echo "❔ ${cyan}[CONFIG]: $message${normal}"
 }
 
 success_echo() {
