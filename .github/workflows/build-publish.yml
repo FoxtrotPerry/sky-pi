@@ -129,5 +129,7 @@ jobs:
           artifacts: ${{ env.ZIP }}
           token: ${{ secrets.GITHUB_TOKEN }}
           generateReleaseNotes: true
-          makeLatest: true
+          # If the tag associated with this workflow run doesn't denote this release as a
+          # release candidate, beta, or alpha, then tag the release as latest
+          makeLatest: ${{ !contains(fromJSON('["rc", "beta", "alpha"]'), github.ref) }}
           commit: ${{ github.sha }}
