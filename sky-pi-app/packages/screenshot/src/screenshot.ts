@@ -1,8 +1,11 @@
-import puppeteer from "puppeteer";
+import puppeteer, { HTTPResponse } from "puppeteer";
 // import { Cache, Browser } from "@puppeteer/browsers";
 
 // Resolution of typical e-ink display
-const [width, height] = [800, 480];
+const [WIDTH, HEIGHT] = [800, 480];
+
+// Amount of retries allowed before
+const RETRY_LIMIT = 7;
 
 const takeScreenshot = async () => {
   /**
@@ -34,17 +37,25 @@ const takeScreenshot = async () => {
     // executablePath: headlessInstalledBrowser.executablePath,
     executablePath: "/usr/bin/chromium-browser",
     headless: true,
-    args: [`--window-size=${width},${height}`],
+    args: [`--window-size=${WIDTH},${HEIGHT}`],
     defaultViewport: {
-      width: width,
-      height: height,
+      width: WIDTH,
+      height: HEIGHT,
     },
     timeout: 5_000_000,
   });
   const page = await browser.newPage();
-  await page.goto("http://localhost:3000", {
-    waitUntil: "networkidle2",
-  });
+
+  let response: HTTPResponse | null = null;
+  for (let i = 0; i < RETRY_LIMIT; i++) {
+    response = await page.goto("http://localhost:3000", {
+      waitUntil: "networkidle2",
+    });
+    if (response && response.status() === 200) {
+      break;
+    }
+  }
+
   await page.screenshot({
     path: `${process.env.HOME}/.sky-pi/sky-pi/screenshot/weather.png`,
   });
