@@ -1,4 +1,4 @@
-import puppeteer, { HTTPResponse } from "puppeteer";
+import puppeteer, { HTTPResponse } from "puppeteer-core";
 // import { Cache, Browser } from "@puppeteer/browsers";
 
 // Resolution of typical e-ink display

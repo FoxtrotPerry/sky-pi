@@ -11,6 +11,11 @@ import {
 const tag = "stable";
 const browser = Browser.CHROMEHEADLESSSHELL;
 
+/**
+ * Previously used to download a specific browser to the raspberry pi.
+ * Raspberry pi's have their own custom browser installed by default so
+ * we just use that instead now.
+ */
 const checkAndInstallBrowser = async () => {
   // Puppeteer default browser installation directory
   const cache = new Cache(`${process.env.HOME}/.cache/puppeteer`);
