@@ -46,7 +46,7 @@ export const ForecastCard = ({
             const shouldHighlight = 20 >= value;
             const shade = percentToSkyShade(value);
             const hour = forecast?.validTime
-              ? getHours(forecast?.validTime.date) + 1
+              ? getHours(forecast?.validTime.date)
               : 0;
             // only show the hour if it's cleanly divisible by 6 or is 1
             const showHour = hour % 6 === 0 || hour === 1 || shouldHighlight;
