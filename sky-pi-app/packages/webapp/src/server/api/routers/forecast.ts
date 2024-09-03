@@ -23,19 +23,35 @@ import {
   getHours,
   startOfDay,
   isAfter,
+  format,
 } from "date-fns";
 import { Temporal } from "temporal-polyfill";
+import {
+  RiseSetTransitTimesParams,
+  RiseSetTransitTimesResp,
+  zRiseSetTransitTimesParams,
+} from "~/types/riseSetTransitTimes";
+import { toSearchParamEntries } from "~/lib/utils/object";
+import z from "zod";
 
 export const forecastRouter = createTRPCRouter({
   getLocalConditions: publicProcedure
-    .input(zGridpointForecastParams)
+    .input(
+      z.object({
+        forecastParams: zGridpointForecastParams,
+        riseSetParams: zRiseSetTransitTimesParams.omit({ date: true }),
+      }),
+    )
     .query(async ({ input }): Promise<LocalConditions> => {
-      const localNow = toZonedTime(new Date(), input.timeZone);
+      const { forecastParams, riseSetParams } = input;
+
+      const localNow = toZonedTime(new Date(), forecastParams.timeZone);
       const startOfToday = startOfDay(localNow);
+
       const localTimeForecast = await axios.get<GridpointForecastResp>(
-        `https://api.weather.gov/gridpoints/${input.wfo}/${input.gridX},${input.gridY}`,
+        `https://api.weather.gov/gridpoints/${forecastParams.wfo}/${forecastParams.gridX},${forecastParams.gridY}`,
         {
-          transformResponse: getDateTransformer(input.timeZone),
+          transformResponse: getDateTransformer(forecastParams.timeZone),
         },
       );
 
@@ -54,7 +70,7 @@ export const forecastRouter = createTRPCRouter({
       const lastSkyCoverDate = skyCover.at(-1)?.validTime.date;
       const firstSkyCoverDate = skyCover.at(0)?.validTime.date;
       if (!firstSkyCoverDate || !lastSkyCoverDate) {
-        return { currTemp: 0, skyCover: [] };
+        return { currTemp: 0, skyCover: [], rsttData: [] };
       }
       const skyCoverByDay: NWSDataPoint[][] = [[]] as NWSDataPoint[][];
       // ISO8601 Duration encoding for a one hour duration
@@ -106,9 +122,30 @@ export const forecastRouter = createTRPCRouter({
         }
       }
 
+      const rsttSearchParamsByDay = skyCoverByDay.map((dataPoint) => {
+        const date = dataPoint[0]?.validTime.date as Date;
+        return new URLSearchParams(
+          toSearchParamEntries({
+            date: format(date, "yyyy-MM-dd"),
+            ...riseSetParams,
+          } satisfies RiseSetTransitTimesParams),
+        );
+      });
+
+      const rsttResponses = await Promise.all(
+        rsttSearchParamsByDay.map((searchParams) => {
+          return axios.get<RiseSetTransitTimesResp>(
+            `https://aa.usno.navy.mil/api/rstt/oneday?${searchParams.toString()}`,
+          );
+        }),
+      );
+
+      const rsttData = rsttResponses.map((response) => response.data);
+
       return {
         skyCover: skyCoverByDay.filter((dayForecasts) => !!dayForecasts),
         currTemp: currTemp ? currTemp : undefined,
+        rsttData,
       } satisfies LocalConditions;
     }),
 
@@ -155,21 +192,26 @@ export const forecastRouter = createTRPCRouter({
   }),
 
   getGeoData: publicProcedure.query(async () => {
-    const { data: ipData } = await axios.get<{ ip: string }>(
-      "https://api.ipify.org?format=json",
-    );
-    const { data: geoData } = await axios.get<GeoData>(
-      `https://ipwho.is/${ipData.ip}`,
-    );
-    const { data: nwsData } = await axios.get<PointMetadataResp>(
+    const { data: geoData } = await axios.get<GeoData>(`https://ipwho.is/`);
+    const nwsResponse = await axios.get<PointMetadataResp>(
       `https://api.weather.gov/points/${geoData.latitude},${geoData.longitude}`,
     );
+
+    const nwsData = nwsResponse.data;
+
     const { gridId, gridX, gridY, timeZone } = nwsData.properties;
     return {
-      wfo: gridId,
-      gridX,
-      gridY,
-      timeZone,
-    } satisfies GridpointForecastParams;
+      gridpointForecastParams: {
+        wfo: gridId,
+        gridX,
+        gridY,
+        timeZone,
+      } satisfies GridpointForecastParams,
+      riseSetTransitTimesParams: {
+        coords: `${geoData.latitude},${geoData.longitude}`,
+        tz: `${geoData.timezone.offset / 60 / 60}`,
+        dst: false,
+      } satisfies Omit<RiseSetTransitTimesParams, "date">,
+    };
   }),
 });

@@ -194,7 +194,7 @@ fi
 #   exit 1
 # fi
 
-info_echo "Building draw project..."
+info_echo "Building sky-pi-draw project..."
 python -m venv $SKYPI_DIR/sky-pi/draw/.venv
 source $SKYPI_DIR/sky-pi/draw/.venv/bin/activate
 python -m pip install $SKYPI_DIR/sky-pi/draw/ --quiet

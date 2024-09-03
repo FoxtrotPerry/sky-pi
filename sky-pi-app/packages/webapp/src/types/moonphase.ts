@@ -3,6 +3,15 @@ import { z } from "zod";
 const zDayOfMonth = z.number().gte(1).lte(31);
 const zMonthOfYear = z.number().gte(1).lte(12);
 
+const moonPhases = [
+  "New Moon",
+  "First Quarter",
+  "Full Moon",
+  "Last Quarter",
+] as const;
+
+export type MoonPhase = (typeof moonPhases)[number];
+
 export const zRawMoonPhaseData = z.object({
   apiVersion: z.string(),
   day: zDayOfMonth,
@@ -13,7 +22,7 @@ export const zRawMoonPhaseData = z.object({
     z.object({
       day: zDayOfMonth,
       month: zMonthOfYear,
-      phase: z.enum(["New Moon", "First Quarter", "Full Moon", "Last Quarter"]),
+      phase: z.enum(moonPhases),
       time: z.string(),
       year: z.number(),
     }),

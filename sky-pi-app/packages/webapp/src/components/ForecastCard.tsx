@@ -7,16 +7,23 @@ import { percentToSkyShade } from "~/lib/utils/tailwind";
 import { useCallback } from "react";
 import { Cloudy } from "~/components/icons/cloudy";
 import { cn } from "~/lib/utils/ui";
+import { RiseSetTransitTimesResp } from "~/types/riseSetTransitTimes";
 
 type ForecastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   skyCoverData: NWSDataPoint[];
+  sunRsttData:
+    | RiseSetTransitTimesResp["properties"]["data"]["sundata"]
+    | undefined;
 };
 
 export const ForecastCard = ({
   skyCoverData,
+  sunRsttData,
   className,
 }: ForecastCardProps) => {
   const day = skyCoverData[0]?.validTime.date;
+
+  if (day === undefined || sunRsttData === undefined) return;
 
   const getIcon = useCallback((value: number) => {
     if (20 >= value) return MoonStar;
@@ -24,7 +31,6 @@ export const ForecastCard = ({
     return Cloudy;
   }, []);
 
-  if (day === undefined) return;
   const dayOfWeek = format(day, "EEEE");
   const date = format(day, "MMM do");
 
