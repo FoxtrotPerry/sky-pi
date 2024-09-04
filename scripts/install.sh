@@ -8,7 +8,7 @@ red=$(tput setaf 1)
 magenta=$(tput setaf 5)
 cyan=$(tput setaf 6)
 
-SKYPI_DIR="$HOME/.sky-pi/"
+SKYPI_DIR="$HOME/.sky-pi"
 ZIP_FILE="sky-pi.zip"
 
 ask_echo() {

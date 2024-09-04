@@ -1,5 +1,4 @@
 #!/bin/bash
-
 SKYPI_DIR="$HOME/.sky-pi/"
 
 # if node is installed...

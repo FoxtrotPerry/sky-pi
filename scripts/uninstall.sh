@@ -18,7 +18,7 @@ done_echo() {
   echo "✨ ${bold}${green}[DONE]: $message${normal} ✨"
 }
 
-SKYPI_DIR="$HOME/.sky-pi/"
+SKYPI_DIR="$HOME/.sky-pi"
 BROWSER_CACHE="$HOME/.cache/puppeteer"
 
 echo "🌓 ${bold}${magenta}SKY PI Removal${normal} 🌗"
