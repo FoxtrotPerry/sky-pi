@@ -82,7 +82,8 @@ export const forecastRouter = createTRPCRouter({
         );
         // if the forecast doesn't have a time or the time is before
         // the start of today, then skip this data point.
-        if (!forecastTime || isBefore(forecastTime, startOfToday)) continue;
+        if (forecastTime === undefined || isBefore(forecastTime, startOfToday))
+          continue;
         // figure out which day index to insert the forecast into
         const dayDiff = differenceInCalendarDays(forecastTime, startOfToday);
 
@@ -122,6 +123,8 @@ export const forecastRouter = createTRPCRouter({
         }
       }
 
+      // Get RSTT data:
+
       const rsttSearchParamsByDay = skyCoverByDay.map((dataPoint) => {
         const date = dataPoint[0]?.validTime.date as Date;
         return new URLSearchParams(
@@ -141,9 +144,12 @@ export const forecastRouter = createTRPCRouter({
       );
 
       const rsttData = rsttResponses.map((response) => response.data);
+      const filteredSkyCover = skyCoverByDay.filter(
+        (dayForecasts) => !!dayForecasts,
+      );
 
       return {
-        skyCover: skyCoverByDay.filter((dayForecasts) => !!dayForecasts),
+        skyCover: filteredSkyCover,
         currTemp: currTemp ? currTemp : undefined,
         rsttData,
       } satisfies LocalConditions;

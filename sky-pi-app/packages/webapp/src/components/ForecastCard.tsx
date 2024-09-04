@@ -47,7 +47,8 @@ export const ForecastCard = ({
       <CardContent className="space-y-0.5 px-3 pb-3 pt-0.5">
         <div className="flex flex-row justify-end gap-1">
           {skyCoverData.map((forecast) => {
-            if (!forecast?.value) return;
+            if (forecast?.value === undefined || forecast?.value === null)
+              return;
             const value = forecast?.value;
             const shouldHighlight = 20 >= value;
             const shade = percentToSkyShade(value);
