@@ -14,15 +14,12 @@ export default async function Home() {
   ]);
 
   const skyCoverForecasts = dayData.skyCover.slice(0, 3);
-  const sunRsttData = dayData.rsttData.map(
-    (rstt) => rstt.properties.data.sundata,
-  );
 
   return (
     <div className="flex max-h-full w-full items-center justify-center align-middle">
       <div className="flex min-h-e-ink-height flex-col gap-1.5 p-1.5">
         {skyCoverForecasts.map((skyCoverForDay, i) => {
-          const sunRsttDataForDay = sunRsttData[i];
+          const sunRsttDataForDay = dayData.sunRsttData[i];
           return (
             <ForecastCard
               key={`forecast-card-${i}`}

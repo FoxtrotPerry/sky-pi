@@ -25,8 +25,7 @@ export const getDateTransformer = (timezone: string) => {
     let resp: GridpointForecastResp | null = null;
     try {
       resp = JSON.parse(data, (key, value: JSONValue) => {
-        if (key !== "validTime") return value;
-        if (typeof value !== "string") return value;
+        if (key !== "validTime" || typeof value !== "string") return value;
         const [timestamp, duration] = separateDuration(value);
         return { date: toZonedTime(timestamp, timezone), duration };
       }) as GridpointForecastResp;

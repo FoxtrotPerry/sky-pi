@@ -1,11 +1,11 @@
 import z from "zod";
 import { zPhenomenon, zSignificance, zWfoEnum } from "./nws";
-import { RiseSetTransitTimesResp } from "./riseSetTransitTimes";
+import { SunRsttData } from "./riseSetTransitTimes";
 
 export type LocalConditions = {
   currTemp?: number;
   skyCover: NWSDataPoint[][];
-  rsttData: RiseSetTransitTimesResp[];
+  sunRsttData: SunRsttData[];
 };
 
 const nwsApiUrl = z

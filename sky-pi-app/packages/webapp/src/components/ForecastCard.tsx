@@ -7,13 +7,11 @@ import { percentToSkyShade } from "~/lib/utils/tailwind";
 import { useCallback } from "react";
 import { Cloudy } from "~/components/icons/cloudy";
 import { cn } from "~/lib/utils/ui";
-import { RiseSetTransitTimesResp } from "~/types/riseSetTransitTimes";
+import { SunRsttData } from "~/types/riseSetTransitTimes";
 
 type ForecastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   skyCoverData: NWSDataPoint[];
-  sunRsttData:
-    | RiseSetTransitTimesResp["properties"]["data"]["sundata"]
-    | undefined;
+  sunRsttData: SunRsttData | undefined;
 };
 
 export const ForecastCard = ({
@@ -34,6 +32,9 @@ export const ForecastCard = ({
   const dayOfWeek = format(day, "EEEE");
   const date = format(day, "MMM do");
 
+  const sunriseHour = Number(sunRsttData.Rise.split(":")[0]);
+  const sunsetHour = Number(sunRsttData.Set.split(":")[0]);
+
   return (
     <Card className={className}>
       <CardHeader className="space-y-0.5 px-3 pb-0.5 pt-3">
@@ -49,38 +50,47 @@ export const ForecastCard = ({
           {skyCoverData.map((forecast) => {
             if (forecast?.value === undefined || forecast?.value === null)
               return;
-            const value = forecast?.value;
+
+            const value = forecast.value;
             const shouldHighlight = 20 >= value;
+            const hourOfDay = getHours(forecast.validTime.date);
+            const duringSunRiseOrSet = [sunriseHour, sunsetHour].includes(
+              hourOfDay,
+            );
+            const duringNighttime =
+              sunriseHour > hourOfDay || hourOfDay > sunsetHour;
             const shade = percentToSkyShade(value);
-            const hour = forecast?.validTime
-              ? getHours(forecast?.validTime.date)
-              : 0;
-            // only show the hour if it's cleanly divisible by 6 or is 1
-            const showHour = hour % 6 === 0 || hour === 1 || shouldHighlight;
+            const hour = forecast.validTime ? hourOfDay : 0;
             const Icon = getIcon(value);
+
             return (
               <div
-                className={cn(
-                  "flex flex-col items-center justify-end",
-                  showHour && "justify-between",
-                )}
+                className={cn("flex flex-col items-center justify-end")}
                 key={`sky-cover-${forecast?.validTime.date.valueOf()}`}
               >
-                {(showHour || shouldHighlight) && (
-                  <p className="text-slate-500">{hour}</p>
-                )}
+                <p className="text-slate-500">{hour}</p>
                 <div
                   className={cn(
                     "flex flex-col items-center rounded-lg border-2",
-                    shouldHighlight && "border-2 border-slate-300 bg-slate-100",
+                    shouldHighlight && "border-slate-300 bg-slate-100",
                     !shouldHighlight && "border-transparent",
+                    duringSunRiseOrSet && "bg-amber-400",
+                    duringNighttime && "bg-cyan-900",
+                    duringNighttime && shouldHighlight && "bg-cyan-700",
                   )}
                 >
-                  <Icon className={`fill-slate-${shade} stroke-slate-500`} />
+                  <Icon
+                    className={cn(
+                      `fill-slate-${shade}`,
+                      "stroke-slate-500",
+                      duringNighttime && "stroke-slate-100",
+                    )}
+                  />
                   <p
                     className={cn(
-                      "text-xs text-slate-500",
-                      shouldHighlight && "font-bold text-slate-800",
+                      "text-xs text-slate-800",
+                      shouldHighlight && "font-bold",
+                      duringNighttime && "text-slate-100",
                     )}
                   >
                     {value}

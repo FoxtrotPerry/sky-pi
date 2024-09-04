@@ -29,6 +29,7 @@ import { Temporal } from "temporal-polyfill";
 import {
   RiseSetTransitTimesParams,
   RiseSetTransitTimesResp,
+  SunRsttData,
   zRiseSetTransitTimesParams,
 } from "~/types/riseSetTransitTimes";
 import { toSearchParamEntries } from "~/lib/utils/object";
@@ -70,7 +71,7 @@ export const forecastRouter = createTRPCRouter({
       const lastSkyCoverDate = skyCover.at(-1)?.validTime.date;
       const firstSkyCoverDate = skyCover.at(0)?.validTime.date;
       if (!firstSkyCoverDate || !lastSkyCoverDate) {
-        return { currTemp: 0, skyCover: [], rsttData: [] };
+        return { currTemp: 0, skyCover: [], sunRsttData: [] };
       }
       const skyCoverByDay: NWSDataPoint[][] = [[]] as NWSDataPoint[][];
       // ISO8601 Duration encoding for a one hour duration
@@ -143,7 +144,16 @@ export const forecastRouter = createTRPCRouter({
         }),
       );
 
-      const rsttData = rsttResponses.map((response) => response.data);
+      const sunRsttData = rsttResponses.map(
+        (response) =>
+          Object.fromEntries(
+            response.data.properties.data.sundata.map((rstt) => {
+              return [rstt.phen, rstt.time];
+            }),
+          ) as SunRsttData,
+        // Object.fromEntries() types the object keys as string regardless of input
+        // so we need to cast it in order to preserve specificity
+      );
       const filteredSkyCover = skyCoverByDay.filter(
         (dayForecasts) => !!dayForecasts,
       );
@@ -151,7 +161,7 @@ export const forecastRouter = createTRPCRouter({
       return {
         skyCover: filteredSkyCover,
         currTemp: currTemp ? currTemp : undefined,
-        rsttData,
+        sunRsttData,
       } satisfies LocalConditions;
     }),
 

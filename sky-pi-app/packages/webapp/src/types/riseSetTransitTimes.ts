@@ -75,3 +75,5 @@ export type RiseSetTransitTimesResp = {
   };
   type: string;
 };
+
+export type SunRsttData = Record<SunTransitEvent, DayTime>;
