@@ -44,7 +44,7 @@ jobs:
           cp -r * ../${{ env.BUILDS_PATH  }}/draw
       - name: Check out webapp project .next folder
         run: |
-          ls -la ${{ env.BUILDS_PATH  }}/webapp/packages/webapp
+          ls -la ${{ env.BUILDS_PATH }}/webapp/packages/webapp
       - name: Generate sky-pi.version file
         run: |
           touch ${{ env.BUILDS_PATH }}/sky-pi.version
@@ -55,6 +55,7 @@ jobs:
         with:
           name: ${{ env.BUILDS_NAME }}
           path: ${{ env.BUILDS_PATH }}
+          include-hidden-files: true
   # TODO: Figure out rasp pi emu, build with pyinstaller, and include dist in zip
   # build-draw:
   #   name: Build sky-pi draw
@@ -118,6 +119,7 @@ jobs:
         with:
           name: ${{ env.ZIP_NAME }}
           path: ${{ env.ZIP }}
+          include-hidden-files: true
   release:
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
