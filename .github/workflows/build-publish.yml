@@ -111,7 +111,7 @@ jobs:
       - name: Zip build
         run: |
           ls -la ${{ env.SKY_PI_DIR }}
-          ls -la ${{ env.SKY_PI_DIR }}/
+          ls -la ${{ env.SKY_PI_DIR }}/webapp/packages/webapp
           zip -q -r ${{ env.ZIP }} ${{ env.SKY_PI_DIR }}
       - name: Upload ${{ env.ZIP }} to artifacts
         uses: actions/upload-artifact@v4
