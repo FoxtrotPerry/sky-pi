@@ -42,9 +42,6 @@ jobs:
         run: |
           mkdir ../${{ env.BUILDS_PATH  }}/draw
           cp -r * ../${{ env.BUILDS_PATH  }}/draw
-      - name: Check out webapp project .next folder
-        run: |
-          ls -la ${{ env.BUILDS_PATH }}/webapp/packages/webapp
       - name: Generate sky-pi.version file
         run: |
           touch ${{ env.BUILDS_PATH }}/sky-pi.version
@@ -111,8 +108,6 @@ jobs:
       #     path: ${{ env.SKY_PI_DIR }}/actions/
       - name: Zip build
         run: |
-          ls -la ${{ env.SKY_PI_DIR }}
-          ls -la ${{ env.SKY_PI_DIR }}/webapp/packages/webapp
           zip -q -r ${{ env.ZIP }} ${{ env.SKY_PI_DIR }}
       - name: Upload ${{ env.ZIP }} to artifacts
         uses: actions/upload-artifact@v4
