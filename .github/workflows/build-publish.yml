@@ -45,11 +45,11 @@ jobs:
         run: |
           mkdir ../${{ env.BUILDS_PATH  }}/draw
           cp -r * ../${{ env.BUILDS_PATH  }}/draw
-      - name: Generate .version file
+      - name: Generate sky-pi.version file
         run: |
-          touch ${{ env.BUILDS_PATH }}/.version
-          echo "${GITHUB_REF##*/}" >> ${{ env.BUILDS_PATH }}/.version
-          ls -la ${{ env.BUILDS_PATH }}
+          touch ${{ env.BUILDS_PATH }}/sky-pi.version
+          echo "${GITHUB_REF##*/}" >> ${{ env.BUILDS_PATH }}/sky-pi.version
+          cat ${{ env.BUILDS_PATH }}/sky-pi.version
       - name: Upload builds dir to artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -109,7 +109,9 @@ jobs:
       #     name: sky-pi-draw
       #     path: ${{ env.SKY_PI_DIR }}/actions/
       - name: Zip build
-        run: zip -q -r ${{ env.ZIP }} ${{ env.SKY_PI_DIR }}
+        run: |
+          ls -la
+          zip -q -r ${{ env.ZIP }} ${{ env.SKY_PI_DIR }}
       - name: Upload ${{ env.ZIP }} to artifacts
         uses: actions/upload-artifact@v4
         with:
