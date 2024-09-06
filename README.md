@@ -42,7 +42,7 @@ I haven't personally tested on every possible Pi, but it stands to reason the fo
 
 1. Raspberry Pi
 2. [Pimoroni Inky Impressions 7.3" e-ink display](https://shop.pimoroni.com/products/inky-impression-7-3?variant=40512683376723)
-3. Micro SD card, ideally with more than 16GB of memory
+3. Micro SD card, ideally with 16GB of memory or more
 4. Power supply (something like [this](https://www.amazon.com/Smraza-Supply-Compatible-Raspberry-Adapter/dp/B0CBPJH1VK) should work just fine)
 
 ### Build Steps
