@@ -34,6 +34,7 @@ import {
 } from "~/types/riseSetTransitTimes";
 import { toSearchParamEntries } from "~/lib/utils/object";
 import z from "zod";
+import { dataPointsToDays } from "~/lib/utils/nws";
 
 export const forecastRouter = createTRPCRouter({
   getLocalConditions: publicProcedure
@@ -66,63 +67,35 @@ export const forecastRouter = createTRPCRouter({
         })?.value;
 
       const skyCover = localTimeForecast.data.properties.skyCover.values;
-      // matrix comprised of forecast data for each day. each elem is
-      // an array of that day's forecasts.
+      const chanceOfRain =
+        localTimeForecast.data.properties.probabilityOfPrecipitation.values;
+      const chanceOfSnow =
+        localTimeForecast.data.properties.snowfallAmount.values;
+
       const lastSkyCoverDate = skyCover.at(-1)?.validTime.date;
       const firstSkyCoverDate = skyCover.at(0)?.validTime.date;
       if (!firstSkyCoverDate || !lastSkyCoverDate) {
-        return { currTemp: 0, skyCover: [], sunRsttData: [] };
+        return {
+          currTemp: 0,
+          skyCover: [],
+          sunRsttData: [],
+          rainChance: [],
+          snowChance: [],
+        };
       }
-      const skyCoverByDay: NWSDataPoint[][] = [[]] as NWSDataPoint[][];
-      // ISO8601 Duration encoding for a one hour duration
-      const oneHourIsoDuration = "PT1H";
-      for (let i = 0; i < skyCover.length; i++) {
-        const forecastTime = skyCover[i]?.validTime.date;
-        const duration = Temporal.Duration.from(
-          skyCover[i]?.validTime.duration ?? oneHourIsoDuration,
-        );
-        // if the forecast doesn't have a time or the time is before
-        // the start of today, then skip this data point.
-        if (forecastTime === undefined || isBefore(forecastTime, startOfToday))
-          continue;
-        // figure out which day index to insert the forecast into
-        const dayDiff = differenceInCalendarDays(forecastTime, startOfToday);
 
-        const newSkyCoverItems = [skyCover[i]];
-
-        /**
-         * If the forecast data point's duration is more than one hour, then add a copy
-         * of the data point for every hour the duration is over.
-         *
-         * We deconstruct these durations so that for every day we have full data coverage
-         * of, we are ensured 24 elements in that day's array.
-         */
-        for (let j = 1; j < duration.hours; j++) {
-          const newDate = addHours(forecastTime, j);
-          const newEntry: NWSDataPoint = {
-            value: skyCover[i]?.value ?? null,
-            validTime: { date: newDate, duration: oneHourIsoDuration },
-          };
-          if (getHours(newDate) > getHours(forecastTime)) {
-            newSkyCoverItems.push(newEntry);
-          } else {
-            // initialize the next day's array before pushing
-            if (skyCoverByDay[dayDiff + 1] === undefined) {
-              skyCoverByDay[dayDiff + 1] = [];
-            }
-            skyCoverByDay[dayDiff + 1]?.push(newEntry);
-          }
-        }
-
-        // if the day array we're about to insert into doesn't exist yet,
-        if (skyCoverByDay?.at(dayDiff) === undefined) {
-          // then assign our new array elems to it
-          skyCoverByDay[dayDiff] = newSkyCoverItems;
-        } else {
-          // otherwise, push the new array elems to what already exists there
-          skyCoverByDay[dayDiff]?.push(...newSkyCoverItems);
-        }
-      }
+      const skyCoverByDay = dataPointsToDays(
+        skyCover,
+        forecastParams.timeZone,
+      ).filter((dayForecasts) => !!dayForecasts);
+      const rainChanceByDay = dataPointsToDays(
+        chanceOfRain,
+        forecastParams.timeZone,
+      ).filter((dayForecasts) => !!dayForecasts);
+      const snowChanceByDay = dataPointsToDays(
+        chanceOfSnow,
+        forecastParams.timeZone,
+      ).filter((dayForecasts) => !!dayForecasts);
 
       // Get RSTT data:
 
@@ -154,12 +127,11 @@ export const forecastRouter = createTRPCRouter({
         // Object.fromEntries() types the object keys as string regardless of input
         // so we need to cast it in order to preserve specificity
       );
-      const filteredSkyCover = skyCoverByDay.filter(
-        (dayForecasts) => !!dayForecasts,
-      );
 
       return {
-        skyCover: filteredSkyCover,
+        skyCover: skyCoverByDay,
+        rainChance: rainChanceByDay,
+        snowChance: snowChanceByDay,
         currTemp: currTemp ? currTemp : undefined,
         sunRsttData,
       } satisfies LocalConditions;

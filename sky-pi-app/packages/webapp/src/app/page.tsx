@@ -5,7 +5,10 @@ import { api } from "~/trpc/server";
 
 export default async function Home() {
   const clientGeoData = await api.forecast.getGeoData();
-  const [moonPhaseCycle, dayData] = await Promise.all([
+  const [
+    moonPhaseCycle,
+    { rainChance, skyCover, snowChance, sunRsttData, currTemp },
+  ] = await Promise.all([
     api.forecast.getMoonPhases(),
     api.forecast.getLocalConditions({
       forecastParams: clientGeoData.gridpointForecastParams,
@@ -13,17 +16,19 @@ export default async function Home() {
     }),
   ]);
 
-  const skyCoverForecasts = dayData.skyCover.slice(0, 3);
+  const skyCoverForecasts = skyCover.slice(0, 3);
 
   return (
     <div className="flex max-h-full w-full items-center justify-center align-middle">
       <div className="flex min-h-e-ink-height flex-col gap-1.5 p-1.5">
         {skyCoverForecasts.map((skyCoverForDay, i) => {
-          const sunRsttDataForDay = dayData.sunRsttData[i];
+          const sunRsttDataForDay = sunRsttData[i];
+          const rainChanceForDay = rainChance[i];
           return (
             <ForecastCard
               key={`forecast-card-${i}`}
               skyCoverData={skyCoverForDay}
+              rainChanceData={rainChanceForDay}
               sunRsttData={sunRsttDataForDay}
               className="border-2 border-slate-400 shadow-none"
             />
@@ -36,7 +41,7 @@ export default async function Home() {
           />
           <MiscCard
             className="w-1/2 border-2 border-slate-400 shadow-none"
-            temperature={dayData.currTemp}
+            temperature={currTemp}
             updateTime={new Date()}
           />
         </div>

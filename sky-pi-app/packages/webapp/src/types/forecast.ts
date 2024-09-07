@@ -5,6 +5,8 @@ import { SunRsttData } from "./riseSetTransitTimes";
 export type LocalConditions = {
   currTemp?: number;
   skyCover: NWSDataPoint[][];
+  rainChance: NWSDataPoint[][];
+  snowChance: NWSDataPoint[][];
   sunRsttData: SunRsttData[];
 };
 
@@ -32,7 +34,7 @@ const nwsDataPoint = z.optional(
       date: z.date(),
       duration: z.string().duration(),
     }), // Is converted to date from ISO8601 duration string
-    value: z.nullable(z.number()),
+    value: z.nullable(z.number().min(0).max(100)),
   }),
 );
 

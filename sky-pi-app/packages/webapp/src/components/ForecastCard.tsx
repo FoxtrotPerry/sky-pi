@@ -2,7 +2,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import type { NWSDataPoint } from "~/types/forecast";
 import { format, getHours } from "date-fns";
-import { MoonStar, CloudMoon } from "lucide-react";
+import {
+  MoonStar,
+  CloudMoon,
+  CloudSun,
+  Droplet,
+  CloudRain,
+  CloudMoonRain,
+  CloudSunRain,
+  Sun,
+  Umbrella,
+} from "lucide-react";
 import { percentToSkyShade } from "~/lib/utils/tailwind";
 import { useCallback } from "react";
 import { Cloudy } from "~/components/icons/cloudy";
@@ -11,11 +21,13 @@ import { SunRsttData } from "~/types/riseSetTransitTimes";
 
 type ForecastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   skyCoverData: NWSDataPoint[];
+  rainChanceData: NWSDataPoint[] | undefined;
   sunRsttData: SunRsttData | undefined;
 };
 
 export const ForecastCard = ({
   skyCoverData,
+  rainChanceData,
   sunRsttData,
   className,
 }: ForecastCardProps) => {
@@ -23,11 +35,41 @@ export const ForecastCard = ({
 
   if (day === undefined || sunRsttData === undefined) return;
 
-  const getIcon = useCallback((value: number) => {
-    if (20 >= value) return MoonStar;
-    if (40 >= value) return CloudMoon;
-    return Cloudy;
-  }, []);
+  const getIcon = useCallback(
+    (context: {
+      skyCover: number;
+      isNightTime: boolean;
+      rainChance?: number;
+    }) => {
+      const { skyCover, isNightTime, rainChance = 0 } = context;
+      // if it's near clear skies
+      if (20 >= skyCover) {
+        return isNightTime ? MoonStar : Sun;
+      }
+
+      // if it's partly cloudy
+      if (40 >= skyCover) {
+        if (rainChance >= 70) return Umbrella;
+        if (rainChance >= 40) return CloudRain;
+        // if we need to depict the sun or moon, check to see
+        // if it's night time
+        if (isNightTime) {
+          if (rainChance >= 20) return CloudMoonRain;
+          return CloudMoon;
+        } else {
+          if (rainChance >= 20) return CloudSunRain;
+          return CloudSun;
+        }
+      }
+
+      // if it's more than 40% cloudy, then we don't need to worry about
+      // showing the sun or moon in the iconography
+      if (rainChance >= 70) return Umbrella;
+      if (rainChance >= 40) return CloudRain;
+      return Cloudy;
+    },
+    [],
+  );
 
   const dayOfWeek = format(day, "EEEE");
   const date = format(day, "MMM do");
@@ -47,7 +89,7 @@ export const ForecastCard = ({
       </CardHeader>
       <CardContent className="space-y-0.5 px-3 pb-3 pt-0.5">
         <div className="flex flex-row justify-end gap-1">
-          {skyCoverData.map((forecast) => {
+          {skyCoverData.map((forecast, i) => {
             if (forecast?.value === undefined || forecast?.value === null)
               return;
 
@@ -57,40 +99,44 @@ export const ForecastCard = ({
             const duringSunRiseOrSet = [sunriseHour, sunsetHour].includes(
               hourOfDay,
             );
-            const duringNighttime =
+            const duringNightTime =
               sunriseHour > hourOfDay || hourOfDay > sunsetHour;
             const shade = percentToSkyShade(value);
             const hour = forecast.validTime ? hourOfDay : 0;
-            const Icon = getIcon(value);
+            const Icon = getIcon({
+              isNightTime: duringNightTime,
+              skyCover: value,
+              rainChance: rainChanceData?.at(i)?.value ?? undefined,
+            });
 
             return (
               <div
                 className={cn("flex flex-col items-center justify-end")}
                 key={`sky-cover-${forecast?.validTime.date.valueOf()}`}
               >
-                <p className="text-slate-500">{hour}</p>
+                <p className="text-slate-500">{hour === 0 ? 12 : hour}</p>
                 <div
                   className={cn(
                     "flex flex-col items-center rounded-lg border-2",
                     shouldHighlight && "border-slate-300 bg-slate-100",
                     !shouldHighlight && "border-transparent",
                     duringSunRiseOrSet && "bg-amber-400",
-                    duringNighttime && "bg-cyan-900",
-                    duringNighttime && shouldHighlight && "bg-cyan-700",
+                    duringNightTime && "bg-cyan-900",
+                    duringNightTime && shouldHighlight && "bg-cyan-700",
                   )}
                 >
                   <Icon
                     className={cn(
                       `fill-slate-${shade}`,
                       "stroke-slate-500",
-                      duringNighttime && "stroke-slate-100",
+                      duringNightTime && "stroke-slate-100",
                     )}
                   />
                   <p
                     className={cn(
                       "text-xs text-slate-800",
                       shouldHighlight && "font-bold",
-                      duringNighttime && "text-slate-100",
+                      duringNightTime && "text-slate-100",
                     )}
                   >
                     {value}
