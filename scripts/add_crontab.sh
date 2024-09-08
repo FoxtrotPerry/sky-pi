@@ -37,7 +37,7 @@ config_draws_per_hour() {
     # use the default value if the user doesn't provide any input
     user_input=${user_input:-$default_value}
 
-    # if the input valid...
+    # if the input is valid...
     if [[ $user_input =~ ^-?[0-9]+$ ]] && (( user_input >= min_value && user_input <= max_value )); then
       # echo screenshot and draw entry into temp file
       # why we need to use bash specifically: https://askubuntu.com/a/752245
@@ -54,8 +54,8 @@ if command -v crontab &> /dev/null; then
   # write out current crontab config to temp file
   crontab -l > tmp_crontab
   config_draws_per_hour 2 1 6
-  # refresh and clean the display every night at midnight
-  echo "0 0 * * * bash -c '$SKYPI_DIR/sky-pi/actions/refresh.sh'" >> tmp_crontab
+  # refresh and clean the display every night at midnight, draw to screen after refresh is complete
+  echo "0 0 * * * bash -c '$SKYPI_DIR/sky-pi/actions/refresh.sh' && bash -c '$SKYPI_DIR/sky-pi/actions/draw.sh'" >> tmp_crontab
   # echo app startup entry into temp file
   echo "@reboot bash -c '$SKYPI_DIR/sky-pi/actions/start.sh'" >> tmp_crontab
   # install new cron file

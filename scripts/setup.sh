@@ -206,3 +206,10 @@ source $SKYPI_DIR/sky-pi/add_crontab.sh
 
 printf "\n"
 done_echo "SKY PI setup complete!"
+
+printf "\n"
+ask_echo "In order to start SKY PI, a reboot is required. Would you like to reboot now?"
+read -p "(y/n) " response </dev/tty
+if [[ "$response" =~ ^[Yy]$ ]]; then
+  sudo reboot
+fi

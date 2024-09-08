@@ -11,6 +11,8 @@ cyan=$(tput setaf 6)
 SKYPI_DIR="$HOME/.sky-pi"
 ZIP_FILE="sky-pi.zip"
 
+RPI_SOURCE_LIST=/etc/apt/sources.list.d/raspi.list
+
 ask_echo() {
   local message="$1"
   echo "❔ ${cyan}[PERMISSION]: $message${normal}"
@@ -35,6 +37,12 @@ clear
 
 echo "🌓 ${bold}${magenta}SKY PI Installation${normal} 🌗"
 printf "\n"
+
+if [-f "$RPI_SOURCE_LIST" && grep -q "http://archive.raspberrypi.com/debian/" $RPI_SOURCE_LIST]; then
+  info_echo "Raspbian OS detected"
+else
+  warn_echo "Rasbian OS not detected! SKY PI might not work properly. If you run into problems, please create an issue on GitHub!"
+fi
 
 info_echo "Making sky-pi directory at $SKYPI_DIR..."
 mkdir -p $SKYPI_DIR
