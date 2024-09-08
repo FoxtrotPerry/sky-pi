@@ -7,6 +7,17 @@ const [WIDTH, HEIGHT] = [800, 480];
 // Amount of retries allowed before
 const RETRY_LIMIT = 7;
 
+const checkInternetConnection = async (): Promise<boolean> => {
+  try {
+    const response = await fetch("https://www.duckduckgo.com", {
+      method: "HEAD",
+    });
+    return response.ok;
+  } catch (error) {
+    return false;
+  }
+};
+
 const takeScreenshot = async () => {
   /**
    * //TODO: Figure out work around for why chrome-headless-shell browsers
@@ -32,6 +43,12 @@ const takeScreenshot = async () => {
   // if (!headlessInstalledBrowser) {
   //   throw new Error("No headless browser found in browser cache");
   // }
+
+  const isOnline = await checkInternetConnection();
+
+  // If sky-pi can't connect to the internet, then subsequent requests will fail.
+  // Therefore, we return early and wait until the next refresh to try again.
+  if (!isOnline) return;
 
   const browser = await puppeteer.launch({
     // executablePath: headlessInstalledBrowser.executablePath,
