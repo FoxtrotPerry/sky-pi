@@ -18,6 +18,8 @@ export default async function Home() {
 
   const skyCoverForecasts = skyCover.slice(0, 3);
 
+  const now = new Date();
+
   return (
     <div className="flex max-h-full w-full items-center justify-center align-middle">
       <div className="flex min-h-e-ink-height flex-col gap-1.5 p-1.5">
@@ -30,6 +32,7 @@ export default async function Home() {
               skyCoverData={skyCoverForDay}
               rainChanceData={rainChanceForDay}
               sunRsttData={sunRsttDataForDay}
+              now={now}
               className="border-2 border-slate-400 shadow-none"
             />
           );

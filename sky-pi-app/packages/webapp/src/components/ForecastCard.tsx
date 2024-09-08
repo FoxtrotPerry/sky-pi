@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import type { NWSDataPoint } from "~/types/forecast";
-import { format, getHours } from "date-fns";
+import { format, getHours, isSameHour } from "date-fns";
 import {
   MoonStar,
   CloudMoon,
@@ -23,6 +23,7 @@ type ForecastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   skyCoverData: NWSDataPoint[];
   rainChanceData: NWSDataPoint[] | undefined;
   sunRsttData: SunRsttData | undefined;
+  now: Date;
 };
 
 export const ForecastCard = ({
@@ -30,6 +31,7 @@ export const ForecastCard = ({
   rainChanceData,
   sunRsttData,
   className,
+  now,
 }: ForecastCardProps) => {
   const day = skyCoverData[0]?.validTime.date;
 
@@ -93,9 +95,14 @@ export const ForecastCard = ({
             if (forecast?.value === undefined || forecast?.value === null)
               return;
 
-            const value = forecast.value;
+            const {
+              value,
+              validTime: { date: forecastDate },
+            } = forecast;
+
+            const isCurrentHour = isSameHour(now, forecastDate);
             const shouldHighlight = 20 >= value;
-            const hourOfDay = getHours(forecast.validTime.date);
+            const hourOfDay = getHours(forecastDate);
             const duringSunRiseOrSet = [sunriseHour, sunsetHour].includes(
               hourOfDay,
             );
@@ -111,18 +118,30 @@ export const ForecastCard = ({
 
             return (
               <div
-                className={cn("flex flex-col items-center justify-end")}
-                key={`sky-cover-${forecast?.validTime.date.valueOf()}`}
+                className={cn(
+                  "flex flex-col items-center justify-end rounded-lg",
+                  isCurrentHour && "bg-slate-900",
+                )}
+                key={`sky-cover-${forecastDate.valueOf()}`}
               >
-                <p className="text-slate-500">{hour === 0 ? 12 : hour}</p>
+                <p
+                  className={cn(
+                    "text-slate-500",
+                    isCurrentHour && "text-slate-100",
+                  )}
+                >
+                  {hour === 0 ? 12 : hour}
+                </p>
                 <div
                   className={cn(
                     "flex flex-col items-center rounded-lg border-2",
-                    shouldHighlight && "border-slate-300 bg-slate-100",
+                    shouldHighlight && "border-slate-400 bg-slate-200",
                     !shouldHighlight && "border-transparent",
                     duringSunRiseOrSet && "bg-amber-400",
-                    duringNightTime && "bg-cyan-900",
-                    duringNightTime && shouldHighlight && "bg-cyan-700",
+                    duringNightTime && "bg-cyan-800",
+                    duringNightTime &&
+                      shouldHighlight &&
+                      "border-purple-500 bg-cyan-950",
                   )}
                 >
                   <Icon
