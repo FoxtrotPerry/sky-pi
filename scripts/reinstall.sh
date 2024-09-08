@@ -1,7 +1,5 @@
 #!/bin/bash
 
-SKYPI_DIR="$HOME/.sky-pi"
-
-bash $SKYPI_DIR/sky-pi/uninstall.sh
+curl -sSL uninstall.skypi.dev | bash
 printf "\n"
-bash $SKYPI_DIR/sky-pi/install.sh
+curl -sSL install.skypi.dev | bash
