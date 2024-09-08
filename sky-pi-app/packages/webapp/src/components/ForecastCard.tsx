@@ -141,7 +141,7 @@ export const ForecastCard = ({
                     duringNightTime && "bg-cyan-800",
                     duringNightTime &&
                       shouldHighlight &&
-                      "border-purple-500 bg-cyan-950",
+                      "border-transparent bg-cyan-950",
                   )}
                 >
                   <Icon
@@ -155,7 +155,7 @@ export const ForecastCard = ({
                     className={cn(
                       "text-xs text-slate-800",
                       shouldHighlight && "font-bold",
-                      duringNightTime && "text-slate-100",
+                      (duringNightTime || isCurrentHour) && "text-slate-100",
                     )}
                   >
                     {value}
