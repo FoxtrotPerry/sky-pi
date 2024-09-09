@@ -148,6 +148,7 @@ export const forecastRouter = createTRPCRouter({
     );
 
     const moonPhaseCycle: MoonPhaseCycle = {};
+    let nextApexEvent: MoonPhaseData | undefined = undefined;
     phasesResp.data.phasedata.forEach((phase) => {
       const phaseName = phase.phase;
       const [hoursStr, minutesStr] = phase.time.split(":");
@@ -165,6 +166,13 @@ export const forecastRouter = createTRPCRouter({
         name: phaseName,
       };
 
+      if (
+        nextApexEvent === null &&
+        (phaseData.name === "Full Moon" || phaseData.name === "New Moon")
+      ) {
+        nextApexEvent = phaseData;
+      }
+
       if (phaseName === "First Quarter") {
         moonPhaseCycle.firstQuarter = phaseData;
       } else if (phaseName === "Full Moon") {
@@ -176,7 +184,10 @@ export const forecastRouter = createTRPCRouter({
       }
     });
 
-    return moonPhaseCycle;
+    return { moonPhaseCycle, nextApexEvent } as {
+      moonPhaseCycle: MoonPhaseCycle;
+      nextApexEvent?: MoonPhaseData;
+    };
   }),
 
   getGeoData: publicProcedure.query(async () => {

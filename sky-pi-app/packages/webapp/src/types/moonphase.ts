@@ -33,7 +33,7 @@ export type RawMoonPhaseData = z.infer<typeof zRawMoonPhaseData>;
 
 export type MoonPhaseData = {
   date: Date;
-  name: string;
+  name: MoonPhase;
 };
 
 export type MoonPhaseCycle = {

@@ -12,26 +12,30 @@ import {
   CloudSunRain,
   Sun,
   Umbrella,
+  Moon,
 } from "lucide-react";
 import { percentToSkyShade } from "~/lib/utils/tailwind";
 import { useCallback } from "react";
 import { Cloudy } from "~/components/icons/cloudy";
 import { cn } from "~/lib/utils/ui";
 import { SunRsttData } from "~/types/riseSetTransitTimes";
+import { MoonPhaseData } from "~/types/moonphase";
 
 type ForecastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   skyCoverData: NWSDataPoint[];
   rainChanceData: NWSDataPoint[] | undefined;
   sunRsttData: SunRsttData | undefined;
   now: Date;
+  phaseEventOnDate?: MoonPhaseData;
 };
 
 export const ForecastCard = ({
+  className,
   skyCoverData,
   rainChanceData,
   sunRsttData,
-  className,
   now,
+  phaseEventOnDate,
 }: ForecastCardProps) => {
   const day = skyCoverData[0]?.validTime.date;
 
@@ -82,11 +86,25 @@ export const ForecastCard = ({
   return (
     <Card className={className}>
       <CardHeader className="space-y-0.5 px-3 pb-0.5 pt-3">
-        <div className="flex flex-row gap-2">
-          <CardTitle>{dayOfWeek}</CardTitle>
-          <Badge className="bg-slate-900 hover:bg-slate-900">
-            <h3 className="text-slate-200">{date}</h3>
-          </Badge>
+        <div className="flex flex-row justify-between gap-2">
+          <div className="flex flex-row gap-2">
+            <CardTitle>{dayOfWeek}</CardTitle>
+            <Badge className="bg-slate-900 hover:bg-slate-900">
+              <h3 className="text-slate-200">{date}</h3>
+            </Badge>
+          </div>
+          {phaseEventOnDate && (
+            <Badge
+              className={cn(
+                "flex items-center gap-1 border-0 bg-gradient-to-r",
+                phaseEventOnDate.name === "New Moon" && "from-indigo-500",
+                phaseEventOnDate.name === "Full Moon" && "from-cyan-600",
+              )}
+            >
+              <Moon size={16} />
+              {phaseEventOnDate.name}
+            </Badge>
+          )}
         </div>
       </CardHeader>
       <CardContent className="space-y-0.5 px-3 pb-3 pt-0.5">
@@ -120,6 +138,7 @@ export const ForecastCard = ({
               <div
                 className={cn(
                   "flex flex-col items-center justify-end rounded-lg",
+                  shouldHighlight && "bg-slate-500",
                   isCurrentHour && "bg-slate-900",
                 )}
                 key={`sky-cover-${forecastDate.valueOf()}`}
@@ -127,21 +146,17 @@ export const ForecastCard = ({
                 <p
                   className={cn(
                     "text-slate-500",
-                    isCurrentHour && "text-slate-100",
+                    (shouldHighlight || isCurrentHour) && "text-slate-100",
                   )}
                 >
                   {hour === 0 ? 12 : hour}
                 </p>
                 <div
                   className={cn(
-                    "flex flex-col items-center rounded-lg border-2",
-                    shouldHighlight && "border-slate-400 bg-slate-200",
-                    !shouldHighlight && "border-transparent",
+                    "flex flex-col items-center rounded-lg p-0.5",
+                    shouldHighlight && "bg-slate-200",
                     duringSunRiseOrSet && "bg-amber-400",
-                    duringNightTime && "bg-cyan-800",
-                    duringNightTime &&
-                      shouldHighlight &&
-                      "border-transparent bg-cyan-950",
+                    duringNightTime && "bg-sky-950",
                   )}
                 >
                   <Icon

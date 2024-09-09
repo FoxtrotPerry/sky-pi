@@ -1,12 +1,14 @@
+import { isSameDay } from "date-fns";
 import { ForecastCard } from "~/components/ForecastCard";
 import { MiscCard } from "~/components/MiscCard";
 import { MoonPhaseCard } from "~/components/MoonPhaseCard";
 import { api } from "~/trpc/server";
+import { MoonPhaseData } from "~/types/moonphase";
 
 export default async function Home() {
   const clientGeoData = await api.forecast.getGeoData();
   const [
-    moonPhaseCycle,
+    { moonPhaseCycle, nextApexEvent },
     { rainChance, skyCover, snowChance, sunRsttData, currTemp },
   ] = await Promise.all([
     api.forecast.getMoonPhases(),
@@ -26,12 +28,22 @@ export default async function Home() {
         {skyCoverForecasts.map((skyCoverForDay, i) => {
           const sunRsttDataForDay = sunRsttData[i];
           const rainChanceForDay = rainChance[i];
+          let phaseEventOnDate: MoonPhaseData | undefined = undefined;
+          if (nextApexEvent) {
+            phaseEventOnDate = isSameDay(
+              nextApexEvent.date,
+              skyCoverForDay[0]?.validTime.date as Date,
+            )
+              ? phaseEventOnDate
+              : undefined;
+          }
           return (
             <ForecastCard
               key={`forecast-card-${i}`}
               skyCoverData={skyCoverForDay}
               rainChanceData={rainChanceForDay}
               sunRsttData={sunRsttDataForDay}
+              phaseEventOnDate={phaseEventOnDate}
               now={now}
               className="border-2 border-slate-400 shadow-none"
             />
