@@ -2,8 +2,16 @@ import z from "zod";
 import { zPhenomenon, zSignificance, zWfoEnum } from "./nws";
 import { SunRsttData } from "./riseSetTransitTimes";
 
+export type TemperatureForecast = {
+  high: number;
+  low: number;
+};
+
 export type LocalConditions = {
-  currTemp?: number;
+  temperature?: {
+    currTemp: number;
+    tempForecast: TemperatureForecast[];
+  };
   skyCover: NWSDataPoint[][];
   rainChance: NWSDataPoint[][];
   snowChance: NWSDataPoint[][];

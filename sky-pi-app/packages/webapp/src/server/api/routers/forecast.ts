@@ -7,6 +7,7 @@ import {
   type GridpointForecastParams,
   type NWSDataPoint,
   LocalConditions,
+  TemperatureForecast,
 } from "~/types/forecast";
 import type {
   MoonPhaseCycle,
@@ -37,6 +38,7 @@ import z from "zod";
 import { dataPointsToDays } from "~/lib/utils/nws";
 
 export const forecastRouter = createTRPCRouter({
+  // #region getLocalConditions
   getLocalConditions: publicProcedure
     .input(
       z.object({
@@ -57,26 +59,26 @@ export const forecastRouter = createTRPCRouter({
         },
       );
 
-      const currTemp =
-        localTimeForecast.data.properties.temperature.values.find((temp) => {
-          if (!temp?.validTime.duration) return false;
-          const duration = Temporal.Duration.from(temp?.validTime.duration);
-          const startTime = temp?.validTime.date;
-          const endTime = addHours(startTime, duration.hours);
-          return isAfter(endTime, new Date());
-        })?.value;
-
       const skyCover = localTimeForecast.data.properties.skyCover.values;
       const chanceOfRain =
         localTimeForecast.data.properties.probabilityOfPrecipitation.values;
       const chanceOfSnow =
         localTimeForecast.data.properties.snowfallAmount.values;
+      const tempForecast = localTimeForecast.data.properties.temperature.values;
+
+      const currTemp = tempForecast.find((temp) => {
+        if (!temp?.validTime.duration) return false;
+        const duration = Temporal.Duration.from(temp?.validTime.duration);
+        const startTime = temp?.validTime.date;
+        const endTime = addHours(startTime, duration.hours);
+        return isAfter(endTime, new Date());
+      })?.value;
 
       const lastSkyCoverDate = skyCover.at(-1)?.validTime.date;
       const firstSkyCoverDate = skyCover.at(0)?.validTime.date;
       if (!firstSkyCoverDate || !lastSkyCoverDate) {
         return {
-          currTemp: 0,
+          temperature: { currTemp: 0, tempForecast: [] },
           skyCover: [],
           sunRsttData: [],
           rainChance: [],
@@ -94,6 +96,10 @@ export const forecastRouter = createTRPCRouter({
       ).filter((dayForecasts) => !!dayForecasts);
       const snowChanceByDay = dataPointsToDays(
         chanceOfSnow,
+        forecastParams.timeZone,
+      ).filter((dayForecasts) => !!dayForecasts);
+      const tempForecastByDay = dataPointsToDays(
+        tempForecast,
         forecastParams.timeZone,
       ).filter((dayForecasts) => !!dayForecasts);
 
@@ -128,15 +134,38 @@ export const forecastRouter = createTRPCRouter({
         // so we need to cast it in order to preserve specificity
       );
 
+      const highLowTempForecast = tempForecastByDay.map(
+        (tempForecastsForDay) => {
+          let high = tempForecastsForDay[0]?.value ?? 1337;
+          let low = high ?? 1337;
+          for (let i = 0; i < tempForecastsForDay.length; i++) {
+            const temp = tempForecastsForDay.at(i)?.value ?? 1337;
+            if (temp > high) {
+              high = temp;
+            } else if (temp < low) {
+              low = temp;
+            }
+          }
+          return {
+            high,
+            low,
+          } satisfies TemperatureForecast;
+        },
+      );
+
       return {
         skyCover: skyCoverByDay,
         rainChance: rainChanceByDay,
         snowChance: snowChanceByDay,
-        currTemp: currTemp ? currTemp : undefined,
+        temperature: {
+          currTemp: currTemp ?? 0,
+          tempForecast: highLowTempForecast,
+        },
         sunRsttData,
       } satisfies LocalConditions;
     }),
 
+  // #region getMoonPhases
   getMoonPhases: publicProcedure.query(async () => {
     const now = new Date();
     const params = new URLSearchParams([
@@ -190,6 +219,7 @@ export const forecastRouter = createTRPCRouter({
     };
   }),
 
+  // #region getGeoData
   getGeoData: publicProcedure.query(async () => {
     const { data: geoData } = await axios.get<GeoData>(`https://ipwho.is/`);
     const nwsResponse = await axios.get<PointMetadataResp>(

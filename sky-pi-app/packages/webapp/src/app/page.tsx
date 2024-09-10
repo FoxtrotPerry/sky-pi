@@ -9,7 +9,7 @@ export default async function Home() {
   const clientGeoData = await api.forecast.getGeoData();
   const [
     { moonPhaseCycle, nextApexEvent },
-    { rainChance, skyCover, snowChance, sunRsttData, currTemp },
+    { rainChance, skyCover, snowChance, sunRsttData, temperature },
   ] = await Promise.all([
     api.forecast.getMoonPhases(),
     api.forecast.getLocalConditions({
@@ -26,8 +26,6 @@ export default async function Home() {
     <div className="flex max-h-full w-full items-center justify-center align-middle">
       <div className="flex min-h-e-ink-height flex-col gap-1.5 p-1.5">
         {skyCoverForecasts.map((skyCoverForDay, i) => {
-          const sunRsttDataForDay = sunRsttData[i];
-          const rainChanceForDay = rainChance[i];
           let phaseEventOnDate: MoonPhaseData | undefined = undefined;
           if (nextApexEvent) {
             phaseEventOnDate = isSameDay(
@@ -41,10 +39,11 @@ export default async function Home() {
             <ForecastCard
               key={`forecast-card-${i}`}
               skyCoverData={skyCoverForDay}
-              rainChanceData={rainChanceForDay}
-              sunRsttData={sunRsttDataForDay}
+              rainChanceData={rainChance[i]}
+              sunRsttData={sunRsttData[i]}
               phaseEventOnDate={phaseEventOnDate}
               now={now}
+              tempForecast={temperature?.tempForecast[i]}
               className="border-2 border-slate-400 shadow-none"
             />
           );
@@ -56,7 +55,7 @@ export default async function Home() {
           />
           <MiscCard
             className="w-1/2 border-2 border-slate-400 shadow-none"
-            temperature={currTemp}
+            temperature={temperature?.currTemp}
             updateTime={new Date()}
           />
         </div>

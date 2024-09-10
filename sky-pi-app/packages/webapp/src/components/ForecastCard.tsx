@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
-import type { NWSDataPoint } from "~/types/forecast";
+import type { NWSDataPoint, TemperatureForecast } from "~/types/forecast";
 import { format, getHours, isSameHour } from "date-fns";
 import {
   MoonStar,
@@ -20,6 +20,7 @@ import { Cloudy } from "~/components/icons/cloudy";
 import { cn } from "~/lib/utils/ui";
 import { SunRsttData } from "~/types/riseSetTransitTimes";
 import { MoonPhaseData } from "~/types/moonphase";
+import { toFahrenheit } from "~/lib/utils/math";
 
 type ForecastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   skyCoverData: NWSDataPoint[];
@@ -27,6 +28,7 @@ type ForecastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   sunRsttData: SunRsttData | undefined;
   now: Date;
   phaseEventOnDate?: MoonPhaseData;
+  tempForecast?: TemperatureForecast;
 };
 
 export const ForecastCard = ({
@@ -36,6 +38,7 @@ export const ForecastCard = ({
   sunRsttData,
   now,
   phaseEventOnDate,
+  tempForecast,
 }: ForecastCardProps) => {
   const day = skyCoverData[0]?.validTime.date;
 
@@ -93,18 +96,25 @@ export const ForecastCard = ({
               <h3 className="text-slate-200">{date}</h3>
             </Badge>
           </div>
-          {phaseEventOnDate && (
-            <Badge
-              className={cn(
-                "flex items-center gap-1 border-0 bg-gradient-to-r",
-                phaseEventOnDate.name === "New Moon" && "from-indigo-500",
-                phaseEventOnDate.name === "Full Moon" && "from-cyan-600",
+          <div>
+            <>
+              {tempForecast && (
+                <h3 className="text-xl font-bold leading-none">{`${toFahrenheit(tempForecast.low)}° - ${toFahrenheit(tempForecast.high)}°`}</h3>
               )}
-            >
-              <Moon size={16} />
-              {phaseEventOnDate.name}
-            </Badge>
-          )}
+              {phaseEventOnDate && (
+                <Badge
+                  className={cn(
+                    "flex items-center gap-1 border-0 bg-gradient-to-r",
+                    phaseEventOnDate.name === "New Moon" && "from-indigo-500",
+                    phaseEventOnDate.name === "Full Moon" && "from-cyan-600",
+                  )}
+                >
+                  <Moon size={16} />
+                  {phaseEventOnDate.name}
+                </Badge>
+              )}
+            </>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-0.5 px-3 pb-3 pt-0.5">

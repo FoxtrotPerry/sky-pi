@@ -1,5 +1,6 @@
 import { format, isToday } from "date-fns";
 import { Card, CardContent } from "~/components/ui/card";
+import { toFahrenheit } from "~/lib/utils/math";
 import { cn } from "~/lib/utils/ui";
 
 type MiscCardProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -25,7 +26,7 @@ export const MiscCard = ({
         </div>
         <div>
           <h2 className="text-5xl font-semibold">
-            {temperature ? `${Math.round(temperature * 1.8 + 32)}°` : "N/A"}
+            {temperature ? `${toFahrenheit(temperature)}°` : "N/A"}
           </h2>
         </div>
       </CardContent>
