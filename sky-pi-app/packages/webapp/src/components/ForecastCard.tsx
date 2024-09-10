@@ -147,6 +147,7 @@ export const ForecastCard = ({
                   className={cn(
                     "text-slate-500",
                     (shouldHighlight || isCurrentHour) && "text-slate-100",
+                    shouldHighlight && "font-bold",
                   )}
                 >
                   {hour === 0 ? 12 : hour}
