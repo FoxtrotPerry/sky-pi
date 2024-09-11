@@ -36,6 +36,7 @@ import {
 import { toSearchParamEntries } from "~/lib/utils/object";
 import z from "zod";
 import { dataPointsToDays } from "~/lib/utils/nws";
+import { ScaleResponse } from "~/types/swpcScales";
 
 export const forecastRouter = createTRPCRouter({
   // #region getLocalConditions
@@ -242,5 +243,13 @@ export const forecastRouter = createTRPCRouter({
         dst: false,
       } satisfies Omit<RiseSetTransitTimesParams, "date">,
     };
+  }),
+
+  getAuroraData: publicProcedure.query(async () => {
+    const { data: auroraData } = await axios.get<ScaleResponse>(
+      `https://services.swpc.noaa.gov/products/noaa-scales.json`,
+    );
+
+    // TODO: return formatted aurora data
   }),
 });
