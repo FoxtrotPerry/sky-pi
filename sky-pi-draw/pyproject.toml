@@ -28,7 +28,8 @@ dependencies = [
   "inky~=2.0.0",
   "pillow~=10.4.0",
   "pyinstaller~=6.10.0",
-  "RPi.GPIO~=0.7.1",
+  "gpiod~=2.2.1",
+  "gpiodevice~=0.0.5",
 ]
 
 [project.urls]
