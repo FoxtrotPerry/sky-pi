@@ -135,9 +135,9 @@ export const ForecastCard = ({
             return (
               <div
                 className={cn(
-                  "flex flex-col items-center justify-end rounded-lg",
-                  shouldHighlight && "bg-slate-500",
-                  isCurrentHour && "bg-slate-900",
+                  "flex flex-col items-center justify-end rounded-lg bg-gradient-to-t",
+                  shouldHighlight && "from-white to-slate-500",
+                  isCurrentHour && "from-white to-slate-900",
                 )}
                 key={`sky-cover-${forecastDate.valueOf()}`}
               >
@@ -152,7 +152,7 @@ export const ForecastCard = ({
                 </p>
                 <div
                   className={cn(
-                    "flex flex-col items-center rounded-lg p-0.5",
+                    "flex flex-col items-center rounded-lg bg-white p-0.5",
                     shouldHighlight && "bg-slate-200",
                     duringSunRiseOrSet && "bg-amber-400",
                     duringNightTime && "bg-sky-950",
