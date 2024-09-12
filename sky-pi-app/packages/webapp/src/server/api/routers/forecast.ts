@@ -5,9 +5,8 @@ import {
   type GridpointForecastResp,
   zGridpointForecastParams,
   type GridpointForecastParams,
-  type NWSDataPoint,
-  LocalConditions,
-  TemperatureForecast,
+  type LocalConditions,
+  type TemperatureForecast,
 } from "~/types/forecast";
 import type {
   MoonPhaseCycle,
@@ -16,27 +15,19 @@ import type {
 } from "~/types/moonphase";
 import type { GeoData } from "~/types/ip";
 import { getDateTransformer } from "~/lib/utils/date";
-import { toZonedTime } from "date-fns-tz";
-import {
-  isBefore,
-  differenceInCalendarDays,
-  addHours,
-  getHours,
-  startOfDay,
-  isAfter,
-  format,
-} from "date-fns";
+import { addHours, isAfter, format } from "date-fns";
 import { Temporal } from "temporal-polyfill";
 import {
-  RiseSetTransitTimesParams,
-  RiseSetTransitTimesResp,
-  SunRsttData,
+  type RiseSetTransitTimesParams,
+  type RiseSetTransitTimesResp,
+  type SunRsttData,
   zRiseSetTransitTimesParams,
 } from "~/types/riseSetTransitTimes";
 import { toSearchParamEntries } from "~/lib/utils/object";
 import z from "zod";
 import { dataPointsToDays } from "~/lib/utils/nws";
-import { ScaleResponse } from "~/types/swpcScales";
+import { type ScaleResponse } from "~/types/swpcScales";
+import { formatScaleResponse } from "~/lib/utils/swpc";
 
 export const forecastRouter = createTRPCRouter({
   // #region getLocalConditions
@@ -49,9 +40,6 @@ export const forecastRouter = createTRPCRouter({
     )
     .query(async ({ input }): Promise<LocalConditions> => {
       const { forecastParams, riseSetParams } = input;
-
-      const localNow = toZonedTime(new Date(), forecastParams.timeZone);
-      const startOfToday = startOfDay(localNow);
 
       const localTimeForecast = await axios.get<GridpointForecastResp>(
         `https://api.weather.gov/gridpoints/${forecastParams.wfo}/${forecastParams.gridX},${forecastParams.gridY}`,
@@ -107,7 +95,10 @@ export const forecastRouter = createTRPCRouter({
       // Get RSTT data:
 
       const rsttSearchParamsByDay = skyCoverByDay.map((dataPoint) => {
-        const date = dataPoint[0]?.validTime.date as Date;
+        const date = dataPoint.at(0)?.validTime.date;
+        if (!date) {
+          return new URLSearchParams();
+        }
         return new URLSearchParams(
           toSearchParamEntries({
             date: format(date, "yyyy-MM-dd"),
@@ -245,11 +236,12 @@ export const forecastRouter = createTRPCRouter({
     };
   }),
 
-  getAuroraData: publicProcedure.query(async () => {
-    const { data: auroraData } = await axios.get<ScaleResponse>(
+  // #region getAuroraData
+  getSpaceWeatherConditions: publicProcedure.query(async () => {
+    const { data: spaceWeatherdata } = await axios.get<ScaleResponse>(
       `https://services.swpc.noaa.gov/products/noaa-scales.json`,
     );
 
-    // TODO: return formatted aurora data
+    return formatScaleResponse(spaceWeatherdata);
   }),
 });

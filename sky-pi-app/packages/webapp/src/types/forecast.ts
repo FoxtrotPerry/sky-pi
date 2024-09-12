@@ -1,6 +1,6 @@
 import z from "zod";
 import { zPhenomenon, zSignificance, zWfoEnum } from "./nws";
-import { SunRsttData } from "./riseSetTransitTimes";
+import type { SunRsttData } from "./riseSetTransitTimes";
 
 export type TemperatureForecast = {
   high: number;

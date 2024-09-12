@@ -6,21 +6,20 @@ import {
   MoonStar,
   CloudMoon,
   CloudSun,
-  Droplet,
   CloudRain,
   CloudMoonRain,
   CloudSunRain,
   Sun,
   Umbrella,
-  Moon,
 } from "lucide-react";
 import { percentToSkyShade } from "~/lib/utils/tailwind";
 import { useCallback } from "react";
 import { Cloudy } from "~/components/icons/cloudy";
 import { cn } from "~/lib/utils/ui";
-import { SunRsttData } from "~/types/riseSetTransitTimes";
-import { MoonPhaseData } from "~/types/moonphase";
-import { toFahrenheit } from "~/lib/utils/math";
+import type { SunRsttData } from "~/types/riseSetTransitTimes";
+import type { MoonPhaseData } from "~/types/moonphase";
+import type { DailyScalesFormatted } from "~/types/swpcScales";
+import { ForecastBadges } from "./ForecastBadges";
 
 type ForecastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   skyCoverData: NWSDataPoint[];
@@ -29,6 +28,7 @@ type ForecastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   now: Date;
   phaseEventOnDate?: MoonPhaseData;
   tempForecast?: TemperatureForecast;
+  spaceWeather?: DailyScalesFormatted;
 };
 
 export const ForecastCard = ({
@@ -39,6 +39,7 @@ export const ForecastCard = ({
   now,
   phaseEventOnDate,
   tempForecast,
+  spaceWeather,
 }: ForecastCardProps) => {
   const day = skyCoverData[0]?.validTime.date;
 
@@ -96,25 +97,12 @@ export const ForecastCard = ({
               <h3 className="text-slate-200">{date}</h3>
             </Badge>
           </div>
-          <div>
-            <>
-              {tempForecast && (
-                <h3 className="text-xl font-bold leading-none">{`${toFahrenheit(tempForecast.low)}° - ${toFahrenheit(tempForecast.high)}°`}</h3>
-              )}
-              {phaseEventOnDate && (
-                <Badge
-                  className={cn(
-                    "flex items-center gap-1 border-0 bg-gradient-to-r",
-                    phaseEventOnDate.name === "New Moon" && "from-indigo-500",
-                    phaseEventOnDate.name === "Full Moon" && "from-cyan-600",
-                  )}
-                >
-                  <Moon size={16} />
-                  {phaseEventOnDate.name}
-                </Badge>
-              )}
-            </>
-          </div>
+          <ForecastBadges
+            className="flex flex-row gap-2"
+            spaceWeather={spaceWeather}
+            tempForecast={tempForecast}
+            phaseEventOnDate={phaseEventOnDate}
+          />
         </div>
       </CardHeader>
       <CardContent className="space-y-0.5 px-3 pb-3 pt-0.5">
