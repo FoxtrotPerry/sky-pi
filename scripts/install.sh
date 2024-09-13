@@ -8,6 +8,9 @@ red=$(tput setaf 1)
 magenta=$(tput setaf 5)
 cyan=$(tput setaf 6)
 
+# option variables
+pre=false
+
 SKYPI_DIR="$HOME/.sky-pi"
 ZIP_FILE="sky-pi.zip"
 
@@ -40,6 +43,19 @@ success_echo() {
 
 clear
 
+while [[ "$#" -gt 0 ]]; do
+  case "$1" in
+    --pre)
+      pre=true
+      ;;
+    *)
+      error_echo "Unknown option: $1"
+      exit 1
+      ;;
+  esac
+  shift # Move to the next argument
+done
+
 echo "🌓 ${bold}${magenta}SKY PI Installation${normal} 🌗"
 printf "\n"
 
@@ -54,7 +70,26 @@ mkdir -p $SKYPI_DIR
 cd $SKYPI_DIR
 
 info_echo "Downloading latest sky-pi distribution..."
-wget -q --show-progress --progress=bar https://github.com/foxtrotperry/sky-pi/releases/latest/download/$ZIP_FILE
+
+if [ "$pre" = true ]; then
+  warn_echo "Downloading pre-release version"
+  # check if jq is installed and offer to install it if not
+  if ! command -v jq &> /dev/null; then
+    ask_echo "jq is required to install pre-release versions. Would you like to install it now?"
+    read -p "(y/n): " response </dev/tty
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+      sudo apt-get update
+      sudo apt-get install jq -y
+    else
+      error_echo "jq is required to install pre-release versions. Exiting..."
+      exit 1
+    fi
+  fi
+  download_url=$(curl -s https://api.github.com/repos/foxtrotperry/sky-pi/releases | jq -r '[.[] | select(.prerelease == true)] | .[0].assets[0].browser_download_url')
+  wget -q --show-progress --progress=bar $download_url
+else
+  wget -q --show-progress --progress=bar https://github.com/foxtrotperry/sky-pi/releases/latest/download/$ZIP_FILE
+fi
 
 if [ ! -f "$ZIP_FILE" ]; then
   error_echo "sky-pi distribution download failed"

@@ -57,6 +57,14 @@ I haven't personally tested on every possible Pi, but it stands to reason the fo
 8. Run the [install script](#installation) and follow the prompts.
 9. Done! Just wait for the next refresh interval and you should be good to go!
 
+## Install pre-release versions
+
+To install the latest pre-release version of Sky Pi, you can run:
+
+```bash
+curl -sSL install.skypi.dev | bash -s -- --pre
+```
+
 ## Uninstall
 
 You can always completely uninstall Sky Pi by running:
