@@ -204,6 +204,9 @@ info_echo "Adding crontab entries..."
 source $SKYPI_DIR/sky-pi/path_crontab.sh
 source $SKYPI_DIR/sky-pi/add_crontab.sh
 
+info_echo "Editing Raspberry Pi config..."
+source $SKYPI_DIR/sky-pi/edit_rasp_config.sh
+
 printf "\n"
 done_echo "SKY PI setup complete!"
 
