@@ -16,7 +16,8 @@ env:
   DRAW_DIR: ./sky-pi-draw
   # Versions
   PYTHON_VER: 3.11
-  MAKE_LATEST: ${{ !endsWith('pre', github.ref) }}
+  # Release
+  MAKE_PRE_RELEASE: ${{ endsWith(github.ref, 'pre') }}
 
 jobs:
   build-app:
@@ -131,6 +132,6 @@ jobs:
           artifacts: ${{ env.ZIP }}
           token: ${{ secrets.GITHUB_TOKEN }}
           generateReleaseNotes: true
-          makeLatest: ${{ env.MAKE_LATEST }}
-          prerelease: ${{ !env.MAKE_LATEST }}
+          makeLatest: ${{ !env.MAKE_PRE_RELEASE }}
+          prerelease: ${{ env.MAKE_PRE_RELEASE }}
           commit: ${{ github.sha }}
