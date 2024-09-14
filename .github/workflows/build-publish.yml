@@ -17,7 +17,7 @@ env:
   # Versions
   PYTHON_VER: 3.11
   # Release
-  MAKE_PRE_RELEASE: ${{ endsWith(github.ref, 'pre') }}
+  MAKE_PRE_RELEASE: ${{ contains(github.ref, 'pre') }}
 
 jobs:
   build-app:
