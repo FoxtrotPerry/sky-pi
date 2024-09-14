@@ -31,7 +31,7 @@ LINE="dtoverlay=spi0-0cs"
 if ! grep -q "^${LINE}$" "$CONFIG_FILE"; then
   info_echo "Required config setting not found. Adding..."
   ask_echo "You might be prompted for your password to edit the config file."
-  echo "$LINE" | tee -a "$CONFIG_FILE" > /dev/null
+  echo "$LINE" | sudo tee -a "$CONFIG_FILE" > /dev/null
   info_echo "Raspberry Pi config updated"
 else
   info_echo "Required config setting already exists in $CONFIG_FILE"
