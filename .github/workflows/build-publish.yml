@@ -16,6 +16,7 @@ env:
   DRAW_DIR: ./sky-pi-draw
   # Versions
   PYTHON_VER: 3.11
+  MAKE_LATEST: ${{ !endsWith('pre', github.ref) }}
 
 jobs:
   build-app:
@@ -130,8 +131,6 @@ jobs:
           artifacts: ${{ env.ZIP }}
           token: ${{ secrets.GITHUB_TOKEN }}
           generateReleaseNotes: true
-          # If the tag associated with this workflow run doesn't denote this release as a
-          # release candidate, beta, or alpha, then tag the release as latest
-          makeLatest: ${{ !contains(fromJSON('["rc", "beta", "alpha", "prerelease", "pre"]'), github.ref) }}
-          prerelease: ${{ contains(fromJSON('["rc", "beta", "alpha", "prerelease", "pre"]'), github.ref) }}
+          makeLatest: ${{ env.MAKE_LATEST }}
+          prerelease: ${{ !env.MAKE_LATEST }}
           commit: ${{ github.sha }}
