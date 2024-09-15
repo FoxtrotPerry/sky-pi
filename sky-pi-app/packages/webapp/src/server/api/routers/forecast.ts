@@ -244,4 +244,15 @@ export const forecastRouter = createTRPCRouter({
 
     return formatScaleResponse(spaceWeatherdata);
   }),
+
+  // #region getThreeDaySpaceWeatherForecast
+  getThreeDaySpaceWeatherForecast: publicProcedure.query(async () => {
+    const { data: ovationAuroraText } = await axios.get<ScaleResponse>(
+      `https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt`,
+    );
+
+    console.log(ovationAuroraText);
+
+    return ovationAuroraText;
+  }),
 });

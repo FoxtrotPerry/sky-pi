@@ -19,6 +19,7 @@ export default async function Home() {
       riseSetParams: clientGeoData.riseSetTransitTimesParams,
     }),
     api.forecast.getSpaceWeatherConditions(),
+    api.forecast.getThreeDaySpaceWeatherForecast(),
   ]);
 
   const skyCoverForecasts = skyCover.slice(0, 3);

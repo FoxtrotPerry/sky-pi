@@ -27,20 +27,20 @@ Short build guide for those who are starting with little to no knowledge of Rasp
 
 Development of this project was done on a very affordable [Raspberry Pi 3](https://www.adafruit.com/product/3055) (thanks [Kamin](https://github.com/kaminfay) for the free Raspberry Pi!)
 
-I haven't personally tested on every possible Pi, but it stands to reason the following Pis would be able to run Sky Pi just fine:
+I haven't personally tested on every possible Pi, but Sky-Pi should work on the following:
 
 - [Raspberry Pi 3B](https://www.adafruit.com/product/3055)
 - [Raspberry Pi 3B+](https://www.adafruit.com/product/3775)
 - [Raspberry Pi 4B](https://www.adafruit.com/product/4295)
+- [Raspberry Pi 5](https://www.adafruit.com/product/6007)
+- [Raspberry Pi 400](https://www.adafruit.com/product/4795) (_please_ let me know if you try this one)
 
 > [!NOTE]
->
-> - Raspberry Pi 5 will be supported when `gpiod` is finished [being integrated into the `inky` python package](https://github.com/pimoroni/inky/pull/182).
-> - In testing, it seems that Raspberry Pi Zeros aren't powerful enough to run this project.
+> In testing, it seems that Raspberry Pi Zeros aren't powerful enough to run this project.
 
 ### What you'll need
 
-1. Raspberry Pi
+1. Your choice of Raspberry Pi from the [list above](#supported-raspberry-pis)
 2. [Pimoroni Inky Impressions 7.3" e-ink display](https://shop.pimoroni.com/products/inky-impression-7-3?variant=40512683376723)
 3. Micro SD card, ideally with 16GB of memory or more
 4. Power supply (something like [this](https://www.amazon.com/Smraza-Supply-Compatible-Raspberry-Adapter/dp/B0CBPJH1VK) should work just fine)
@@ -48,8 +48,8 @@ I haven't personally tested on every possible Pi, but it stands to reason the fo
 ### Build Steps
 
 1. Install [Raspbian OS](https://www.raspberrypi.com/software/) to your microSD card.
-2. Put the sd card into the Raspberry Pi.
-3. Install the e-ink display to the Raspberry Pi.
+2. Put the sd card in the Raspberry Pi.
+3. Attach the e-ink display to the Raspberry Pi.
 4. Boot up the Raspberry Pi.
 5. Go through whatever updates / setup steps are required.
 6. Run `sudo apt update` followed by `sudo apt upgrade`.
