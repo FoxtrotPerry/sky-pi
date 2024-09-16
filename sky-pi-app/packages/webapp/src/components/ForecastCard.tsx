@@ -151,7 +151,7 @@ export const ForecastCard = ({
                     shouldHighlight && "font-bold",
                   )}
                 >
-                  {hour === 0 ? 12 : hour}
+                  {hour % 12 === 0 ? 12 : hour % 12}
                 </p>
                 <div
                   className={cn(
