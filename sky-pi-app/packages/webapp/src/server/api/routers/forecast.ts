@@ -15,7 +15,7 @@ import type {
 } from "~/types/moonphase";
 import type { GeoData } from "~/types/ip";
 import { getDateTransformer } from "~/lib/utils/date";
-import { addHours, isAfter, format, parse } from "date-fns";
+import { addHours, isAfter, format, parse, isSameDay } from "date-fns";
 import { Temporal } from "temporal-polyfill";
 import {
   type RiseSetTransitTimesParams,
@@ -26,8 +26,9 @@ import {
 import { toSearchParamEntries } from "~/lib/utils/object";
 import z from "zod";
 import { dataPointsToDays } from "~/lib/utils/nws";
-import { type ScaleResponse } from "~/types/swpcScales";
-import { formatScaleResponse } from "~/lib/utils/swpc";
+import type { KpForecast } from "~/types/swpc";
+import { kpIndexToSeverity } from "~/lib/utils/swpc";
+import { toZonedTime } from "date-fns-tz";
 
 export const forecastRouter = createTRPCRouter({
   // #region getLocalConditions
@@ -236,137 +237,112 @@ export const forecastRouter = createTRPCRouter({
     };
   }),
 
-  // #region getAuroraData
-  getSpaceWeatherConditions: publicProcedure.query(async () => {
-    const { data: spaceWeatherdata } = await axios.get<ScaleResponse>(
-      `https://services.swpc.noaa.gov/products/noaa-scales.json`,
-    );
+  // #region getThreeDayGeomagneticForecast
+  getThreeDayGeomagneticForecast: publicProcedure
+    .input(
+      z.object({
+        timezone: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const { data: ovationAuroraText } = await axios.get<string>(
+        `https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt`,
+      );
 
-    return formatScaleResponse(spaceWeatherdata);
-  }),
+      // Parse the text into a more usable format
+      const textLines = ovationAuroraText?.split("\n");
 
-  // #region getThreeDaySpaceWeatherForecast
-  // TODO: Clean up this function when development is finished
-  getThreeDaySpaceWeatherForecast: publicProcedure.query(async () => {
-    const { data: ovationAuroraText } = await axios.get<string>(
-      `https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt`,
-    );
-
-    // Parse the text into a more usable format
-    const textLines = ovationAuroraText?.split("\n");
-
-    /**
-     * Find the start and end of the geomagnetic activity probabilities and kp index forecasts
-     */
-    let [probabilitiesStart, probabilitiesEnd, kpIndexStart, kpDatesLineIdx] = [
-      0, 0, 0, 0,
-    ];
-    textLines.forEach((line, index) => {
-      if (line.includes("NOAA Geomagnetic Activity Probabilities")) {
-        probabilitiesStart = index + 1;
-      } else if (line.includes("NOAA Kp index forecast")) {
-        probabilitiesEnd = index - 1;
-        kpDatesLineIdx = index + 1;
-        kpIndexStart = index + 2;
-      }
-    });
-
-    const geomagneticProbabilityLines = textLines.slice(
-      probabilitiesStart,
-      probabilitiesEnd,
-    );
-    const kpIndexLines = textLines.slice(kpIndexStart, -1);
-
-    /**
-     * Parse severity probabilities from the text
-     */
-
-    // TODO: Parse % probabilities into the following type:
-    type GeomagProbabilities = Array<{
-      time: Date;
-      probabilities: Array<{
-        severity: "Active" | "Minor" | "Moderate" | "Strong";
-        probability: number;
-      }>;
-    }>;
-    const geomagneticProbabilityDataBySeverity =
-      geomagneticProbabilityLines.map((line) => {
-        const [activity, probabilities] = line.split(/\s{2,}/);
-        const [day1Probability, day2Probability, day3Probability] =
-          probabilities!.split("/");
-        return {
-          severity: activity,
-          probabilities: [
-            Number(day1Probability),
-            Number(day2Probability),
-            Number(day3Probability),
-          ],
-        };
+      /**
+       * Find the start and end of the geomagnetic activity probabilities and kp index forecasts
+       */
+      let [kpIndexStart, kpDatesLineIdx] = [0, 0, 0, 0];
+      textLines.forEach((line, index) => {
+        if (line.includes("NOAA Kp index forecast")) {
+          kpDatesLineIdx = index + 1;
+          kpIndexStart = index + 2;
+        }
       });
 
-    /**
-     * Parse kp values from the text table
-     */
+      const kpIndexLines = textLines.slice(kpIndexStart, -1);
 
-    type KpForecast = Array<{
-      time: Date;
-      value: number;
-    }>;
+      /**
+       * Parse kp values from the text table
+       */
 
-    // split each hour range and kp value into an array
-    const kpIndexDatesSplit = textLines[kpDatesLineIdx]!.trim().split(/\s{2,}/);
+      // split each hour range and kp value into an array
+      const kpIndexDatesSplit =
+        textLines[kpDatesLineIdx]!.trim().split(/\s{2,}/);
 
-    // parse the dates into Date objects in UTC
-    const kpIndexForecastDates = kpIndexDatesSplit.map((dayOfMonth) => {
-      const [month, day] = dayOfMonth.split(" ");
-      const localDate = parse(`${month} ${day}`, "MMM d", new Date());
-      return new Date(
-        Date.UTC(
-          localDate.getFullYear(),
-          localDate.getMonth() - 1,
-          localDate.getDate(),
-        ),
+      // parse the dates into Date objects in UTC
+      const kpIndexForecastDates = kpIndexDatesSplit.map((dayOfMonth) => {
+        const [month, day] = dayOfMonth.split(" ");
+        const localDate = parse(`${month} ${day}`, "MMM d", new Date());
+        return new Date(
+          Date.UTC(
+            localDate.getFullYear(),
+            localDate.getMonth() - 1,
+            localDate.getDate(),
+          ),
+        );
+      });
+
+      // init an array to hold the kp values for each day
+      const kpUtcForecasts: KpForecast[][] | undefined = new Array(
+        kpIndexForecastDates.length,
       );
-    });
-    const kpIndexSplitLines = kpIndexLines.map((line, i) => {
-      // when looking at the date line, only match on two or more spaces
-      if (i === 0) return line.trim().split(/\s{2,}/);
-      // otherwise, split on one or more spaces
-      return line.trim().split(/\s+/);
-    });
 
-    console.log(kpIndexForecastDates);
-    console.log(kpIndexSplitLines);
+      // for every line in the kp index forecast table, parse the kp values
+      for (let i = 0; i < kpIndexLines.length; i++) {
+        // split the line into an array of hour ranges and kp values
+        const [hourRange, ...kpValues] = kpIndexLines[i]!.trim().split(/\s+/);
+        // for every kp value, add the kp value and time pairs to each day in the kpUtcForecasts array
+        // they belong to
+        for (let j = 0; j < kpUtcForecasts.length; j++) {
+          const kpValue = kpValues[j];
+          if (!kpUtcForecasts[j]) {
+            kpUtcForecasts[j] = [];
+          }
+          const newUtcDate = new Date(
+            Date.UTC(
+              kpIndexForecastDates[j]!.getFullYear(),
+              kpIndexForecastDates[j]!.getMonth() + 1,
+              kpIndexForecastDates[j]!.getDate(),
+              Number(hourRange!.slice(0, 2)),
+            ),
+          );
+          kpUtcForecasts[j]!.push({
+            time: newUtcDate,
+            value: Number(kpValue),
+            severity: kpIndexToSeverity(Number(kpValue)),
+          });
+        }
+      }
 
-    return ovationAuroraText;
-  }),
+      const kpLocalForecasts: KpForecast[][] | undefined = [];
+      // init a flat array to iterate over
+      let dayIndex = 0;
+      for (let i = 0; i < kpUtcForecasts.length; i++) {
+        for (let j = 0; j < kpUtcForecasts[i]!.length; j++) {
+          const kpUtcForecast = kpUtcForecasts[i]![j];
+          const kpLocalForecast = {
+            time: toZonedTime(kpUtcForecast!.time, input.timezone),
+            value: kpUtcForecast!.value,
+            severity: kpIndexToSeverity(kpUtcForecast!.value),
+          };
+          const lastInsertedForecast = kpLocalForecasts[dayIndex]?.at(-1);
+          if (
+            lastInsertedForecast &&
+            !isSameDay(lastInsertedForecast.time, kpLocalForecast.time)
+          ) {
+            dayIndex++;
+          }
+          if (!kpLocalForecasts[dayIndex]) {
+            kpLocalForecasts[dayIndex] = [];
+          }
+          kpLocalForecasts[dayIndex]!.push(kpLocalForecast);
+        }
+      }
+
+      return kpLocalForecasts;
+    }),
 });
-
-/**
-:Product: Geomagnetic Forecast
-:Issued: 2024 Sep 14 2205 UTC
-# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center
-#
-NOAA Ap Index Forecast
-Observed Ap 13 Sep 037
-Estimated Ap 14 Sep 024
-Predicted Ap 15 Sep-17 Sep 018-070-028
-
-NOAA Geomagnetic Activity Probabilities 15 Sep-17 Sep
-Active                40/01/20
-Minor storm           15/15/25
-Moderate storm        05/30/35
-Strong-Extreme storm  01/55/20
-
-NOAA Kp index forecast 15 Sep - 17 Sep
-             Sep 15    Sep 16    Sep 17
-00-03UT        3.33      3.33      5.67      
-03-06UT        3.67      3.33      5.00      
-06-09UT        3.33      5.33      4.67      
-09-12UT        3.33      7.00      4.00      
-12-15UT        3.33      6.67      2.67      
-15-18UT        3.00      6.00      2.33      
-18-21UT        3.00      6.00      2.33      
-21-00UT        3.33      5.67      3.00      
-
- */

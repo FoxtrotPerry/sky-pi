@@ -1,87 +1,21 @@
-import type {
-  ScaleResponse,
-  FormattedScaleResponse,
-  DailyScales,
-} from "~/types/swpcScales";
-import { toZonedTime } from "date-fns-tz";
+import type { GeomagneticSeverity, KpForecast } from "~/types/swpc";
 
-export const keyToIndex = (key: keyof FormattedScaleResponse) => {
-  if (key === "previousDay") return -1;
-  if (key === "currentDay") return 0;
-  if (key === "nextDay") return 1;
-  if (key === "day2") return 2;
-  if (key === "day3") return 3;
+export const kpIndexToSeverity = (kp: number): GeomagneticSeverity => {
+  if (kp >= 9) return { text: "Extreme", scale: "G5" };
+  if (kp >= 8) return { text: "Severe", scale: "G4" };
+  if (kp >= 7) return { text: "Strong", scale: "G3" };
+  if (kp >= 6) return { text: "Moderate", scale: "G2" };
+  if (kp >= 5) return { text: "Minor", scale: "G1" };
+  return { text: "Active", scale: "G0" };
 };
 
-export const indexToKey = (index: number): keyof FormattedScaleResponse => {
-  if (index === -1) return "previousDay";
-  if (index === 0) return "currentDay";
-  if (index === 1) return "nextDay";
-  if (index === 2) return "day2";
-  if (index === 3) return "day3";
-  return "currentDay";
-};
-
-const datePartsToDate = (
-  dateStamp: DailyScales["DateStamp"],
-  timeStamp: DailyScales["TimeStamp"],
-) => {
-  const [year, month, day] = dateStamp.split("-").map(Number);
-  const [hour, minute, second] = timeStamp.split(":").map(Number);
-  return toZonedTime(
-    new Date(year!, month! - 1, day, hour, minute, second),
-    "America/New_York",
-  );
-};
-
-export const formatScaleResponse = (
-  rawResponse: ScaleResponse,
-): FormattedScaleResponse => {
-  return {
-    previousDay: {
-      date: datePartsToDate(
-        rawResponse["-1"].DateStamp,
-        rawResponse["-1"].TimeStamp,
-      ),
-      radioBlackout: rawResponse["-1"].R,
-      solarRadiation: rawResponse["-1"].S,
-      geomagneticStorming: rawResponse["-1"].G,
-    },
-    currentDay: {
-      date: datePartsToDate(
-        rawResponse["0"].DateStamp,
-        rawResponse["0"].TimeStamp,
-      ),
-      radioBlackout: rawResponse["0"].R,
-      solarRadiation: rawResponse["0"].S,
-      geomagneticStorming: rawResponse["0"].G,
-    },
-    nextDay: {
-      date: datePartsToDate(
-        rawResponse["1"].DateStamp,
-        rawResponse["1"].TimeStamp,
-      ),
-      radioBlackout: rawResponse["1"].R,
-      solarRadiation: rawResponse["1"].S,
-      geomagneticStorming: rawResponse["1"].G,
-    },
-    day2: {
-      date: datePartsToDate(
-        rawResponse["2"].DateStamp,
-        rawResponse["2"].TimeStamp,
-      ),
-      radioBlackout: rawResponse["2"].R,
-      solarRadiation: rawResponse["2"].S,
-      geomagneticStorming: rawResponse["2"].G,
-    },
-    day3: {
-      date: datePartsToDate(
-        rawResponse["3"].DateStamp,
-        rawResponse["3"].TimeStamp,
-      ),
-      radioBlackout: rawResponse["3"].R,
-      solarRadiation: rawResponse["3"].S,
-      geomagneticStorming: rawResponse["3"].G,
-    },
-  };
+export const getMaxKpForecast = (forecasts: KpForecast[]) => {
+  let maxKpForecast = forecasts[0];
+  for (let i = 1; i < forecasts.length; i++) {
+    const forecast = forecasts[i];
+    if (forecast && forecast.value > maxKpForecast!.value) {
+      maxKpForecast = forecasts[i];
+    }
+  }
+  return maxKpForecast;
 };

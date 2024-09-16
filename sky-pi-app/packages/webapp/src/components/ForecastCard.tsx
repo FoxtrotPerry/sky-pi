@@ -18,8 +18,9 @@ import { Cloudy } from "~/components/icons/cloudy";
 import { cn } from "~/lib/utils/ui";
 import type { SunRsttData } from "~/types/riseSetTransitTimes";
 import type { MoonPhaseData } from "~/types/moonphase";
-import type { DailyScalesFormatted } from "~/types/swpcScales";
+import type { KpForecast } from "~/types/swpc";
 import { ForecastBadges } from "./ForecastBadges";
+import { getMaxKpForecast } from "~/lib/utils/swpc";
 
 type ForecastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   skyCoverData: NWSDataPoint[];
@@ -28,7 +29,7 @@ type ForecastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   now: Date;
   phaseEventOnDate?: MoonPhaseData;
   tempForecast?: TemperatureForecast;
-  spaceWeather?: DailyScalesFormatted;
+  auroraForecastsForDay?: KpForecast[];
 };
 
 export const ForecastCard = ({
@@ -39,7 +40,7 @@ export const ForecastCard = ({
   now,
   phaseEventOnDate,
   tempForecast,
-  spaceWeather,
+  auroraForecastsForDay,
 }: ForecastCardProps) => {
   const day = skyCoverData[0]?.validTime.date;
 
@@ -81,6 +82,8 @@ export const ForecastCard = ({
     [],
   );
 
+  const maxKpForecast = getMaxKpForecast(auroraForecastsForDay ?? []);
+
   const dayOfWeek = format(day, "EEEE");
   const date = format(day, "MMM do");
 
@@ -99,9 +102,9 @@ export const ForecastCard = ({
           </div>
           <ForecastBadges
             className="flex flex-row gap-2"
-            spaceWeather={spaceWeather}
             tempForecast={tempForecast}
             phaseEventOnDate={phaseEventOnDate}
+            auroraForecast={maxKpForecast}
           />
         </div>
       </CardHeader>

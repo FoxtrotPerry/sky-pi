@@ -2,7 +2,6 @@ import { isSameDay } from "date-fns";
 import { ForecastCard } from "~/components/ForecastCard";
 import { MiscCard } from "~/components/MiscCard";
 import { MoonPhaseCard } from "~/components/MoonPhaseCard";
-import { indexToKey } from "~/lib/utils/swpc";
 import { api } from "~/trpc/server";
 import type { MoonPhaseData } from "~/types/moonphase";
 
@@ -11,15 +10,16 @@ export default async function Home() {
   const [
     { moonPhaseCycle, nextApexEvent },
     { rainChance, skyCover, sunRsttData, temperature },
-    spaceWeather,
+    geomagneticForecast,
   ] = await Promise.all([
     api.forecast.getMoonPhases(),
     api.forecast.getLocalConditions({
       forecastParams: clientGeoData.gridpointForecastParams,
       riseSetParams: clientGeoData.riseSetTransitTimesParams,
     }),
-    api.forecast.getSpaceWeatherConditions(),
-    api.forecast.getThreeDaySpaceWeatherForecast(),
+    api.forecast.getThreeDayGeomagneticForecast({
+      timezone: clientGeoData.gridpointForecastParams.timeZone,
+    }),
   ]);
 
   const skyCoverForecasts = skyCover.slice(0, 3);
@@ -30,7 +30,6 @@ export default async function Home() {
     <div className="flex max-h-full w-full items-center justify-center align-middle">
       <div className="flex min-h-e-ink-height flex-col gap-1.5 p-1.5">
         {skyCoverForecasts.map((skyCoverForDay, i) => {
-          const dailySpaceWeather = spaceWeather[indexToKey(i)];
           let phaseEventOnDate: MoonPhaseData | undefined = undefined;
           if (nextApexEvent) {
             const firstSkyCoverOfDay = skyCoverForDay[0];
@@ -53,7 +52,7 @@ export default async function Home() {
               phaseEventOnDate={phaseEventOnDate}
               now={now}
               tempForecast={temperature?.tempForecast[i]}
-              spaceWeather={dailySpaceWeather}
+              auroraForecastsForDay={geomagneticForecast[i]}
               className="border-2 border-slate-400 shadow-none"
             />
           );

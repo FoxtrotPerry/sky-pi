@@ -1,30 +1,27 @@
 import { Badge } from "./ui/badge";
 import { Moon, AudioWaveform } from "lucide-react";
 import { toFahrenheit } from "~/lib/utils/math";
-import { upperCaseFirstLetter } from "~/lib/utils/string";
 import { cn } from "~/lib/utils/ui";
 import type { TemperatureForecast } from "~/types/forecast";
 import type { MoonPhaseData } from "~/types/moonphase";
-import type { DailyScalesFormatted } from "~/types/swpcScales";
+import type { KpForecast } from "~/types/swpc";
 
 type ForecastBadgesProps = React.HTMLAttributes<HTMLDivElement> & {
   phaseEventOnDate?: MoonPhaseData;
   tempForecast?: TemperatureForecast;
-  spaceWeather?: DailyScalesFormatted;
+  auroraForecast?: KpForecast;
 };
 
 export const ForecastBadges = ({
   className,
   phaseEventOnDate,
   tempForecast,
-  spaceWeather,
+  auroraForecast,
 }: ForecastBadgesProps) => {
-  const geomagneticStormingScale = Number(
-    spaceWeather?.geomagneticStorming.Scale,
-  );
-  const significantGeomagneticStorming = geomagneticStormingScale >= 2;
+  const auroraKpIndex = auroraForecast?.value ?? 0;
+  const significantGeomagneticStorming = auroraKpIndex >= 6;
   const canShowAuroraNotice =
-    significantGeomagneticStorming && spaceWeather?.geomagneticStorming.Text;
+    significantGeomagneticStorming && auroraForecast?.severity;
 
   return (
     <div className={cn("flex flex-row gap-2", className)}>
@@ -44,17 +41,13 @@ export const ForecastBadges = ({
         <Badge
           className={cn(
             "from-in-lch to-in-lch flex items-center gap-1 border-0 bg-gradient-to-r",
-            geomagneticStormingScale >= 2 &&
-              "from-purple-700 via-blue-700 to-emerald-700",
-            geomagneticStormingScale >= 4 &&
-              "from-purple-500 via-blue-500 to-emerald-500",
+            auroraKpIndex >= 5 && "from-purple-700 via-blue-700 to-emerald-700",
+            auroraKpIndex >= 7 && "from-purple-500 via-blue-500 to-emerald-500",
           )}
         >
           <AudioWaveform size={16} />
           <p className="font-bold">
-            {`${upperCaseFirstLetter(
-              spaceWeather.geomagneticStorming.Text!,
-            )} Geomagnetic Storming`}
+            {`${auroraForecast.severity.text} Geomagnetic Storming (${auroraForecast.severity.scale})`}
           </p>
         </Badge>
       )}
