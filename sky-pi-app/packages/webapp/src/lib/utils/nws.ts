@@ -7,7 +7,7 @@ import {
 } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { Temporal } from "temporal-polyfill";
-import { NWSDataPoint } from "~/types/forecast";
+import type { NWSDataPoint } from "~/types/forecast";
 
 /**
  * Takes in [`NWSDataPoint[]`](../../types/forecast.ts) and returns a matrix containing a forecast value for each hour of

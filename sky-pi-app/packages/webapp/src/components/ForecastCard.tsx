@@ -44,7 +44,7 @@ export const ForecastCard = ({
 }: ForecastCardProps) => {
   const day = skyCoverData[0]?.validTime.date;
 
-  if (day === undefined || sunRsttData === undefined) return;
+  if (day === undefined) return;
 
   const getIcon = useCallback(
     (context: {
@@ -87,8 +87,9 @@ export const ForecastCard = ({
   const dayOfWeek = format(day, "EEEE");
   const date = format(day, "MMM do");
 
-  const sunriseHour = Number(sunRsttData.Rise.split(":")[0]);
-  const sunsetHour = Number(sunRsttData.Set.split(":")[0]);
+  // if sunRsttData is undefined, we'll just default to 0
+  const sunriseHour = Number(sunRsttData?.Rise.split(":")[0] ?? -1);
+  const sunsetHour = Number(sunRsttData?.Set.split(":")[0] ?? -1);
 
   return (
     <Card className={className}>
@@ -125,8 +126,9 @@ export const ForecastCard = ({
             const duringSunRiseOrSet = [sunriseHour, sunsetHour].includes(
               hourOfDay,
             );
-            const duringNightTime =
-              sunriseHour > hourOfDay || hourOfDay > sunsetHour;
+            const duringNightTime = sunRsttData
+              ? sunriseHour > hourOfDay || hourOfDay > sunsetHour
+              : false;
             const shade = percentToSkyShade(value);
             const hour = forecast.validTime ? hourOfDay : 0;
             const Icon = getIcon({

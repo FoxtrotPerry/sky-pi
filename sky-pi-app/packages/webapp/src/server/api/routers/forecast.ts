@@ -15,7 +15,15 @@ import type {
 } from "~/types/moonphase";
 import type { GeoData } from "~/types/ip";
 import { getDateTransformer } from "~/lib/utils/date";
-import { addHours, isAfter, format, parse, isSameDay } from "date-fns";
+import {
+  addHours,
+  isAfter,
+  format,
+  parse,
+  isSameDay,
+  isBefore,
+  addDays,
+} from "date-fns";
 import { Temporal } from "temporal-polyfill";
 import {
   type RiseSetTransitTimesParams,
@@ -27,8 +35,9 @@ import { toSearchParamEntries } from "~/lib/utils/object";
 import z from "zod";
 import { dataPointsToDays } from "~/lib/utils/nws";
 import type { KpForecast } from "~/types/swpc";
-import { kpIndexToSeverity } from "~/lib/utils/swpc";
+import { datePartsToDate, kpIndexToSeverity } from "~/lib/utils/swpc";
 import { toZonedTime } from "date-fns-tz";
+import { type ScaleResponse } from "~/types/swpcScales";
 
 export const forecastRouter = createTRPCRouter({
   // #region getLocalConditions
@@ -114,7 +123,10 @@ export const forecastRouter = createTRPCRouter({
             `https://aa.usno.navy.mil/api/rstt/oneday?${searchParams.toString()}`,
           );
         }),
-      );
+      ).catch(() => {
+        console.error("Failed to get RSTT data");
+        return [];
+      });
 
       const sunRsttData = rsttResponses.map(
         (response) =>
@@ -165,12 +177,18 @@ export const forecastRouter = createTRPCRouter({
       ["date", `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`],
       ["nump", "4"],
     ]);
-    const phasesResp = await axios.get<RawMoonPhaseData>(
-      `https://aa.usno.navy.mil/api/moon/phases/date?${params.toString()}`,
-    );
+    const phasesResp = await axios
+      .get<RawMoonPhaseData>(
+        `https://aa.usno.navy.mil/api/moon/phases/date?${params.toString()}`,
+      )
+      .catch(() => {
+        console.error("Failed to get moon phase data");
+        return null;
+      });
+
+    if (!phasesResp) return null;
 
     const moonPhaseCycle: MoonPhaseCycle = {};
-    let nextApexEvent: MoonPhaseData | undefined = undefined;
     phasesResp.data.phasedata.forEach((phase) => {
       const phaseName = phase.phase;
       const [hoursStr, minutesStr] = phase.time.split(":");
@@ -189,10 +207,10 @@ export const forecastRouter = createTRPCRouter({
       };
 
       if (
-        nextApexEvent === null &&
-        (phaseData.name === "Full Moon" || phaseData.name === "New Moon")
+        !moonPhaseCycle.nextApexEvent &&
+        (phaseName === "Full Moon" || phaseName === "New Moon")
       ) {
-        nextApexEvent = phaseData;
+        moonPhaseCycle.nextApexEvent = phaseData;
       }
 
       if (phaseName === "First Quarter") {
@@ -206,18 +224,25 @@ export const forecastRouter = createTRPCRouter({
       }
     });
 
-    return { moonPhaseCycle, nextApexEvent } as {
-      moonPhaseCycle: MoonPhaseCycle;
-      nextApexEvent?: MoonPhaseData;
-    };
+    return moonPhaseCycle;
   }),
 
   // #region getGeoData
   getGeoData: publicProcedure.query(async () => {
-    const { data: geoData } = await axios.get<GeoData>(`https://ipwho.is/`);
+    const { data: geoData, status } =
+      await axios.get<GeoData>(`https://ipwho.is/`);
+    if (status !== 200) {
+      console.error("Failed to get geolocation data");
+      return null;
+    }
     const nwsResponse = await axios.get<PointMetadataResp>(
       `https://api.weather.gov/points/${geoData.latitude},${geoData.longitude}`,
     );
+
+    if (nwsResponse.status !== 200) {
+      console.error("Failed to get NWS point data");
+      return null;
+    }
 
     const nwsData = nwsResponse.data;
 
@@ -242,12 +267,19 @@ export const forecastRouter = createTRPCRouter({
     .input(
       z.object({
         timezone: z.string(),
+        now: z.date(),
       }),
     )
     .query(async ({ input }) => {
-      const { data: ovationAuroraText } = await axios.get<string>(
-        `https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt`,
-      );
+      const [{ data: ovationAuroraText }, { data: noaaScalesForecast }] =
+        await Promise.all([
+          axios.get<string>(
+            `https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt`,
+          ),
+          axios.get<ScaleResponse>(
+            `https://services.swpc.noaa.gov/products/noaa-scales.json`,
+          ),
+        ]);
 
       // Parse the text into a more usable format
       const textLines = ovationAuroraText?.split("\n");
@@ -277,13 +309,17 @@ export const forecastRouter = createTRPCRouter({
       const kpIndexForecastDates = kpIndexDatesSplit.map((dayOfMonth) => {
         const [month, day] = dayOfMonth.split(" ");
         const localDate = parse(`${month} ${day}`, "MMM d", new Date());
-        return new Date(
-          Date.UTC(
-            localDate.getFullYear(),
-            localDate.getMonth() - 1,
-            localDate.getDate(),
+        const utcDate = addDays(
+          new Date(
+            Date.UTC(
+              localDate.getFullYear(),
+              localDate.getMonth() - 1,
+              localDate.getDate(),
+            ),
           ),
+          1,
         );
+        return utcDate;
       });
 
       // init an array to hold the kp values for each day
@@ -341,6 +377,45 @@ export const forecastRouter = createTRPCRouter({
           }
           kpLocalForecasts[dayIndex]!.push(kpLocalForecast);
         }
+      }
+
+      const firstKpForecast = kpLocalForecasts[0]?.at(0);
+      // If the first forecast is not for today, add the NOAA scale forecast for today
+      // to supplement the missing KpForecast
+      if (firstKpForecast?.time && isBefore(input.now, firstKpForecast?.time)) {
+        const scaleForecastForToday = Object.values(noaaScalesForecast).find(
+          (forecast) => {
+            const forecastDate = datePartsToDate(
+              forecast.DateStamp,
+              forecast.TimeStamp,
+            );
+            return isSameDay(forecastDate, new Date(input.now));
+          },
+        );
+
+        const scaleForecastKpForToday = scaleForecastForToday?.G.Scale
+          ? Number(scaleForecastForToday?.G.Scale)
+          : 0;
+
+        // Create a KpForecast from the scale forecast fetched from NOAA
+        // to handle the case where kpLocalForecasts doesn't include today's forecast.
+        const kpForecastForToday: KpForecast = {
+          time: datePartsToDate(
+            scaleForecastForToday!.DateStamp,
+            scaleForecastForToday!.TimeStamp,
+          ),
+          value: scaleForecastForToday?.G.Scale
+            ? Number(scaleForecastForToday?.G.Scale)
+            : 0,
+          severity: {
+            scale: scaleForecastForToday?.G.Scale
+              ? `G${scaleForecastForToday?.G.Scale}`
+              : "G0",
+            text: kpIndexToSeverity(scaleForecastKpForToday).text,
+          },
+        };
+
+        return [[kpForecastForToday], ...kpLocalForecasts];
       }
 
       return kpLocalForecasts;

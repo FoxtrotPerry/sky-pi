@@ -1,4 +1,6 @@
+import { toZonedTime } from "date-fns-tz";
 import type { GeomagneticSeverity, KpForecast } from "~/types/swpc";
+import type { DailyScales } from "~/types/swpcScales";
 
 export const kpIndexToSeverity = (kp: number): GeomagneticSeverity => {
   if (kp >= 9) return { text: "Extreme", scale: "G5" };
@@ -18,4 +20,16 @@ export const getMaxKpForecast = (forecasts: KpForecast[]) => {
     }
   }
   return maxKpForecast;
+};
+
+export const datePartsToDate = (
+  dateStamp: DailyScales["DateStamp"],
+  timeStamp: DailyScales["TimeStamp"],
+) => {
+  const [year, month, day] = dateStamp.split("-").map(Number);
+  const [hour, minute, second] = timeStamp.split(":").map(Number);
+  return toZonedTime(
+    new Date(year!, month! - 1, day, hour, minute, second),
+    "America/New_York",
+  );
 };

@@ -41,4 +41,5 @@ export type MoonPhaseCycle = {
   firstQuarter?: MoonPhaseData;
   fullMoon?: MoonPhaseData;
   lastQuarter?: MoonPhaseData;
+  nextApexEvent?: MoonPhaseData;
 };

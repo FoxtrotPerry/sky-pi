@@ -42,7 +42,6 @@ export const ForecastBadges = ({
           className={cn(
             "from-in-lch to-in-lch flex items-center gap-1 border-0 bg-gradient-to-r",
             auroraKpIndex >= 5 && "from-purple-700 via-blue-700 to-emerald-700",
-            auroraKpIndex >= 7 && "from-purple-500 via-blue-500 to-emerald-500",
           )}
         >
           <AudioWaveform size={16} />
