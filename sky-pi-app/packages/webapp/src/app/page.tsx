@@ -34,14 +34,6 @@ export default async function Home() {
 
   console.log("Request OK", requestOk);
 
-  console.log(
-    geomagneticForecast?.map((forecasts) =>
-      forecasts.map(
-        (forecast) => `${forecast.time.toUTCString()} -- ${forecast.value}`,
-      ),
-    ),
-  );
-
   const canShowForecastCards = !!skyCoverForecasts && !!localConditions;
   const canShowBottomCards = !!moonPhases || !!localConditions;
 
