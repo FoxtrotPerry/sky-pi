@@ -91,6 +91,14 @@ export const ForecastCard = ({
   const sunriseHour = Number(sunRsttData?.Rise.split(":")[0] ?? -1);
   const sunsetHour = Number(sunRsttData?.Set.split(":")[0] ?? -1);
 
+  /**
+   * Conditions are ideal if:
+   * - average night time sky cover is below 20%
+   * - there's no rain
+   * - it's within three days of a new moon
+   */
+  const conditionsAreIdeal = undefined; // TODO: implement
+
   return (
     <Card className={className}>
       <CardHeader className="space-y-0.5 px-3 pb-0.5 pt-3">
