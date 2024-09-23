@@ -10,7 +10,7 @@ cyan=$(tput setaf 6)
 
 info_echo() {
   local message="$1"
-  echo "⛅️ ${bold}[INFO]${normal}: $message"
+  echo "🌪️ ${bold}[INFO]${normal}: $message"
 }
 
 done_echo() {
