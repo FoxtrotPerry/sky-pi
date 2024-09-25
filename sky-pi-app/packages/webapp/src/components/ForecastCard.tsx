@@ -27,6 +27,7 @@ type ForecastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   rainChanceData: NWSDataPoint[] | undefined;
   sunRsttData: SunRsttData | undefined;
   now: Date;
+  dayDistanceToNewMoon?: number;
   phaseEventOnDate?: MoonPhaseData;
   tempForecast?: TemperatureForecast;
   auroraForecastsForDay?: KpForecast[];
@@ -38,6 +39,7 @@ export const ForecastCard = ({
   rainChanceData,
   sunRsttData,
   now,
+  dayDistanceToNewMoon,
   phaseEventOnDate,
   tempForecast,
   auroraForecastsForDay,
@@ -91,13 +93,29 @@ export const ForecastCard = ({
   const sunriseHour = Number(sunRsttData?.Rise.split(":")[0] ?? -1);
   const sunsetHour = Number(sunRsttData?.Set.split(":")[0] ?? -1);
 
+  // get all forecasts that are during night time
+  const dawnSkyCoverForecasts = [];
+  const duskSkyCoverForecasts = [];
+  for (let i = 0; i < skyCoverData.length; i++) {
+    if (i < sunriseHour) {
+      dawnSkyCoverForecasts.push(skyCoverData[i]);
+    } else if (i > sunsetHour) {
+      duskSkyCoverForecasts.push(skyCoverData[i]);
+    }
+  }
+
   /**
    * Conditions are ideal if:
-   * - average night time sky cover is below 20%
-   * - there's no rain
+   * - majority of night time sky cover forecasts are 20% or lower
+   * - there's no rain during night time
    * - it's within three days of a new moon
    */
-  const conditionsAreIdeal = undefined; // TODO: implement
+  // const conditionsAreIdeal =
+
+  // console.log({
+  //   dayDistanceToNewMoon,
+  //   rainlessNight,
+  // });
 
   return (
     <Card className={className}>

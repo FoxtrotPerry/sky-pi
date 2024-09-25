@@ -51,6 +51,16 @@ export default async function Home() {
           skyCoverForecasts.map((skyCoverForDay, i) => {
             let phaseEventOnDate: MoonPhaseData | undefined = undefined;
             const nextApexEvent = moonPhases?.nextApexEvent;
+
+            const forecastDate = skyCoverForDay[0]!.validTime.date;
+
+            const dayDistanceToNewMoon = Math.abs(
+              differenceInCalendarDays(
+                forecastDate,
+                moonPhases?.newMoon?.date ?? new Date(0),
+              ),
+            );
+
             if (nextApexEvent) {
               const firstSkyCoverOfDay = skyCoverForDay[0];
               if (!firstSkyCoverOfDay) {
@@ -79,6 +89,7 @@ export default async function Home() {
                 auroraForecastsForDay={geomagneticForecast?.at(
                   i + geomagneticForecastDayDiff,
                 )}
+                dayDistanceToNewMoon={dayDistanceToNewMoon}
                 className="border-2 border-slate-400 shadow-none"
               />
             );
