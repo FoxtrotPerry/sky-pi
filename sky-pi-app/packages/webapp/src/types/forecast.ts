@@ -40,7 +40,7 @@ const nwsDataPoint = z.optional(
   z.object({
     validTime: z.object({
       date: z.date(),
-      duration: z.string().duration(),
+      duration: z.string().duration().optional(),
     }), // Is converted to date from ISO8601 duration string
     value: z.nullable(z.number().min(0).max(100)),
   }),

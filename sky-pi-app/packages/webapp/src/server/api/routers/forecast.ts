@@ -58,12 +58,12 @@ export const forecastRouter = createTRPCRouter({
         },
       );
 
-      const skyCover = localTimeForecast.data.properties.skyCover.values;
-      const chanceOfRain =
-        localTimeForecast.data.properties.probabilityOfPrecipitation.values;
-      const chanceOfSnow =
-        localTimeForecast.data.properties.snowfallAmount.values;
-      const tempForecast = localTimeForecast.data.properties.temperature.values;
+      const forecastProperties = localTimeForecast.data.properties;
+      const skyCover = forecastProperties.skyCover.values;
+      const chanceOfRain = forecastProperties.probabilityOfPrecipitation.values;
+      // snowfall amount measured in mm
+      const chanceOfSnow = forecastProperties.snowfallAmount.values;
+      const tempForecast = forecastProperties.temperature.values;
 
       const currTemp = tempForecast.find((temp) => {
         if (!temp?.validTime.duration) return false;
@@ -169,6 +169,7 @@ export const forecastRouter = createTRPCRouter({
         sunRsttData,
       } satisfies LocalConditions;
     }),
+  // #endregion
 
   // #region getMoonPhases
   getMoonPhases: publicProcedure.query(async () => {
@@ -226,6 +227,7 @@ export const forecastRouter = createTRPCRouter({
 
     return moonPhaseCycle;
   }),
+  // #endregion
 
   // #region getGeoData
   getGeoData: publicProcedure.query(async () => {
@@ -261,6 +263,7 @@ export const forecastRouter = createTRPCRouter({
       } satisfies Omit<RiseSetTransitTimesParams, "date">,
     };
   }),
+  // #endregion
 
   // #region getThreeDayGeomagneticForecast
   getThreeDayGeomagneticForecast: publicProcedure
@@ -420,4 +423,5 @@ export const forecastRouter = createTRPCRouter({
 
       return kpLocalForecasts;
     }),
+  // #endregion
 });

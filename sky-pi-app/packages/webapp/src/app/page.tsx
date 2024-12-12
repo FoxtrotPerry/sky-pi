@@ -26,13 +26,13 @@ export default async function Home() {
 
   const skyCoverForecasts = localConditions?.skyCover.slice(0, 3);
 
-  const requestOk = {
+  const dataOk = {
     moonPhases: !!moonPhases,
     localConditions: !!localConditions,
     geomagneticForecast: !!geomagneticForecast,
   };
 
-  console.log("Request OK", requestOk);
+  console.log("Data OK", dataOk);
 
   const canShowForecastCards = !!skyCoverForecasts && !!localConditions;
   const canShowBottomCards = !!moonPhases || !!localConditions;
@@ -82,6 +82,7 @@ export default async function Home() {
                 key={`forecast-card-${i}`}
                 skyCoverData={skyCoverForDay}
                 rainChanceData={localConditions.rainChance?.at(i)}
+                snowfallAmount={localConditions.snowChance?.at(i)}
                 sunRsttData={localConditions.sunRsttData?.at(i)}
                 phaseEventOnDate={phaseEventOnDate}
                 now={now}

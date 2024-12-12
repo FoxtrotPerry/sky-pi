@@ -29,9 +29,10 @@ export const dataPointsToDays = (
   const startOfToday = startOfDay(localNow);
 
   for (let i = 0; i < nwsDataPoints.length; i++) {
-    const forecastTime = nwsDataPoints[i]?.validTime.date;
+    const nwsDataPoint = nwsDataPoints[i];
+    const forecastTime = nwsDataPoint?.validTime.date;
     const duration = Temporal.Duration.from(
-      nwsDataPoints[i]?.validTime.duration ?? oneHourIsoDuration,
+      nwsDataPoint?.validTime.duration ?? oneHourIsoDuration,
     );
     // if the forecast doesn't have a time or the time is before
     // the start of today, then skip this data point.
@@ -40,7 +41,8 @@ export const dataPointsToDays = (
     // figure out which day index to insert the forecast into
     const dayDiff = differenceInCalendarDays(forecastTime, startOfToday);
 
-    const newNWSDataPointItems = [nwsDataPoints[i]];
+    delete nwsDataPoint?.validTime.duration;
+    const newNWSDataPointItems = [nwsDataPoint];
 
     /**
      * If the forecast data point's duration is more than one hour, then add a copy
@@ -53,7 +55,7 @@ export const dataPointsToDays = (
       const newDate = addHours(forecastTime, j);
       const newEntry: NWSDataPoint = {
         value: nwsDataPoints[i]?.value ?? null,
-        validTime: { date: newDate, duration: oneHourIsoDuration },
+        validTime: { date: newDate },
       };
       if (getHours(newDate) > getHours(forecastTime)) {
         newNWSDataPointItems.push(newEntry);

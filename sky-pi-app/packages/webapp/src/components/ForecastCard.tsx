@@ -10,6 +10,8 @@ import {
   CloudMoonRain,
   CloudSunRain,
   Sun,
+  Snowflake,
+  CloudSnow,
   Umbrella,
 } from "lucide-react";
 import { percentToSkyShade } from "~/lib/utils/tailwind";
@@ -21,10 +23,12 @@ import type { MoonPhaseData } from "~/types/moonphase";
 import type { KpForecast } from "~/types/swpc";
 import { ForecastBadges } from "./ForecastBadges";
 import { getMaxKpForecast } from "~/lib/utils/swpc";
+import { mmToInches } from "~/lib/utils/math";
 
 type ForecastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   skyCoverData: NWSDataPoint[];
   rainChanceData: NWSDataPoint[] | undefined;
+  snowfallAmount: NWSDataPoint[] | undefined;
   sunRsttData: SunRsttData | undefined;
   now: Date;
   dayDistanceToNewMoon?: number;
@@ -37,6 +41,7 @@ export const ForecastCard = ({
   className,
   skyCoverData,
   rainChanceData,
+  snowfallAmount,
   sunRsttData,
   now,
   dayDistanceToNewMoon,
@@ -53,8 +58,15 @@ export const ForecastCard = ({
       skyCover: number;
       isNightTime: boolean;
       rainChance?: number;
+      snowfallAmount?: number;
     }) => {
-      const { skyCover, isNightTime, rainChance = 0 } = context;
+      const {
+        skyCover,
+        isNightTime,
+        rainChance = 0,
+        snowfallAmount = 0,
+      } = context;
+      const imperialSnowfallAmount = mmToInches(snowfallAmount);
       // if it's near clear skies
       if (20 >= skyCover) {
         return isNightTime ? MoonStar : Sun;
@@ -75,10 +87,15 @@ export const ForecastCard = ({
         }
       }
 
-      // if it's more than 40% cloudy, then we don't need to worry about
-      // showing the sun or moon in the iconography
+      // check if we need to show snowfall
+      if (imperialSnowfallAmount >= 5) return Snowflake;
+      if (imperialSnowfallAmount >= 1) return CloudSnow;
+
+      // check if we need to show rainfall
       if (rainChance >= 70) return Umbrella;
       if (rainChance >= 40) return CloudRain;
+
+      // if we get here, then it must be just cloudy without any precipitation
       return Cloudy;
     },
     [],
@@ -161,6 +178,7 @@ export const ForecastCard = ({
               isNightTime: duringNightTime,
               skyCover: value,
               rainChance: rainChanceData?.at(i)?.value ?? undefined,
+              snowfallAmount: snowfallAmount?.at(i)?.value ?? undefined,
             });
 
             return (
