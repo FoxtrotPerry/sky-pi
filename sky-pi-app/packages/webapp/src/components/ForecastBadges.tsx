@@ -2,13 +2,13 @@ import { Badge } from "./ui/badge";
 import { Moon, AudioWaveform } from "lucide-react";
 import { toFahrenheit } from "~/lib/utils/math";
 import { cn } from "~/lib/utils/ui";
-import type { TemperatureForecast } from "~/types/forecast";
+import type { TemperatureRangeForecast } from "~/types/forecast";
 import type { MoonPhaseData } from "~/types/moonphase";
 import type { KpForecast } from "~/types/swpc";
 
 type ForecastBadgesProps = React.HTMLAttributes<HTMLDivElement> & {
   phaseEventOnDate?: MoonPhaseData;
-  tempForecast?: TemperatureForecast;
+  tempForecast?: TemperatureRangeForecast;
   auroraForecast?: KpForecast;
 };
 

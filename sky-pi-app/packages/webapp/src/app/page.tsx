@@ -86,7 +86,12 @@ export default async function Home() {
                 sunRsttData={localConditions.sunRsttData?.at(i)}
                 phaseEventOnDate={phaseEventOnDate}
                 now={now}
-                tempForecast={localConditions.temperature?.tempForecast?.at(i)}
+                tempForecast={localConditions.temperature?.tempForecastByDay.at(
+                  i,
+                )}
+                tempRangeForecast={localConditions.temperature?.tempRangeForecast?.at(
+                  i,
+                )}
                 auroraForecastsForDay={geomagneticForecast?.at(
                   i + geomagneticForecastDayDiff,
                 )}

@@ -6,7 +6,7 @@ import {
   zGridpointForecastParams,
   type GridpointForecastParams,
   type LocalConditions,
-  type TemperatureForecast,
+  type TemperatureRangeForecast,
 } from "~/types/forecast";
 import type {
   MoonPhaseCycle,
@@ -77,7 +77,11 @@ export const forecastRouter = createTRPCRouter({
       const firstSkyCoverDate = skyCover.at(0)?.validTime.date;
       if (!firstSkyCoverDate || !lastSkyCoverDate) {
         return {
-          temperature: { currTemp: 0, tempForecast: [] },
+          temperature: {
+            currTemp: 0,
+            tempRangeForecast: [],
+            tempForecastByDay: [],
+          },
           skyCover: [],
           sunRsttData: [],
           rainChance: [],
@@ -154,7 +158,7 @@ export const forecastRouter = createTRPCRouter({
           return {
             high,
             low,
-          } satisfies TemperatureForecast;
+          } satisfies TemperatureRangeForecast;
         },
       );
 
@@ -164,7 +168,8 @@ export const forecastRouter = createTRPCRouter({
         snowChance: snowChanceByDay,
         temperature: {
           currTemp: currTemp ?? 0,
-          tempForecast: highLowTempForecast,
+          tempRangeForecast: highLowTempForecast,
+          tempForecastByDay,
         },
         sunRsttData,
       } satisfies LocalConditions;

@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
-import type { NWSDataPoint, TemperatureForecast } from "~/types/forecast";
+import type { NWSDataPoint, TemperatureRangeForecast } from "~/types/forecast";
 import { format, getHours, isSameHour } from "date-fns";
 import {
   MoonStar,
@@ -31,9 +31,10 @@ type ForecastCardProps = React.HTMLAttributes<HTMLDivElement> & {
   snowfallAmount: NWSDataPoint[] | undefined;
   sunRsttData: SunRsttData | undefined;
   now: Date;
+  tempForecast?: NWSDataPoint[];
   dayDistanceToNewMoon?: number;
   phaseEventOnDate?: MoonPhaseData;
-  tempForecast?: TemperatureForecast;
+  tempRangeForecast?: TemperatureRangeForecast;
   auroraForecastsForDay?: KpForecast[];
 };
 
@@ -44,9 +45,10 @@ export const ForecastCard = ({
   snowfallAmount,
   sunRsttData,
   now,
+  tempForecast,
   dayDistanceToNewMoon,
   phaseEventOnDate,
-  tempForecast,
+  tempRangeForecast,
   auroraForecastsForDay,
 }: ForecastCardProps) => {
   const day = skyCoverData[0]?.validTime.date;
@@ -54,18 +56,17 @@ export const ForecastCard = ({
   if (day === undefined) return;
 
   const getIcon = useCallback(
-    (context: {
+    ({
+      skyCover,
+      isNightTime,
+      rainChance = 0,
+      snowfallAmount = 0,
+    }: {
       skyCover: number;
       isNightTime: boolean;
       rainChance?: number;
       snowfallAmount?: number;
     }) => {
-      const {
-        skyCover,
-        isNightTime,
-        rainChance = 0,
-        snowfallAmount = 0,
-      } = context;
       const imperialSnowfallAmount = mmToInches(snowfallAmount);
       // if it's near clear skies
       if (20 >= skyCover) {
@@ -88,8 +89,8 @@ export const ForecastCard = ({
       }
 
       // check if we need to show snowfall
-      if (imperialSnowfallAmount >= 5) return Snowflake;
-      if (imperialSnowfallAmount >= 1) return CloudSnow;
+      if (imperialSnowfallAmount >= 1) return Snowflake;
+      if (imperialSnowfallAmount >= 0.05) return CloudSnow;
 
       // check if we need to show rainfall
       if (rainChance >= 70) return Umbrella;
@@ -146,7 +147,7 @@ export const ForecastCard = ({
           </div>
           <ForecastBadges
             className="flex flex-row gap-2"
-            tempForecast={tempForecast}
+            tempForecast={tempRangeForecast}
             phaseEventOnDate={phaseEventOnDate}
             auroraForecast={maxKpForecast}
           />
@@ -174,6 +175,7 @@ export const ForecastCard = ({
               : false;
             const shade = percentToSkyShade(value);
             const hour = forecast.validTime ? hourOfDay : 0;
+
             const Icon = getIcon({
               isNightTime: duringNightTime,
               skyCover: value,
