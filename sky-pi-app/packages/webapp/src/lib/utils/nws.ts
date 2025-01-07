@@ -1,13 +1,15 @@
 import {
   addHours,
   differenceInCalendarDays,
-  getHours,
   isBefore,
   startOfDay,
 } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 import { Temporal } from "temporal-polyfill";
 import type { NWSDataPoint } from "~/types/forecast";
+
+// ISO8601 Duration encoding for a one hour duration
+const oneHourIsoDuration = "PT1H";
 
 /**
  * Takes in [`NWSDataPoint[]`](../../types/forecast.ts) and returns a matrix containing a forecast value for each hour of
@@ -19,64 +21,66 @@ export const dataPointsToDays = (
   nwsDataPoints: NWSDataPoint[],
   timezone: string,
 ) => {
-  // ISO8601 Duration encoding for a one hour duration
-  const oneHourIsoDuration = "PT1H";
-  // matrix comprised of forecast data for each day. each elem is
-  // an array of that day's forecasts.
-  const nwsDataPointsByDay: NWSDataPoint[][] = [[]] as NWSDataPoint[][];
+  /**
+   * Step 1: Break down durations in the data points into hour by hour data
+   */
+  let extrapolatedData: NWSDataPoint[] = [];
 
+  for (let i = 0; i < nwsDataPoints.length; i++) {
+    const dataPoint = nwsDataPoints[i];
+    if (dataPoint === undefined) {
+      continue;
+    }
+    const duration = Temporal.Duration.from(
+      dataPoint.validTime.duration ?? oneHourIsoDuration,
+    );
+    const infillData: NWSDataPoint[] = [];
+
+    const hoursInDuration = duration.hours + duration.days * 24;
+
+    // for every hour past 1 the duration covers, add to the infillData
+    // that many entries
+    for (let j = 1; j < hoursInDuration; j++) {
+      const infillEntry: NWSDataPoint = {
+        ...dataPoint,
+        validTime: {
+          date: addHours(dataPoint.validTime.date, j),
+        },
+      };
+      infillData.push(infillEntry);
+    }
+    extrapolatedData = extrapolatedData.concat(dataPoint).concat(infillData);
+  }
+
+  /*
+   * Step 2: Take the extrapolated data and group it by days
+   */
   const localNow = toZonedTime(new Date(), timezone);
   const startOfToday = startOfDay(localNow);
 
-  for (let i = 0; i < nwsDataPoints.length; i++) {
-    const nwsDataPoint = nwsDataPoints[i];
-    const forecastTime = nwsDataPoint?.validTime.date;
-    const duration = Temporal.Duration.from(
-      nwsDataPoint?.validTime.duration ?? oneHourIsoDuration,
-    );
-    // if the forecast doesn't have a time or the time is before
-    // the start of today, then skip this data point.
-    if (forecastTime === undefined || isBefore(forecastTime, startOfToday))
+  const dataGroupedByDay: NWSDataPoint[][] = [[]];
+
+  for (let i = 0; i < extrapolatedData.length; i++) {
+    const dataPoint = extrapolatedData[i];
+    if (!dataPoint) {
       continue;
-    // figure out which day index to insert the forecast into
-    const dayDiff = differenceInCalendarDays(forecastTime, startOfToday);
-
-    delete nwsDataPoint?.validTime.duration;
-    const newNWSDataPointItems = [nwsDataPoint];
-
-    /**
-     * If the forecast data point's duration is more than one hour, then add a copy
-     * of the data point for every hour the duration is over.
-     *
-     * We deconstruct these durations so that for every day we have full data coverage
-     * of, we are ensured 24 elements in that day's array.
-     */
-    for (let j = 1; j < duration.hours; j++) {
-      const newDate = addHours(forecastTime, j);
-      const newEntry: NWSDataPoint = {
-        value: nwsDataPoints[i]?.value ?? null,
-        validTime: { date: newDate },
-      };
-      if (getHours(newDate) > getHours(forecastTime)) {
-        newNWSDataPointItems.push(newEntry);
-      } else {
-        // initialize the next day's array before pushing
-        if (nwsDataPointsByDay[dayDiff + 1] === undefined) {
-          nwsDataPointsByDay[dayDiff + 1] = [];
-        }
-        nwsDataPointsByDay[dayDiff + 1]?.push(newEntry);
-      }
     }
-
-    // if the day array we're about to insert into doesn't exist yet,
-    if (nwsDataPointsByDay?.at(dayDiff) === undefined) {
-      // then assign our new array elems to it
-      nwsDataPointsByDay[dayDiff] = newNWSDataPointItems;
+    const forecastTime = dataPoint.validTime.date;
+    const dayDiff = differenceInCalendarDays(forecastTime, startOfToday);
+    if (typeof dataGroupedByDay[dayDiff] === "undefined") {
+      dataGroupedByDay[dayDiff] = [dataPoint];
     } else {
-      // otherwise, push the new array elems to what already exists there
-      nwsDataPointsByDay[dayDiff]?.push(...newNWSDataPointItems);
+      dataGroupedByDay[dayDiff].push(dataPoint);
     }
   }
 
-  return nwsDataPointsByDay;
+  /*
+   * Step 3: Ensure we're not returning data from yesterday
+   */
+
+  if (isBefore(dataGroupedByDay[0]![0]!.validTime.date, startOfToday)) {
+    return dataGroupedByDay.slice(1);
+  } else {
+    return dataGroupedByDay;
+  }
 };
