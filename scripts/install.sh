@@ -97,7 +97,7 @@ if [ ! -f "$ZIP_FILE" ]; then
 fi
 
 info_echo "Un-zipping sky-pi zip..."
-unzip -qq $ZIP_FILE
+unzip -o -qq $ZIP_FILE
 
 if [ ! -d "$SKYPI_DIR" ]; then
   error_echo "sky-pi distribution failed to unzip"
