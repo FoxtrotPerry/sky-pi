@@ -1,7 +1,7 @@
 import { Circle } from "lucide-react";
 import { Card, CardContent } from "~/components/ui/card";
 import type { MoonPhaseCycle, MoonPhaseData } from "~/types/moonphase";
-import { format, formatDistanceStrict, intervalToDuration } from "date-fns";
+import { format, formatDistanceStrict } from "date-fns";
 import type { ReactNode } from "react";
 import { cn } from "~/lib/utils/ui";
 
@@ -16,6 +16,7 @@ type MoonDetailsProps = {
 
 const PhaseDetails = ({ phaseData, children }: MoonDetailsProps) => {
   const temporalDistance = formatDistanceStrict(new Date(), phaseData.date);
+  const phaseDate = `${format(phaseData.date, "ccc, MMM do")} (in ${temporalDistance})`;
 
   return (
     <div className="flex flex-col items-center justify-center gap-2 gap-y-0">
@@ -23,9 +24,7 @@ const PhaseDetails = ({ phaseData, children }: MoonDetailsProps) => {
         {children}
         <h3 className="text-2xl">{phaseData.name}</h3>
       </div>
-      <p className="text-sm text-muted-foreground">
-        {`${format(phaseData.date, "ccc, MMM do")} (in ${temporalDistance})`}
-      </p>
+      <p className="text-sm text-muted-foreground">{phaseDate}</p>
     </div>
   );
 };

@@ -53,7 +53,7 @@ export const ForecastCard = ({
 }: ForecastCardProps) => {
   const day = skyCoverData[0]?.validTime.date;
 
-  if (day === undefined) return;
+  if (day === undefined) return null;
 
   const getIcon = useCallback(
     ({
