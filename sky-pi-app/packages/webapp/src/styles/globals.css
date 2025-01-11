@@ -74,3 +74,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .sun-event-gradient {
+    @apply bg-gradient-to-b from-[#f59e0b] via-[#fcd34d] to-[#fef9c3]
+  }
+}

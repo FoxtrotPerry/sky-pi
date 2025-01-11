@@ -1,5 +1,5 @@
 import z from "zod";
-import { MoonPhase } from "./moonphase";
+import type { MoonPhase } from "./moonphase";
 
 type TzOffset = `${number}`;
 
@@ -30,7 +30,7 @@ export type RiseSetTransitTimesParams = z.infer<
 //   dst: boolean;
 // };
 
-type DayTime = `${number}:${number}`;
+export type DayTime = `${number}:${number}`;
 
 type MoonTransitEvent = "Rise" | "Upper Transit" | "Set";
 
