@@ -121,13 +121,13 @@ export const forecastRouter = createTRPCRouter({
         );
       });
 
-      const rsttResponses = await Promise.all(
-        rsttSearchParamsByDay.map((searchParams) => {
-          return axios.get<RiseSetTransitTimesResp>(
-            `https://aa.usno.navy.mil/api/rstt/oneday?${searchParams.toString()}`,
-          );
-        }),
-      ).catch(() => {
+      const rsttRequests = rsttSearchParamsByDay.map((searchParams) => {
+        return axios.get<RiseSetTransitTimesResp>(
+          `https://aa.usno.navy.mil/api/rstt/oneday?${searchParams.toString()}`,
+        );
+      });
+
+      const rsttResponses = await Promise.all(rsttRequests).catch(() => {
         console.error("Failed to get RSTT data");
         return [];
       });

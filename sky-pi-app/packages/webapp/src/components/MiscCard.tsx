@@ -54,7 +54,7 @@ export const MiscCard = ({
           )}
         </div>
         <div className="flex flex-col">
-          <h2 className="text-end text-5xl font-semibold">
+          <h2 className="text-end text-4xl font-semibold">
             {formattedTemperature}
           </h2>
           <p className="text-muted-foreground">{updateText}</p>

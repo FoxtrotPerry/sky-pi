@@ -48,7 +48,7 @@ export default async function Home() {
 
   return (
     <div className="flex max-h-full w-full items-center justify-center align-middle">
-      <div className="flex min-h-e-ink-height flex-col gap-1.5 p-1.5">
+      <div className="h-e-ink-width flex h-e-ink-height flex-col gap-1.5 overflow-clip p-1.5">
         {canShowForecastCards &&
           skyCoverForecasts.map((skyCoverForDay, i) => {
             let phaseEventOnDate: MoonPhaseData | undefined = undefined;
