@@ -6,6 +6,8 @@ type TzOffset = `${number}`;
 export const zRiseSetTransitTimesParams = z.object({
   date: z.string().date(),
   coords: z.string(),
+  lat: z.number(),
+  lng: z.number(),
   tz: z.string(),
   dst: z.boolean(),
 });

@@ -27,7 +27,7 @@ Short build guide for those who are starting with little to no knowledge of Rasp
 
 Development of this project was done on a very affordable [Raspberry Pi 3](https://www.adafruit.com/product/3055) (thanks [Kamin](https://github.com/kaminfay) for the free Raspberry Pi!)
 
-I haven't personally tested on every possible Pi, but Sky-Pi should work on the following:
+I haven't personally tested on every possible Pi, but Sky Pi should work on the following:
 
 - [Raspberry Pi 3B](https://www.adafruit.com/product/3055)
 - [Raspberry Pi 3B+](https://www.adafruit.com/product/3775)
@@ -80,3 +80,13 @@ You can always completely uninstall Sky Pi by running:
 ```bash
 curl -sSL uninstall.skypi.dev | bash
 ```
+
+### Sources
+
+The following sites are either currently providing data to Sky Pi are have done so in the past!
+
+- <https://navy.mil>
+- <https://weather.gov>
+- <https://sunrise-sunset.org>
+- <https://ipwho.is>
+- <https://noaa.gov>

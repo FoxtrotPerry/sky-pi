@@ -76,7 +76,10 @@
 }
 
 @layer components {
-  .sun-event-gradient {
-    @apply bg-gradient-to-b from-[#f59e0b] via-[#fcd34d] to-[#fef9c3]
+  .sun-rise-set-gradient {
+    @apply bg-gradient-to-t from-[#f59e0b] via-[#fcd34d] to-[#fef9c3]
+  }
+  .astro-night-gradient {
+    @apply bg-gradient-to-t from-[#4d2fa7] via-[#2c0ce2] to-[#006ec9]
   }
 }

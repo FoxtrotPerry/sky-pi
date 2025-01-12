@@ -37,7 +37,11 @@ import { dataPointsToDays } from "~/lib/utils/nws";
 import type { KpForecast } from "~/types/swpc";
 import { datePartsToDate, kpIndexToSeverity } from "~/lib/utils/swpc";
 import { toZonedTime } from "date-fns-tz";
-import { type ScaleResponse } from "~/types/swpcScales";
+import type { ScaleResponse } from "~/types/swpcScales";
+import {
+  type SunPhaseRequestResponse,
+  type SunPhaseRequestParams,
+} from "~/types/sunPhase";
 
 export const forecastRouter = createTRPCRouter({
   // #region getLocalConditions
@@ -86,6 +90,7 @@ export const forecastRouter = createTRPCRouter({
           sunRsttData: [],
           rainChance: [],
           snowChance: [],
+          sunPhaseData: [],
         };
       }
 
@@ -106,7 +111,40 @@ export const forecastRouter = createTRPCRouter({
         forecastParams.timeZone,
       ).filter((dayForecasts) => !!dayForecasts);
 
-      // Get RSTT data:
+      // TODO: Decide on one of these two RSTT APIs
+
+      // RSTT Source #1
+
+      const sunPhaseParamsByDay = skyCoverByDay.map((dataPoint) => {
+        const date = dataPoint.at(0)?.validTime.date;
+        if (!date) {
+          return new URLSearchParams();
+        }
+        return new URLSearchParams({
+          lat: riseSetParams.lat.toString(),
+          lng: riseSetParams.lng.toString(),
+          tzid: forecastParams.timeZone,
+          date: format(date, "yyyy-MM-dd"),
+        } satisfies SunPhaseRequestParams);
+      });
+
+      const sunPhaseRequests = sunPhaseParamsByDay.map((params) => {
+        const reqUrl = `https://api.sunrise-sunset.org/json?${params.toString()}`;
+        return axios.get<SunPhaseRequestResponse>(reqUrl);
+      });
+
+      const sunPhaseResponses = await Promise.all(sunPhaseRequests).catch(
+        () => {
+          console.error("Failed to get Sun Phase data");
+          return [];
+        },
+      );
+
+      const sunPhaseData = sunPhaseResponses.map((resp) => {
+        return resp.data satisfies SunPhaseRequestResponse;
+      });
+
+      // RSTT Source #2
 
       const rsttSearchParamsByDay = skyCoverByDay.map((dataPoint) => {
         const date = dataPoint.at(0)?.validTime.date;
@@ -172,6 +210,7 @@ export const forecastRouter = createTRPCRouter({
           tempForecastByDay,
         },
         sunRsttData,
+        sunPhaseData,
       } satisfies LocalConditions;
     }),
   // #endregion
@@ -263,6 +302,8 @@ export const forecastRouter = createTRPCRouter({
       } satisfies GridpointForecastParams,
       riseSetTransitTimesParams: {
         coords: `${geoData.latitude},${geoData.longitude}`,
+        lat: geoData.latitude,
+        lng: geoData.longitude,
         tz: `${geoData.timezone.offset / 60 / 60}`,
         dst: false,
       } satisfies Omit<RiseSetTransitTimesParams, "date">,

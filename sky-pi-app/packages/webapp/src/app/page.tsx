@@ -44,7 +44,7 @@ export default async function Home() {
     ? differenceInCalendarDays(now, firstGeomagneticForecastDay)
     : 0;
 
-  const sunRsttToday = localConditions?.sunRsttData?.at(0);
+  const sunPhasesToday = localConditions?.sunPhaseData[0];
 
   return (
     <div className="flex max-h-full w-full items-center justify-center align-middle">
@@ -115,8 +115,7 @@ export default async function Home() {
                 className="w-1/2 border-2 border-slate-400 shadow-none"
                 temperature={localConditions.temperature.currTemp}
                 updateTime={new Date()}
-                sunriseToday={sunRsttToday?.Rise}
-                sunsetToday={sunRsttToday?.Set}
+                sunPhaseTimes={sunPhasesToday}
               />
             )}
           </div>

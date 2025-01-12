@@ -1,6 +1,7 @@
 import z from "zod";
 import { zPhenomenon, zSignificance, zWfoEnum } from "./nws";
 import type { SunRsttData } from "./riseSetTransitTimes";
+import type { SunPhaseRequestResponse } from "./sunPhase";
 
 export type TemperatureRangeForecast = {
   high: number;
@@ -17,6 +18,7 @@ export type LocalConditions = {
   rainChance: NWSDataPoint[][];
   snowChance: NWSDataPoint[][];
   sunRsttData: SunRsttData[];
+  sunPhaseData: SunPhaseRequestResponse[];
 };
 
 const nwsApiUrl = z

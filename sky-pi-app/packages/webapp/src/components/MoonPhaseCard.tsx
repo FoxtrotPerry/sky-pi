@@ -38,7 +38,7 @@ export const MoonPhaseCard = ({
 
   return (
     <Card className={cn("grow", className)} {...props}>
-      <CardContent className="flex h-full justify-around gap-3 space-y-0.5 px-3 py-1.5">
+      <CardContent className="flex h-full justify-around gap-3 px-3 py-1.5">
         {newMoon && (
           <PhaseDetails phaseData={newMoon}>
             <Circle size={24} className="fill-slate-600 stroke-slate-700" />
