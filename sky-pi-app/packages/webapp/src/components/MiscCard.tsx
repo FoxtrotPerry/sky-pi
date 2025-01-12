@@ -76,7 +76,7 @@ export const MiscCard = ({
             />
           )}
         </div>
-        <div className="mx-2 h-full w-0.5 rounded-full bg-slate-400" />
+        <div className="mx-2 h-full w-0.5 bg-slate-400" />
         <div className="flex flex-col">
           <h2 className="text-end text-4xl font-semibold">
             {formattedTemperature}
