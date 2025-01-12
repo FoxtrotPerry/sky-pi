@@ -71,7 +71,7 @@ export const MiscCard = ({
           {astro_twilight_end && (
             <SunEvent
               className="astro-night-gradient"
-              icon={<Sunrise size={20} className="stroke-white" />}
+              icon={<Sunset size={20} className="stroke-white" />}
               text={astro_twilight_end}
             />
           )}
