@@ -78,11 +78,15 @@ export const MiscCard = ({
         </div>
         <div className="mx-2 h-full w-0.5 bg-slate-400" />
         <div className="flex flex-col">
-          <h2 className="text-end text-4xl font-semibold">
+          <h2 className="-mr-0.5 text-center text-4xl font-semibold">
             {formattedTemperature}
           </h2>
           <div className="flex items-center gap-0.5">
-            <RefreshCcw className="stroke-muted-foreground" size={12} />
+            <RefreshCcw
+              className="stroke-muted-foreground"
+              size={16}
+              strokeWidth={2.5}
+            />
             <p className="text-sm text-muted-foreground">{formattedTime}</p>
           </div>
         </div>
