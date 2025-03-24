@@ -15,15 +15,7 @@ import type {
 } from "~/types/moonphase";
 import type { GeoData } from "~/types/ip";
 import { getDateTransformer } from "~/lib/utils/date";
-import {
-  addHours,
-  isAfter,
-  format,
-  parse,
-  isSameDay,
-  isBefore,
-  addDays,
-} from "date-fns";
+import { addHours, isAfter, format, isSameDay, isBefore } from "date-fns";
 import { Temporal } from "temporal-polyfill";
 import {
   type RiseSetTransitTimesParams,
@@ -42,6 +34,11 @@ import {
   type SunPhaseRequestResponse,
   type SunPhaseRequestParams,
 } from "~/types/sunPhase";
+import {
+  combineNormalizedForecasts,
+  parseGeomagneticForecast,
+  parseSpaceForecast,
+} from "~/lib/utils/aurora";
 
 export const forecastRouter = createTRPCRouter({
   // #region getLocalConditions
@@ -320,88 +317,34 @@ export const forecastRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input }) => {
-      const [{ data: ovationAuroraText }, { data: noaaScalesForecast }] =
-        await Promise.all([
-          axios.get<string>(
-            `https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt`,
-          ),
-          axios.get<ScaleResponse>(
-            `https://services.swpc.noaa.gov/products/noaa-scales.json`,
-          ),
-        ]);
+      const [
+        { data: geomagneticForecastText },
+        { data: noaaScalesForecast },
+        { data: threeDaySpaceForecastText },
+      ] = await Promise.all([
+        axios.get<string>(
+          `https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt`,
+        ),
+        axios.get<ScaleResponse>(
+          `https://services.swpc.noaa.gov/products/noaa-scales.json`,
+        ),
+        axios.get<string>(
+          `https://services.swpc.noaa.gov/text/3-day-forecast.txt`,
+        ),
+      ]);
 
-      // Parse the text into a more usable format
-      const textLines = ovationAuroraText?.split("\n");
-
-      /**
-       * Find the start and end of the geomagnetic activity probabilities and kp index forecasts
-       */
-      let [kpIndexStart, kpDatesLineIdx] = [0, 0, 0, 0];
-      textLines.forEach((line, index) => {
-        if (line.includes("NOAA Kp index forecast")) {
-          kpDatesLineIdx = index + 1;
-          kpIndexStart = index + 2;
-        }
-      });
-
-      const kpIndexLines = textLines.slice(kpIndexStart, -1);
-
-      /**
-       * Parse kp values from the text table
-       */
-
-      // split each hour range and kp value into an array
-      const kpIndexDatesSplit =
-        textLines[kpDatesLineIdx]!.trim().split(/\s{2,}/);
-
-      // parse the dates into Date objects in UTC
-      const kpIndexForecastDates = kpIndexDatesSplit.map((dayOfMonth) => {
-        const [month, day] = dayOfMonth.split(" ");
-        const localDate = parse(`${month} ${day}`, "MMM d", new Date());
-        const utcDate = addDays(
-          new Date(
-            Date.UTC(
-              localDate.getFullYear(),
-              localDate.getMonth() - 1,
-              localDate.getDate(),
-            ),
-          ),
-          1,
-        );
-        return utcDate;
-      });
-
-      // init an array to hold the kp values for each day
-      const kpUtcForecasts: KpForecast[][] | undefined = new Array(
-        kpIndexForecastDates.length,
+      const parsedGeomagneticForecast = parseGeomagneticForecast(
+        geomagneticForecastText,
       );
 
-      // for every line in the kp index forecast table, parse the kp values
-      for (let i = 0; i < kpIndexLines.length; i++) {
-        // split the line into an array of hour ranges and kp values
-        const [hourRange, ...kpValues] = kpIndexLines[i]!.trim().split(/\s+/);
-        // for every kp value, add the kp value and time pairs to each day in the kpUtcForecasts array
-        // they belong to
-        for (let j = 0; j < kpUtcForecasts.length; j++) {
-          const kpValue = kpValues[j];
-          if (!kpUtcForecasts[j]) {
-            kpUtcForecasts[j] = [];
-          }
-          const newUtcDate = new Date(
-            Date.UTC(
-              kpIndexForecastDates[j]!.getFullYear(),
-              kpIndexForecastDates[j]!.getMonth() + 1,
-              kpIndexForecastDates[j]!.getDate(),
-              Number(hourRange!.slice(0, 2)),
-            ),
-          );
-          kpUtcForecasts[j]!.push({
-            time: newUtcDate,
-            value: Number(kpValue),
-            severity: kpIndexToSeverity(Number(kpValue)),
-          });
-        }
-      }
+      const parsedThreeDaySpaceForecast = parseSpaceForecast(
+        threeDaySpaceForecastText,
+      );
+
+      const kpUtcForecasts = combineNormalizedForecasts(
+        parsedGeomagneticForecast,
+        parsedThreeDaySpaceForecast,
+      );
 
       const kpLocalForecasts: KpForecast[][] | undefined = [];
       // init a flat array to iterate over
@@ -412,15 +355,19 @@ export const forecastRouter = createTRPCRouter({
           const kpLocalForecast = {
             time: toZonedTime(kpUtcForecast!.time, input.timezone),
             value: kpUtcForecast!.value,
-            severity: kpIndexToSeverity(kpUtcForecast!.value),
+            severity: kpUtcForecast!.severity,
           };
+
           const lastInsertedForecast = kpLocalForecasts[dayIndex]?.at(-1);
+          // If the last forecast and the current forecast aren't on the same day,
+          // we must be on the next day and can increment the day index
           if (
             lastInsertedForecast &&
             !isSameDay(lastInsertedForecast.time, kpLocalForecast.time)
           ) {
             dayIndex++;
           }
+
           if (!kpLocalForecasts[dayIndex]) {
             kpLocalForecasts[dayIndex] = [];
           }

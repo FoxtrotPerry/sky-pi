@@ -79,24 +79,29 @@ export default async function Home() {
               }
             }
 
+            const rainChanceData = localConditions.rainChance?.at(i);
+            const snowfallAmount = localConditions.snowChance?.at(i);
+            const runRsttData = localConditions.sunRsttData?.at(i);
+            const tempForecast =
+              localConditions.temperature?.tempForecastByDay.at(i);
+            const tempRangeForecast =
+              localConditions.temperature?.tempRangeForecast?.at(i);
+            const auroraForecastsForDay = geomagneticForecast?.at(
+              i + geomagneticForecastDayDiff,
+            );
+
             return (
               <ForecastCard
                 key={`forecast-card-${i}`}
                 skyCoverData={skyCoverForDay}
-                rainChanceData={localConditions.rainChance?.at(i)}
-                snowfallAmount={localConditions.snowChance?.at(i)}
-                sunRsttData={localConditions.sunRsttData?.at(i)}
+                rainChanceData={rainChanceData}
+                snowfallAmount={snowfallAmount}
+                sunRsttData={runRsttData}
                 phaseEventOnDate={phaseEventOnDate}
                 now={now}
-                tempForecast={localConditions.temperature?.tempForecastByDay.at(
-                  i,
-                )}
-                tempRangeForecast={localConditions.temperature?.tempRangeForecast?.at(
-                  i,
-                )}
-                auroraForecastsForDay={geomagneticForecast?.at(
-                  i + geomagneticForecastDayDiff,
-                )}
+                tempForecast={tempForecast}
+                tempRangeForecast={tempRangeForecast}
+                auroraForecastsForDay={auroraForecastsForDay}
                 dayDistanceToNewMoon={dayDistanceToNewMoon}
                 className="border-2 border-slate-400 shadow-none"
               />

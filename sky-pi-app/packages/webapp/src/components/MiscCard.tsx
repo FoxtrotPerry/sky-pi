@@ -22,9 +22,8 @@ export const MiscCard = ({
   ...props
 }: MiscCardProps) => {
   const formattedTime = format(updateTime, "p");
-  const formattedTemperature = temperature
-    ? `${toFahrenheit(temperature)}°`
-    : "N/A";
+  const formattedTemperature =
+    temperature !== undefined ? `${toFahrenheit(temperature)}°` : "N/A";
   const sunset = removeSeconds(sunPhaseTimes?.results.sunset);
   const sunrise = removeSeconds(sunPhaseTimes?.results.sunrise);
   const astro_twilight_start = removeSeconds(
