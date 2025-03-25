@@ -12,11 +12,11 @@ import {
   Sun,
   Snowflake,
   CloudSnow,
-  Umbrella,
 } from "lucide-react";
 import { percentToSkyShade } from "~/lib/utils/tailwind";
 import { useCallback } from "react";
-import { Cloudy } from "~/components/icons/cloudy";
+import { Cloudy } from "~/components/icons/Cloudy";
+import { Umbrella } from "~/components/icons/Umbrella";
 import { cn } from "~/lib/utils/ui";
 import type { SunRsttData } from "~/types/riseSetTransitTimes";
 import type { MoonPhaseData } from "~/types/moonphase";
