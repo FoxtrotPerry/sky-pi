@@ -36,45 +36,70 @@ export const MiscCard = ({
   return (
     <Card className={cn(className)} {...props}>
       <CardContent className="flex h-full items-center justify-between px-2 py-0">
-        <div className="flex h-full flex-grow items-center justify-around">
-          {astro_twilight_start && (
-            <>
-              <SunEvent
-                className="astro-night-gradient"
-                icon={<Sunrise size={20} className="stroke-white" />}
-                text={astro_twilight_start}
-              />
-              <MoveRight size={10} />
-            </>
-          )}
-          {sunrise && (
-            <>
-              <SunEvent
-                className="sun-rise-set-gradient"
-                icon={<Sunrise size={20} />}
-                text={sunrise}
-              />
-              <MoveRight size={10} />
-            </>
-          )}
-          {sunset && (
-            <>
-              <SunEvent
-                className="sun-rise-set-gradient"
-                icon={<Sunset size={20} />}
-                text={sunset}
-              />
-              <MoveRight size={10} />
-            </>
-          )}
-          {astro_twilight_end && (
-            <SunEvent
-              className="astro-night-gradient"
-              icon={<Sunset size={20} className="stroke-white" />}
-              text={astro_twilight_end}
-            />
-          )}
-        </div>
+        <table className="w-full table-auto">
+          <tbody>
+            <tr>
+              <td>
+                <SunEvent
+                  className="astro-night-gradient"
+                  icon={<Sunrise size={24} className="stroke-white" />}
+                />
+              </td>
+              <td>
+                <MoveRight size={12} />
+              </td>
+              <td>
+                <SunEvent
+                  className="sun-rise-set-gradient"
+                  icon={<Sunrise size={24} />}
+                />
+              </td>
+              <td>
+                <MoveRight size={12} />
+              </td>
+              <td>
+                <SunEvent
+                  className="sun-rise-set-gradient"
+                  icon={<Sunset size={24} />}
+                />
+              </td>
+              <td>
+                <MoveRight size={12} />
+              </td>
+              <td>
+                <SunEvent
+                  className="astro-night-gradient"
+                  icon={<Sunset size={24} className="stroke-white" />}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <p className="text-center text-sm text-muted-foreground">
+                  {astro_twilight_start}
+                </p>
+              </td>
+              <td />
+              <td>
+                <p className="text-center text-sm text-muted-foreground">
+                  {sunrise}
+                </p>
+              </td>
+              <td />
+              <td>
+                <p className="text-center text-sm text-muted-foreground">
+                  {sunset}
+                </p>
+              </td>
+              <td />
+              <td>
+                <p className="text-center text-sm text-muted-foreground">
+                  {astro_twilight_end}
+                </p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
         <div className="mx-2 h-full w-0.5 bg-slate-400" />
         <div className="flex flex-col">
           <h2 className="-mr-0.5 text-center text-4xl font-semibold">
@@ -86,7 +111,9 @@ export const MiscCard = ({
               size={16}
               strokeWidth={2.5}
             />
-            <p className="text-sm text-muted-foreground">{formattedTime}</p>
+            <p className="text-nowrap text-sm text-muted-foreground">
+              {formattedTime}
+            </p>
           </div>
         </div>
       </CardContent>
@@ -96,24 +123,21 @@ export const MiscCard = ({
 
 const SunEvent = ({
   className,
-  text,
   icon,
 }: {
   className?: string;
-  text: string;
   icon: React.ReactNode;
 }) => {
   return (
     <div className="flex flex-col items-center">
       <div
         className={cn(
-          "flex size-7 items-center justify-center rounded-full",
+          "flex size-10 items-center justify-center rounded-full",
           className,
         )}
       >
         {icon}
       </div>
-      <p className="text-sm text-muted-foreground">{text}</p>
     </div>
   );
 };

@@ -20,8 +20,8 @@ export const Umbrella = (props: UmbrellaProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
+      width={pixels}
+      height={pixels}
       viewBox="0 0 24 24"
       {...props}
     >
