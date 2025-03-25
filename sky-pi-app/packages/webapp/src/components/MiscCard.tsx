@@ -132,11 +132,11 @@ const SunEvent = ({
     <div className="flex flex-col items-center">
       <div
         className={cn(
-          "flex size-10 items-center justify-center rounded-full",
+          "border-slate flex size-10 justify-center rounded-full border-2 border-slate-400",
           className,
         )}
       >
-        {icon}
+        <div className="my-1">{icon}</div>
       </div>
     </div>
   );

@@ -38,17 +38,36 @@ export const MoonPhaseCard = ({
 
   return (
     <Card className={cn("grow", className)} {...props}>
-      <CardContent className="flex h-full justify-around gap-3 px-3 py-1.5">
-        {newMoon && (
-          <PhaseDetails phaseData={newMoon}>
-            <Circle size={24} className="fill-slate-600 stroke-slate-700" />
-          </PhaseDetails>
-        )}
-        {fullMoon && (
-          <PhaseDetails phaseData={fullMoon}>
-            <Circle size={24} className="fill-slate-100 stroke-slate-700" />
-          </PhaseDetails>
-        )}
+      <CardContent className="h-full p-0">
+        <table className="h-full w-full table-auto">
+          <tbody>
+            <tr className="[&_td]:p-0">
+              <td className="flex h-full items-center justify-center">
+                {newMoon && (
+                  <PhaseDetails phaseData={newMoon}>
+                    <Circle
+                      size={24}
+                      className="fill-slate-600 stroke-slate-700"
+                    />
+                  </PhaseDetails>
+                )}
+              </td>
+              <td>
+                <div className="h-full w-0.5 bg-slate-400" />
+              </td>
+              <td className="flex h-full items-center justify-center">
+                {fullMoon && (
+                  <PhaseDetails phaseData={fullMoon}>
+                    <Circle
+                      size={24}
+                      className="fill-slate-100 stroke-slate-700"
+                    />
+                  </PhaseDetails>
+                )}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </CardContent>
     </Card>
   );
