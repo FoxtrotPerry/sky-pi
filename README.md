@@ -5,9 +5,7 @@
 Quickly glance sky condition information relevant to astrophotography
 
 > [!IMPORTANT]
-> READ BEFORE INSTALLING: Make sure you have I2C and SPI enabled on your Raspberry Pi!
-
-If you don't know how to do this, you can check out the [sky-pi-draw project's README](./sky-pi-draw/README.md#how-to-enable-i2c-and-spi) for info about how to enable that.
+> READ BEFORE INSTALLING: Make sure you have [I2C and SPI enabled on your Raspberry Pi]((./sky-pi-draw/README.md#how-to-enable-i2c-and-spi))!
 
 ## Installation
 
