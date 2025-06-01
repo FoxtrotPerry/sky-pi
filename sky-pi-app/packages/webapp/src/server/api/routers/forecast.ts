@@ -344,9 +344,6 @@ export const forecastRouter = createTRPCRouter({
         parsedThreeDaySpaceForecast,
       );
 
-      // console.log("UTC Kp Forecasts:");
-      // console.log(kpUtcForecasts);
-
       const kpLocalForecasts: KpForecast[][] | undefined = [];
       // init a flat array to iterate over
       let dayIndex = 0;
@@ -375,18 +372,6 @@ export const forecastRouter = createTRPCRouter({
           kpLocalForecasts[dayIndex]!.push(kpLocalForecast);
         }
       }
-
-      console.log(
-        kpLocalForecasts.map((dayForecasts) => {
-          return dayForecasts.map((forecast) => {
-            return {
-              time: forecast.time.toString(),
-              value: forecast.value,
-              severity: forecast.severity,
-            };
-          });
-        }),
-      );
 
       return kpLocalForecasts;
     }),

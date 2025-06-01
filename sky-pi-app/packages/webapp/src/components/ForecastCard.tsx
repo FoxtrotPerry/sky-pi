@@ -130,11 +130,6 @@ export const ForecastCard = ({
    */
   // const conditionsAreIdeal =
 
-  // console.log({
-  //   dayDistanceToNewMoon,
-  //   rainlessNight,
-  // });
-
   return (
     <Card className={className}>
       <CardHeader className="space-y-0.5 px-3 pb-0.5 pt-3">
