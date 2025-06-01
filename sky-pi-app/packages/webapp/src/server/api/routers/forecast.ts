@@ -15,7 +15,13 @@ import type {
 } from "~/types/moonphase";
 import type { GeoData } from "~/types/ip";
 import { getDateTransformer } from "~/lib/utils/date";
-import { addHours, isAfter, format, isSameDay, isBefore } from "date-fns";
+import {
+  addHours,
+  isAfter,
+  format,
+  isSameDay,
+  differenceInCalendarDays,
+} from "date-fns";
 import { Temporal } from "temporal-polyfill";
 import {
   type RiseSetTransitTimesParams,
@@ -346,6 +352,9 @@ export const forecastRouter = createTRPCRouter({
         parsedThreeDaySpaceForecast,
       );
 
+      // console.log("UTC Kp Forecasts:");
+      // console.log(kpUtcForecasts);
+
       const kpLocalForecasts: KpForecast[][] | undefined = [];
       // init a flat array to iterate over
       let dayIndex = 0;
@@ -376,9 +385,13 @@ export const forecastRouter = createTRPCRouter({
       }
 
       const firstKpForecast = kpLocalForecasts[0]?.at(0);
+      const dayDiff = differenceInCalendarDays(
+        input.now,
+        firstKpForecast?.time ?? new Date(),
+      );
       // If the first forecast is not for today, add the NOAA scale forecast for today
       // to supplement the missing KpForecast
-      if (firstKpForecast?.time && isBefore(input.now, firstKpForecast?.time)) {
+      if (firstKpForecast?.time && dayDiff !== 0) {
         const scaleForecastForToday = Object.values(noaaScalesForecast).find(
           (forecast) => {
             const forecastDate = datePartsToDate(
