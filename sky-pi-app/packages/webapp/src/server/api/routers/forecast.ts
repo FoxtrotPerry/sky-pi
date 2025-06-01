@@ -15,13 +15,7 @@ import type {
 } from "~/types/moonphase";
 import type { GeoData } from "~/types/ip";
 import { getDateTransformer } from "~/lib/utils/date";
-import {
-  addHours,
-  isAfter,
-  format,
-  isSameDay,
-  differenceInCalendarDays,
-} from "date-fns";
+import { addHours, isAfter, format, isSameDay } from "date-fns";
 import { Temporal } from "temporal-polyfill";
 import {
   type RiseSetTransitTimesParams,
@@ -33,9 +27,7 @@ import { toSearchParamEntries } from "~/lib/utils/object";
 import z from "zod";
 import { dataPointsToDays } from "~/lib/utils/nws";
 import type { KpForecast } from "~/types/swpc";
-import { datePartsToDate, kpIndexToSeverity } from "~/lib/utils/swpc";
 import { toZonedTime } from "date-fns-tz";
-import type { ScaleResponse } from "~/types/swpcScales";
 import {
   type SunPhaseRequestResponse,
   type SunPhaseRequestParams,
@@ -325,15 +317,15 @@ export const forecastRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const [
         { data: geomagneticForecastText },
-        { data: noaaScalesForecast },
+        // { data: noaaScalesForecast },
         { data: threeDaySpaceForecastText },
       ] = await Promise.all([
         axios.get<string>(
           `https://services.swpc.noaa.gov/text/3-day-geomag-forecast.txt`,
         ),
-        axios.get<ScaleResponse>(
-          `https://services.swpc.noaa.gov/products/noaa-scales.json`,
-        ),
+        // axios.get<ScaleResponse>(
+        //   `https://services.swpc.noaa.gov/products/noaa-scales.json`,
+        // ),
         axios.get<string>(
           `https://services.swpc.noaa.gov/text/3-day-forecast.txt`,
         ),
@@ -384,48 +376,17 @@ export const forecastRouter = createTRPCRouter({
         }
       }
 
-      const firstKpForecast = kpLocalForecasts[0]?.at(0);
-      const dayDiff = differenceInCalendarDays(
-        input.now,
-        firstKpForecast?.time ?? new Date(),
+      console.log(
+        kpLocalForecasts.map((dayForecasts) => {
+          return dayForecasts.map((forecast) => {
+            return {
+              time: forecast.time.toString(),
+              value: forecast.value,
+              severity: forecast.severity,
+            };
+          });
+        }),
       );
-      // If the first forecast is not for today, add the NOAA scale forecast for today
-      // to supplement the missing KpForecast
-      if (firstKpForecast?.time && dayDiff !== 0) {
-        const scaleForecastForToday = Object.values(noaaScalesForecast).find(
-          (forecast) => {
-            const forecastDate = datePartsToDate(
-              forecast.DateStamp,
-              forecast.TimeStamp,
-            );
-            return isSameDay(forecastDate, new Date(input.now));
-          },
-        );
-
-        const scaleForecastKpForToday = scaleForecastForToday?.G.Scale
-          ? Number(scaleForecastForToday?.G.Scale)
-          : 0;
-
-        // Create a KpForecast from the scale forecast fetched from NOAA
-        // to handle the case where kpLocalForecasts doesn't include today's forecast.
-        const kpForecastForToday: KpForecast = {
-          time: datePartsToDate(
-            scaleForecastForToday!.DateStamp,
-            scaleForecastForToday!.TimeStamp,
-          ),
-          value: scaleForecastForToday?.G.Scale
-            ? Number(scaleForecastForToday?.G.Scale)
-            : 0,
-          severity: {
-            scale: scaleForecastForToday?.G.Scale
-              ? `G${scaleForecastForToday?.G.Scale}`
-              : "G0",
-            text: kpIndexToSeverity(scaleForecastKpForToday).text,
-          },
-        };
-
-        return [[kpForecastForToday], ...kpLocalForecasts];
-      }
 
       return kpLocalForecasts;
     }),

@@ -70,11 +70,16 @@ export const parseGeomagneticForecast = (text: string) => {
           Number(hourRange!.slice(0, 2)),
         ),
       );
-      kpUtcForecasts[j]!.push({
-        time: newUtcDate,
-        value: Number(kpValue),
-        severity: kpIndexToSeverity(Number(kpValue)),
-      });
+      // every hour range spans three hours, so we need to add a forecast for each hour
+      // in the range, starting from the hour in the range
+      for (let hourOffset = 0; hourOffset < 3; hourOffset++) {
+        const hourDate = addHours(newUtcDate, hourOffset);
+        kpUtcForecasts[j]!.push({
+          time: hourDate,
+          value: Number(kpValue),
+          severity: kpIndexToSeverity(Number(kpValue)),
+        });
+      }
     }
   }
 
