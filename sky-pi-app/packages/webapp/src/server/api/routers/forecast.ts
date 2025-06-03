@@ -97,6 +97,7 @@ export const forecastRouter = createTRPCRouter({
         chanceOfRain,
         forecastParams.timeZone,
       ).filter((dayForecasts) => !!dayForecasts);
+      console.log(chanceOfSnow);
       const snowChanceByDay = dataPointsToDays(
         chanceOfSnow,
         forecastParams.timeZone,

@@ -21,7 +21,7 @@ export const dataPointsToDays = (
   nwsDataPoints: NWSDataPoint[],
   timezone: string,
 ) => {
-  /**
+  /*
    * Step 1: Break down durations in the data points into hour by hour data
    */
   let extrapolatedData: NWSDataPoint[] = [];
@@ -78,7 +78,10 @@ export const dataPointsToDays = (
    * Step 3: Ensure we're not returning data from yesterday
    */
 
-  if (isBefore(dataGroupedByDay[0]![0]!.validTime.date, startOfToday)) {
+  const firstDay = dataGroupedByDay[0];
+  const firstDayDate = firstDay?.[0]?.validTime.date;
+
+  if (firstDayDate && isBefore(firstDayDate, startOfToday)) {
     return dataGroupedByDay.slice(1);
   } else {
     return dataGroupedByDay;
