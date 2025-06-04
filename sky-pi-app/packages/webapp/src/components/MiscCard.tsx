@@ -73,29 +73,21 @@ export const MiscCard = ({
                 />
               </td>
             </tr>
-            <tr>
+            <tr className="[&_p]:text-center [&_p]:text-sm [&_p]:leading-4 [&_p]:text-muted-foreground">
               <td>
-                <p className="text-center text-sm text-muted-foreground">
-                  {astro_twilight_start}
-                </p>
+                <p>{astro_twilight_start}</p>
               </td>
               <td />
               <td>
-                <p className="text-center text-sm text-muted-foreground">
-                  {sunrise}
-                </p>
+                <p>{sunrise}</p>
               </td>
               <td />
               <td>
-                <p className="text-center text-sm text-muted-foreground">
-                  {sunset}
-                </p>
+                <p>{sunset}</p>
               </td>
               <td />
               <td>
-                <p className="text-center text-sm text-muted-foreground">
-                  {astro_twilight_end}
-                </p>
+                <p>{astro_twilight_end}</p>
               </td>
             </tr>
           </tbody>

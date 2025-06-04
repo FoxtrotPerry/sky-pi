@@ -21,6 +21,9 @@ const config = {
     {
       pattern: /fill-slate-(50|100|200|300|400|500|600|700|800|900|950)/,
     },
+    {
+      pattern: /aurora-intensity-kp(5|6|7|8|9)/,
+    },
   ],
   prefix: "",
   theme: {

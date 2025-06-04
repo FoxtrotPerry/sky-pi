@@ -13,10 +13,8 @@ const __dirname = path.dirname(__filename);
 /** @type {import("next").NextConfig} */
 const config = {
   output: "standalone",
-  experimental: {
-    // this includes files from the monorepo's root
-    outputFileTracingRoot: path.join(__dirname, "../../"),
-  },
+  // this includes files from the monorepo's root
+  outputFileTracingRoot: path.join(__dirname, "../../"),
 };
 
 export default config;

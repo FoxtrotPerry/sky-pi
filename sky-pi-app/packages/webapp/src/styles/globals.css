@@ -82,4 +82,28 @@
   .astro-night-gradient {
     @apply bg-gradient-to-t from-[#4d2fa7] via-[#2c0ce2] to-[#006ec9]
   }
+  .aurora-intensity-kp5 {
+    /* box-shadow: 0 0 1px 1px rgba(179, 147, 255, 0.1), 0 0 2px 2px rgba(34, 197, 94, 0.1); */
+    opacity: 0.3;
+    @apply bg-gradient-to-r from-purple-300 to-green-300
+  }
+  .aurora-intensity-kp6 {
+    /* box-shadow: 0 0 1px 1px rgba(126, 73, 248, 0.2), 0 0 2px 2px rgba(34, 197, 94, 0.2); */
+    opacity: 0.4;
+    @apply bg-gradient-to-r from-purple-400 to-green-400
+  }
+  .aurora-intensity-kp7 {
+    box-shadow: 0 0 1px 1px rgba(139, 92, 246, 0.3), 0 0 2px 1px rgba(34, 197, 94, 0.3);
+    opacity: 0.65;
+    @apply bg-gradient-to-r from-emerald-500 via-purple-500 to-rose-600
+  }
+  .aurora-intensity-kp8 {
+    box-shadow: 0 0 3px 1px rgba(126, 70, 255, 0.4), 0 0 2px 2px rgba(34, 197, 94, 0.4);
+    opacity: 0.825;
+    @apply bg-gradient-to-r from-emerald-600 via-purple-600 to-rose-800
+  }
+  .aurora-intensity-kp9 {
+    box-shadow: 0 0px 2.5px 2px rgba(105, 40, 255, 0.5), 0 0 3px 3px rgba(34, 197, 94, 0.5);
+    @apply bg-gradient-to-r from-emerald-600 via-purple-600 to-rose-600
+  }
 }

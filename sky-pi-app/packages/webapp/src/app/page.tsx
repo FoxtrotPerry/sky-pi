@@ -103,7 +103,7 @@ export default async function Home() {
                 tempRangeForecast={tempRangeForecast}
                 auroraForecastsForDay={auroraForecastsForDay}
                 dayDistanceToNewMoon={dayDistanceToNewMoon}
-                className="border-2 border-slate-400 shadow-none"
+                className="overflow-hidden border-2 border-slate-400 shadow-none"
               />
             );
           })}
